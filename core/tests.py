@@ -6,7 +6,7 @@ from django.test import Client, TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from .models import GameScore, GameSession, PlayerProfile
+from .models import GameScore, GameSession, PlayerAchievement, PlayerProfile
 
 
 class PublicPagesTests(TestCase):
@@ -72,3 +72,42 @@ class GameApiTests(TestCase):
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 409)
+
+
+class RewardsTests(TestCase):
+    def setUp(self):
+        self.client = Client(enforce_csrf_checks=False)
+        self.user = User.objects.create_user("mora", password="StrongPass123!")
+        self.client.force_login(self.user)
+
+    def test_score_unlocks_achievements_and_records_combo(self):
+        start = self.client.post(reverse("api_start_session"))
+        token = start.json()["token"]
+        session = GameSession.objects.get(token=token)
+        session.started_at = timezone.now() - timedelta(seconds=10)
+        session.save(update_fields=["started_at"])
+
+        response = self.client.post(
+            reverse("api_submit_score"),
+            data=json.dumps({
+                "token": token,
+                "nickname": "Mora",
+                "score": 12000,
+                "carrots": 30,
+                "level": 10,
+                "max_combo": 8,
+                "duration_ms": 10000,
+            }),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(GameScore.objects.get().max_combo, 8)
+        self.assertGreaterEqual(PlayerAchievement.objects.filter(user=self.user).count(), 5)
+        self.assertIn("Huella dorada", response.json()["achievements"])
+
+    def test_profile_shows_daily_missions_and_achievements(self):
+        response = self.client.get(reverse("profile"))
+        self.assertContains(response, "Misiones diarias")
+        self.assertContains(response, "Insignias del bosque")
+        self.assertContains(response, "Desbloqueás más accesorios")

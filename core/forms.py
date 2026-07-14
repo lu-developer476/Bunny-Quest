@@ -32,9 +32,24 @@ class SignUpForm(UserCreationForm):
 
 
 class ProfileForm(forms.ModelForm):
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        unlocked = {"none"}
+        if user is not None:
+            unlocked.update(
+                user.achievements.exclude(achievement__accessory_reward="")
+                .values_list("achievement__accessory_reward", flat=True)
+            )
+        current = self.instance.bunny_accessory if self.instance and self.instance.pk else "none"
+        unlocked.add(current)
+        self.fields["bunny_accessory"].choices = [
+            choice for choice in PlayerProfile.BUNNY_ACCESSORIES if choice[0] in unlocked
+        ]
+        self.fields["bunny_accessory"].help_text = "Desbloqueás más accesorios consiguiendo insignias."
+
     class Meta:
         model = PlayerProfile
-        fields = ("bunny_name", "bunny_color")
+        fields = ("bunny_name", "bunny_color", "bunny_accessory")
         widgets = {
             "bunny_name": forms.TextInput(attrs={"maxlength": 24}),
         }

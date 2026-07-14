@@ -13,10 +13,23 @@ class PlayerProfile(models.Model):
         ("sand", "Arena"),
         ("moon", "Gris luna"),
     ]
+    BUNNY_ACCESSORIES = [
+        ("none", "Sin accesorio"),
+        ("scarf", "Pañuelo verde"),
+        ("flower", "Flor silvestre"),
+        ("bow", "Moño zanahoria"),
+        ("clover", "Trébol de la suerte"),
+    ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="player_profile")
     bunny_name = models.CharField("nombre del conejo", max_length=24, default="Nube")
     bunny_color = models.CharField("pelaje", max_length=12, choices=BUNNY_COLORS, default="snow")
+    bunny_accessory = models.CharField(
+        "accesorio",
+        max_length=16,
+        choices=BUNNY_ACCESSORIES,
+        default="none",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -74,6 +87,7 @@ class GameScore(models.Model):
     level = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(100)]
     )
+    max_combo = models.PositiveSmallIntegerField(default=1, validators=[MaxValueValidator(50)])
     duration_ms = models.PositiveIntegerField(validators=[MaxValueValidator(7_200_000)])
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
 
@@ -88,3 +102,55 @@ class GameScore(models.Model):
 
     def __str__(self):
         return f"{self.nickname}: {self.score}"
+
+
+class Achievement(models.Model):
+    KIND_SCORE = "score"
+    KIND_CARROTS = "carrots"
+    KIND_LEVEL = "level"
+    KIND_GAMES = "games"
+    KIND_COMBO = "combo"
+    KINDS = [
+        (KIND_SCORE, "Puntaje"),
+        (KIND_CARROTS, "Zanahorias"),
+        (KIND_LEVEL, "Nivel"),
+        (KIND_GAMES, "Partidas"),
+        (KIND_COMBO, "Combo"),
+    ]
+
+    code = models.SlugField(max_length=40, unique=True)
+    name = models.CharField(max_length=60)
+    description = models.CharField(max_length=160)
+    icon = models.CharField(max_length=8, default="🏅")
+    kind = models.CharField(max_length=12, choices=KINDS)
+    threshold = models.PositiveIntegerField()
+    accessory_reward = models.CharField(
+        max_length=16,
+        choices=PlayerProfile.BUNNY_ACCESSORIES,
+        blank=True,
+        default="",
+    )
+    sort_order = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        ordering = ["sort_order", "threshold"]
+        verbose_name = "logro"
+        verbose_name_plural = "logros"
+
+    def __str__(self):
+        return self.name
+
+
+class PlayerAchievement(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="achievements")
+    achievement = models.ForeignKey(Achievement, on_delete=models.CASCADE, related_name="players")
+    unlocked_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "achievement")
+        ordering = ["-unlocked_at"]
+        verbose_name = "logro desbloqueado"
+        verbose_name_plural = "logros desbloqueados"
+
+    def __str__(self):
+        return f"{self.user.username} · {self.achievement.name}"

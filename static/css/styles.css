@@ -267,3 +267,44 @@ kbd { padding: 4px 7px; border: 1px solid var(--line); border-bottom-width: 3px;
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+.mission-card { padding: 24px; border: 1px solid var(--line); border-radius: var(--radius); background: white; box-shadow: 0 14px 45px rgba(52,76,45,.06); }
+.mission-mini, .mission-row { position: relative; overflow: hidden; display: grid; gap: 4px; padding: 14px 0 17px; border-bottom: 1px solid var(--line); }
+.mission-mini:last-child, .mission-row:last-child { border-bottom: 0; }
+.mission-mini strong, .mission-row strong { font-size: 14px; }
+.mission-mini span, .mission-row span, .mission-row small { color: var(--muted); font-size: 12px; }
+.mission-mini i, .mission-row i, .progress-track i { display: block; height: 7px; border-radius: 999px; background: linear-gradient(90deg, var(--leaf), #9fbe76); width: var(--progress); }
+.mission-mini::after, .mission-row::after, .progress-track { content: ''; display: block; height: 7px; border-radius: 999px; background: var(--cream); }
+.mission-mini i, .mission-row i { position: relative; z-index: 1; margin-bottom: -7px; }
+.mission-mini.completed strong, .mission-row.completed strong { color: var(--leaf); }
+
+.profile-bunny::after { content: attr(data-accessory); }
+.achievement-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+.achievement-card { padding: 24px; border: 1px solid var(--line); border-radius: 24px; background: rgba(255,255,255,.72); opacity: .72; filter: grayscale(.45); }
+.achievement-card.unlocked { opacity: 1; filter: none; box-shadow: 0 14px 40px rgba(52,76,45,.08); }
+.achievement-icon { display: grid; place-items: center; width: 52px; height: 52px; margin-bottom: 18px; border-radius: 18px; background: var(--cream); font-size: 27px; }
+.achievement-card.unlocked .achievement-icon { background: var(--leaf-light); }
+.achievement-card h3 { margin-bottom: 8px; font-size: 21px; }
+.achievement-card p { min-height: 66px; margin: 0 0 10px; color: var(--muted); font-size: 13px; }
+.achievement-card small { display: block; min-height: 18px; color: var(--leaf); font-size: 11px; font-weight: 800; }
+.achievement-card > strong { display: block; margin-top: 8px; color: var(--muted); font-size: 12px; }
+.progress-track { margin-top: 14px; }
+.progress-track i { margin-bottom: -7px; }
+.profile-history { margin-top: 22px; }
+
+.profile-bunny.accessory-scarf::after { content: '🟢'; position: absolute; transform: translate(28px, 34px) rotate(-18deg); font-size: 24px; }
+.profile-bunny.accessory-flower::after { content: '🌼'; position: absolute; transform: translate(-36px, -44px); font-size: 28px; }
+.profile-bunny.accessory-bow::after { content: '🎀'; position: absolute; transform: translate(0, -48px); font-size: 30px; }
+.profile-bunny.accessory-clover::after { content: '☘️'; position: absolute; transform: translate(-38px, -38px); font-size: 28px; }
+.profile-bunny { position: relative; }
+
+@media (max-width: 980px) {
+  .achievement-grid { grid-template-columns: repeat(2, 1fr); }
+  .game-side { grid-template-columns: repeat(2, 1fr); }
+  .mission-card, .live-board { grid-column: span 2; }
+}
+
+@media (max-width: 720px) {
+  .achievement-grid { grid-template-columns: 1fr; }
+  .mission-card, .live-board { grid-column: auto; }
+}
