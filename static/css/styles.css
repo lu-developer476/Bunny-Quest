@@ -338,3 +338,71 @@ kbd { padding: 4px 7px; border: 1px solid var(--line); border-bottom-width: 3px;
 .profile-bunny.accessory-cap::after { content: '🧢'; position: absolute; transform: translate(0, -54px); font-size: 30px; }
 .profile-bunny.accessory-collar::after { content: '📿'; position: absolute; transform: translate(2px, 42px); font-size: 24px; }
 @media (max-width: 720px) { .challenge-picker { grid-template-columns: 1fr; } .burrow-bunny-card { min-width: 0; width: 100%; } }
+
+/* Compact start form: keep the action button visible on short screens. */
+.overlay-card { max-height: min(92vh, 620px); overflow-y: auto; }
+.overlay-card .overlay-bunny { font-size: 40px; line-height: 1; }
+.overlay-card h2 { margin: 6px 0; }
+.overlay-card p { margin-bottom: 12px; }
+.challenge-slider {
+  position: relative;
+  display: flex;
+  grid-template-columns: none;
+  gap: 10px;
+  overflow-x: auto;
+  margin: 12px 0 10px;
+  padding: 18px 12px 12px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+.challenge-slider legend { position: absolute; top: -8px; left: 16px; background: var(--cream); }
+.challenge-card {
+  position: relative;
+  flex: 0 0 128px;
+  min-height: 76px;
+  flex-direction: column;
+  align-items: flex-start !important;
+  justify-content: center;
+  gap: 3px !important;
+  padding: 12px 14px 12px 38px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: white;
+  color: var(--ink) !important;
+  scroll-snap-align: start;
+  cursor: pointer;
+}
+.challenge-card input {
+  position: absolute;
+  left: 12px;
+  top: 14px;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--leaf-dark);
+}
+.challenge-card span { font-size: 13px; line-height: 1.1; }
+.challenge-card small { color: var(--muted); font-size: 10px; line-height: 1.1; }
+.challenge-card:has(input:checked) { border-color: var(--leaf); background: var(--leaf-light); box-shadow: inset 0 0 0 1px rgba(79,112,70,.24); }
+.nickname-field { margin-top: 8px; }
+.overlay-card input { height: 44px; margin-bottom: 10px; }
+
+/* Keep the register panel visually aligned with the orange invite card. */
+.auth-section-compact .auth-card { padding: 40px 52px; }
+.auth-section-compact .auth-card h2 { margin-bottom: 20px; font-size: 40px; }
+.auth-section-compact .styled-form p { margin-bottom: 10px; }
+.auth-section-compact .styled-form label { margin-bottom: 5px; }
+.auth-section-compact .styled-form input,
+.auth-section-compact .styled-form select { min-height: 42px; }
+.auth-section-compact .styled-form .helptext,
+.auth-section-compact .styled-form > ul { display: none; }
+.auth-section-compact .button { min-height: 46px; margin-top: 4px; }
+.auth-section-compact .auth-foot { margin: 12px 0 0; }
+
+.footer-grid-simple { justify-content: center; text-align: center; }
+.footer-grid-simple p { width: 100%; }
+
+@media (max-width: 720px) {
+  .overlay-card { max-height: 94vh; }
+  .challenge-card { flex-basis: 118px; min-height: 70px; padding-right: 10px; }
+  .auth-section-compact .auth-card { padding: 28px; }
+}

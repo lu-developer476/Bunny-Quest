@@ -24,13 +24,13 @@
             <span class="overlay-bunny">🐇</span>
             <h2 id="overlayTitle">¿Listo para saltar?</h2>
             <p id="overlayText">Juntá zanahorias, esquivá troncos y no pierdas el ritmo.</p>
-            <fieldset class="challenge-picker" aria-label="Modo desafío">
+            <fieldset class="challenge-picker challenge-slider" aria-label="Modo desafío">
               <legend>Modo</legend>
-              <label><input type="radio" name="challengeMode" value="normal" checked> Normal</label>
-              <label><input type="radio" name="challengeMode" value="timed"> 60 segundos</label>
-              <label><input type="radio" name="challengeMode" value="one_life"> Una vida</label>
-              <label><input type="radio" name="challengeMode" value="high_carrots"> Zanahorias altas</label>
-              <label><input type="radio" name="challengeMode" value="fast_forest"> Bosque veloz</label>
+              <label class="challenge-card"><input type="radio" name="challengeMode" value="normal" checked><span>Normal</span><small>Clásico</small></label>
+              <label class="challenge-card"><input type="radio" name="challengeMode" value="timed"><span>60 segundos</span><small>Contrarreloj</small></label>
+              <label class="challenge-card"><input type="radio" name="challengeMode" value="one_life"><span>Una vida</span><small>Sin errores</small></label>
+              <label class="challenge-card"><input type="radio" name="challengeMode" value="high_carrots"><span>Zanahorias altas</span><small>Saltos precisos</small></label>
+              <label class="challenge-card"><input type="radio" name="challengeMode" value="fast_forest"><span>Bosque veloz</span><small>Ritmo intenso</small></label>
             </fieldset>
             <label class="nickname-field" for="nicknameInput">Tu apodo</label>
             <input id="nicknameInput" maxlength="24" value="{{ default_nickname }}" autocomplete="nickname">
