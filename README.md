@@ -12,7 +12,7 @@ Juego web avanzado protagonizado por un conejo. Incluye motor Canvas en JavaScri
 - WhiteNoise para archivos estáticos.
 - Health check para Render.
 - Tests de modelos, páginas y API.
-- Blueprint `render.yaml` para desplegar web + base de datos.
+- Blueprint `render.yaml` para desplegar web + base de datos, más `runtime.txt` para fijar Python en Render.
 
 ## Puesta en marcha local
 
@@ -40,7 +40,7 @@ Copiá `.env.example` como referencia. Django toma directamente las variables de
 | `SECRET_KEY` | Sí | Generar valor aleatorio desde Render |
 | `DEBUG` | Sí | `False` |
 | `DATABASE_URL` | Sí | Internal Database URL de Render PostgreSQL |
-| `PYTHON_VERSION` | Recomendada | `3.13.5` |
+| `PYTHON_VERSION` | Recomendada | `3.13.5` (también fijado en `runtime.txt`) |
 | `WEB_CONCURRENCY` | Recomendada | `4` |
 | `ALLOWED_HOSTS` | No | Render agrega `RENDER_EXTERNAL_HOSTNAME`; usar para dominios extra |
 | `CSRF_TRUSTED_ORIGINS` | No | `https://tu-dominio.com` para dominios personalizados |
