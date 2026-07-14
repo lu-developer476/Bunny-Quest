@@ -2,7 +2,7 @@
 {% block title %}Crear cuenta · Conejo Aventura{% endblock %}
 {% block content %}
 <section class="auth-section auth-section-compact container">
-  <div class="auth-art auth-art-green"><span>🥕</span><h1>Adoptá tu lugar en el bosque.</h1><p>Guardá récords, personalizá tu conejo y competí en el ranking.</p></div>
-  <div class="auth-card"><span class="eyebrow">Nueva madriguera</span><h2>Crear cuenta</h2><form method="post" class="styled-form">{% csrf_token %}{{ form.as_p }}<button class="button button-primary" type="submit">Crear mi cuenta</button></form><p class="auth-foot">¿Ya tenés una? <a href="{% url 'login' %}">Ingresá</a>.</p></div>
+  <div class="auth-art auth-art-green"><span>🥕</span><h1>Adoptá tu lugar en el bosque.</h1><p>Creá la cuenta con tu email; después de confirmar el acceso vas a elegir tu usuario, nombrar a tu conejo y completar tu madriguera.</p></div>
+  <div class="auth-card"><span class="eyebrow">Nueva madriguera</span><h2>Crear cuenta</h2><p class="form-note">Primero aseguramos tu acceso. El usuario público y el nombre del conejo se configuran luego desde Mi madriguera.</p><form method="post" class="styled-form">{% csrf_token %}{{ form.as_p }}<button class="button button-primary" type="submit">Crear mi cuenta</button></form><p class="auth-foot">¿Ya tenés una? <a href="{% url 'login' %}">Ingresá</a>.</p></div>
 </section>
 {% endblock %}

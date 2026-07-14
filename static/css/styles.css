@@ -406,3 +406,36 @@ kbd { padding: 4px 7px; border: 1px solid var(--line); border-bottom-width: 3px;
   .challenge-card { flex-basis: 118px; min-height: 70px; padding-right: 10px; }
   .auth-section-compact .auth-card { padding: 28px; }
 }
+
+/* Story panel and modal guide on the game page. */
+.forest-story-panel { padding: 28px; border: 1px solid var(--line); border-radius: var(--radius); color: white; background: linear-gradient(145deg, #496b41, #2f462b); box-shadow: var(--shadow); }
+.forest-story-panel .eyebrow { color: #d7ecb6; }
+.forest-story-panel h2 { margin-bottom: 14px; font-size: 30px; }
+.forest-story-panel p { margin: 0 0 22px; color: rgba(255,255,255,.78); font-size: 14px; }
+.forest-story-panel .button { width: 100%; color: var(--leaf-dark); background: white; box-shadow: none; }
+.game-info-modal { width: min(940px, calc(100% - 28px)); padding: 0; border: 0; border-radius: 34px; background: transparent; color: var(--ink); }
+.game-info-modal::backdrop { background: rgba(36,49,35,.58); backdrop-filter: blur(6px); }
+.modal-card { position: relative; padding: 36px; border: 1px solid rgba(255,255,255,.6); border-radius: 34px; background: rgba(255,255,255,.98); box-shadow: 0 30px 90px rgba(20,32,18,.34); }
+.modal-card h2 { margin-bottom: 24px; font-size: clamp(34px, 4vw, 52px); }
+.modal-close { position: absolute; top: 18px; right: 18px; display: grid; place-items: center; width: 42px; height: 42px; border: 1px solid var(--line); border-radius: 50%; background: var(--cream); color: var(--leaf-dark); font-size: 28px; line-height: 1; cursor: pointer; }
+.tip-slider { display: flex; gap: 16px; overflow-x: auto; margin: 0 -36px 24px; padding: 0 36px 18px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+.tip-slider .tip-card { flex: 0 0 min(280px, 78vw); scroll-snap-align: start; }
+.game-info-modal .live-board { background: linear-gradient(145deg, #fff, #f8faf5); }
+
+/* Wider start card and stronger card-slider behavior for mode selection. */
+.overlay-card { width: min(620px, 96%); text-align: left; }
+.overlay-card .overlay-bunny, .overlay-card h2, .overlay-card p { text-align: center; }
+.challenge-slider { margin-inline: -8px; padding-inline: 12px; }
+.challenge-card { flex: 0 0 146px; }
+.challenge-card span { font-size: 14px; }
+
+@media (max-width: 980px) {
+  .forest-story-panel { grid-column: span 2; }
+}
+
+@media (max-width: 720px) {
+  .forest-story-panel { grid-column: auto; }
+  .modal-card { padding: 28px 20px; }
+  .tip-slider { margin-inline: -20px; padding-inline: 20px; }
+  .overlay-card { width: min(96%, 500px); }
+}
