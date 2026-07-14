@@ -1,57 +1,52 @@
 {% extends "base.html" %}
 {% block title %}Mi madriguera · Conejo Aventura{% endblock %}
 {% block content %}
-<section class="page-header container profile-header">
-  <div><span class="eyebrow">Mi madriguera</span><h1>Hola, {{ user.username }}.</h1><p>Acá viven tus récords y la identidad absolutamente seria de tu conejo.</p></div>
-  <div class="profile-bunny color-{{ user.player_profile.bunny_color }} accessory-{{ user.player_profile.bunny_accessory }}" aria-hidden="true">🐇</div>
+<section class="page-header container profile-header burrow-header">
+  <div><span class="eyebrow">Mi madriguera</span><h1>Hola, {{ user.username }}.</h1><p>Tu refugio reúne identidad, récords, racha diaria, vitrina de logros y recuerdos de las últimas carreras.</p></div>
+  <article class="burrow-bunny-card">
+    <span class="profile-bunny color-{{ user.player_profile.bunny_color }} accessory-{{ user.player_profile.bunny_accessory }}" aria-hidden="true">🐇</span>
+    <div><strong>{{ user.player_profile.bunny_name }}</strong><small>{{ user.player_profile.get_bunny_breed_display }} · {{ user.player_profile.get_bunny_color_display }}</small><small>{{ user.player_profile.get_bunny_accessory_display }}</small></div>
+  </article>
 </section>
 <section class="section container">
-  <div class="stats-grid">
-    <div class="stat-card"><span>Mejor puntaje</span><strong>{{ stats.best_score|default:0 }}</strong></div>
+  <div class="stats-grid burrow-stats">
+    <div class="stat-card highlight-stat"><span>Récord personal</span><strong>{{ stats.best_score|default:0 }}</strong>{% if best_score %}<small>Combo x{{ best_score.max_combo }} · {{ best_score.get_mode_display }}</small>{% endif %}</div>
+    <div class="stat-card"><span>Racha diaria</span><strong>{{ daily_streak }}</strong><small>días con partidas</small></div>
     <div class="stat-card"><span>Partidas</span><strong>{{ stats.games|default:0 }}</strong></div>
     <div class="stat-card"><span>Zanahorias</span><strong>{{ stats.carrots|default:0 }}</strong></div>
-    <div class="stat-card"><span>Promedio</span><strong>{{ stats.average|floatformat:0|default:0 }}</strong></div>
   </div>
   <div class="profile-grid">
     <div class="form-card">
       <span class="eyebrow">Personalización</span><h2>Tu compañero</h2>
+      <p class="form-note">Elegí raza, color y accesorios. Algunos gorritos y collarines aparecen como recompensa al desbloquear insignias.</p>
       <form method="post" class="styled-form">{% csrf_token %}{{ form.as_p }}<button class="button button-primary" type="submit">Guardar cambios</button></form>
     </div>
-    <div class="history-card">
-      <div class="card-header"><div><span class="eyebrow">Misiones diarias</span><h2>Senderos de hoy</h2></div><a href="{% url 'game' %}">Jugar</a></div>
-      <div class="mission-list">
+    <div class="history-card burrow-showcase">
+      <div class="card-header"><div><span class="eyebrow">Vitrina</span><h2>Logros destacados</h2></div><a href="{% url 'game' %}">Jugar</a></div>
+      <div class="achievement-shelf">
+        {% for card in achievement_cards %}
+          {% if card.unlocked %}<span title="{{ card.achievement.name }}">{{ card.achievement.icon }}</span>{% endif %}
+        {% empty %}{% endfor %}
+      </div>
+      <span class="eyebrow">Misiones diarias</span><div class="mission-list">
         {% for mission in daily_missions %}
-          <article class="mission-row {% if mission.completed %}completed{% endif %}">
-            <div><strong>{{ mission.title }}</strong><span>{{ mission.description }}</span></div>
-            <small>{{ mission.progress }}/{{ mission.goal }} {{ mission.unit }}</small>
-            <i style="--progress: {{ mission.percent }}%"></i>
-          </article>
+          <article class="mission-row {% if mission.completed %}completed{% endif %}"><div><strong>{{ mission.title }}</strong><span>{{ mission.description }}</span></div><small>{{ mission.progress }}/{{ mission.goal }} {{ mission.unit }}</small><i style="--progress: {{ mission.percent }}%"></i></article>
         {% endfor %}
       </div>
     </div>
   </div>
 </section>
 <section class="section container profile-rewards">
-  <div class="section-heading">
-    <div><span class="eyebrow">Insignias del bosque</span><h2>Logros y accesorios</h2></div>
-    <p>Desbloqueá premios jugando: algunas insignias habilitan accesorios para tu conejo.</p>
-  </div>
+  <div class="section-heading"><div><span class="eyebrow">Insignias del bosque</span><h2>Logros y accesorios</h2></div><p>Desbloqueá premios jugando: algunas insignias habilitan accesorios para tu conejo.</p></div>
   <div class="achievement-grid">
     {% for card in achievement_cards %}
-      <article class="achievement-card {% if card.unlocked %}unlocked{% endif %}">
-        <span class="achievement-icon">{{ card.achievement.icon }}</span>
-        <h3>{{ card.achievement.name }}</h3>
-        <p>{{ card.achievement.description }}</p>
-        {% if card.achievement.accessory_reward %}<small>Premio: {{ card.achievement.get_accessory_reward_display }}</small>{% endif %}
-        <div class="progress-track"><i style="--progress: {{ card.percent }}%"></i></div>
-        <strong>{{ card.progress }}/{{ card.achievement.threshold }}</strong>
-      </article>
+      <article class="achievement-card {% if card.unlocked %}unlocked{% endif %}"><span class="achievement-icon">{{ card.achievement.icon }}</span><h3>{{ card.achievement.name }}</h3><p>{{ card.achievement.description }}</p>{% if card.achievement.accessory_reward %}<small>Premio: {{ card.achievement.get_accessory_reward_display }}</small>{% endif %}<div class="progress-track"><i style="--progress: {{ card.percent }}%"></i></div><strong>{{ card.progress }}/{{ card.achievement.threshold }}</strong></article>
     {% endfor %}
   </div>
   <div class="history-card profile-history">
-    <div class="card-header"><div><span class="eyebrow">Últimas carreras</span><h2>Historial</h2></div><a href="{% url 'game' %}">Jugar</a></div>
+    <div class="card-header"><div><span class="eyebrow">Últimas carreras</span><h2>Historial emocional</h2></div><a href="{% url 'game' %}">Jugar</a></div>
     <ol class="history-list">
-      {% for item in scores %}<li><span><strong>{{ item.score }}</strong><small>{{ item.created_at|date:"d/m/Y H:i" }}</small></span><span>🥕 {{ item.carrots }} · Nv. {{ item.level }} · Combo x{{ item.max_combo }}</span></li>
+      {% for item in scores %}<li><span><strong>{{ item.score }}</strong><small>{{ item.created_at|date:"d/m/Y H:i" }} · {{ item.get_mode_display }}</small></span><span>🥕 {{ item.carrots }} · Nv. {{ item.level }} · Combo x{{ item.max_combo }}{% for badge in item.profile_badges %}<em class="run-tag">{{ badge }}</em>{% endfor %}</span></li>
       {% empty %}<li class="empty-state">Todavía no jugaste. Nube empieza a sospechar que le temés a los troncos.</li>{% endfor %}
     </ol>
   </div>

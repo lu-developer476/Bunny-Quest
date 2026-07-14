@@ -27,7 +27,8 @@
   let previousTime = 0;
   let startedAt = 0;
   let sessionToken = null;
-  let soundEnabled = true;
+  const soundPreferenceKey = 'bunnyQuestSoundEnabled';
+  let soundEnabled = localStorage.getItem(soundPreferenceKey) !== 'false';
   let audioContext = null;
   let maxComboReached = 1;
   let finalShareText = '';
@@ -48,6 +49,8 @@
   };
   const bunnyColor = canvas.dataset.bunnyColor || 'snow';
   const bunnyAccessory = canvas.dataset.bunnyAccessory || 'none';
+  const selectedModeInput = document.querySelector('input[name=challengeMode]:checked');
+  let currentMode = selectedModeInput?.value || 'normal';
   const bunnyPalette = {
     snow: {fur: '#fdfcf8', shade: '#f1eee5'},
     cocoa: {fur: '#c99d7e', shade: '#b98262'},
@@ -85,7 +88,8 @@
       {x: 540, y: 138, size: .8},
       {x: 790, y: 70, size: 1.25}
     ],
-    rabbit: {x: 145, y: groundY - 72, w: 58, h: 72, vy: 0, jumps: 0, invuln: 0, squash: 0}
+    rabbit: {x: 145, y: groundY - 72, w: 58, h: 72, vy: 0, jumps: 0, invuln: 0, squash: 0},
+    timeLeft: null
   };
 
   function resizeCanvas() {
@@ -96,26 +100,34 @@
     ctx.setTransform(canvas.width / WORLD_W, 0, 0, canvas.height / WORLD_H, 0, 0);
   }
 
-  function beep(frequency = 440, duration = .05, type = 'sine', volume = .04) {
+  function beep(frequency = 440, duration = .05, type = 'sine', volume = .04, delay = 0) {
     if (!soundEnabled) return;
     audioContext ??= new (window.AudioContext || window.webkitAudioContext)();
     const osc = audioContext.createOscillator();
     const gain = audioContext.createGain();
     osc.type = type;
-    osc.frequency.value = frequency;
-    gain.gain.setValueAtTime(volume, audioContext.currentTime);
-    gain.gain.exponentialRampToValueAtTime(.0001, audioContext.currentTime + duration);
+    const startAt = audioContext.currentTime + delay;
+    osc.frequency.setValueAtTime(frequency, startAt);
+    gain.gain.setValueAtTime(volume, startAt);
+    gain.gain.exponentialRampToValueAtTime(.0001, startAt + duration);
     osc.connect(gain).connect(audioContext.destination);
-    osc.start();
-    osc.stop(audioContext.currentTime + duration);
+    osc.start(startAt);
+    osc.stop(startAt + duration);
+  }
+
+  function playSound(name) {
+    if (name === 'level') [740, 980, 1240].forEach((note, i) => beep(note, .11, 'sine', .035, i * .08));
+    else if (name === 'combo') [520, 780, 1040].forEach((note, i) => beep(note, .08, 'triangle', .035, i * .045));
+    else if (name === 'damage') [180, 130].forEach((note, i) => beep(note, .12, 'sine', .025, i * .08));
+    else if (name === 'record') [660, 880, 990, 1320].forEach((note, i) => beep(note, .12, 'triangle', .04, i * .09));
   }
 
   function reset() {
     Object.assign(game, {
       running: false, paused: false, over: false, speed: 315, distance: 0,
-      score: 0, carrots: 0, lives: 3, level: 1, combo: 1, comboTimer: 0, shield: 0,
+      score: 0, carrots: 0, lives: currentMode === 'one_life' ? 1 : 3, level: 1, combo: 1, comboTimer: 0, shield: 0,
       scoreMultiplier: 1, scoreMultiplierTimer: 0, wingTimer: 0, mintTimer: 0, tutorialStep: 0, tutorialTimer: 3.8, toast: null,
-      spawnTimer: 2.2, carrotTimer: .75, particles: [], obstacles: [], pickups: []
+      spawnTimer: 2.2, carrotTimer: .75, particles: [], obstacles: [], pickups: [], timeLeft: currentMode === 'timed' ? 60 : null
     });
     Object.assign(game.rabbit, {x: 145, y: groundY - 72, w: 58, h: 72, vy: 0, jumps: 0, invuln: 0, squash: 0});
     maxComboReached = 1;
@@ -133,7 +145,7 @@
       const response = await fetch('/api/game/start/', {
         method: 'POST',
         headers: {'X-CSRFToken': csrfToken, 'Content-Type': 'application/json'},
-        body: '{}'
+        body: JSON.stringify({mode: currentMode})
       });
       if (!response.ok) throw new Error('No se pudo iniciar la sesión.');
       const data = await response.json();
@@ -190,7 +202,7 @@
   }
 
   function spawnCarrot() {
-    const high = Math.random() < .45;
+    const high = currentMode === 'high_carrots' || Math.random() < .45;
     const y = game.tutorialStep < 2 ? 360 : (high ? 270 + Math.random() * 60 : 360 + Math.random() * 32);
     let type = 'carrot';
     const roll = Math.random();
@@ -220,9 +232,12 @@
   function update(dt) {
     const rabbit = game.rabbit;
     const speedFactor = game.mintTimer > 0 ? .68 : 1;
+    if (game.timeLeft !== null) { game.timeLeft = Math.max(0, game.timeLeft - dt); if (game.timeLeft <= 0) { endGame(); return; } }
     game.distance += game.speed * speedFactor * dt;
+    const previousLevel = game.level;
     game.level = Math.min(100, Math.floor(game.distance / 2200) + 1);
-    game.speed = Math.min(650, 315 + (game.level - 1) * 22);
+    game.speed = Math.min(currentMode === 'fast_forest' ? 760 : 650, 315 + (currentMode === 'fast_forest' ? 95 : 0) + (game.level - 1) * 22);
+    if (game.level > previousLevel) playSound('level');
     game.score += dt * 22 * game.level * game.scoreMultiplier;
 
     rabbit.vy += 1780 * dt;
@@ -275,7 +290,7 @@
         game.combo = 1;
         game.comboTimer = 0;
         emitParticles(rabbit.x + 28, rabbit.y + 38, obstacle.soft ? 9 : 14, obstacle.soft ? '#5da7b1' : '#b66a4b');
-        beep(obstacle.soft ? 210 : 120, obstacle.soft ? .09 : .18, 'sawtooth', .05);
+        playSound('damage');
         if (game.lives <= 0) endGame();
       }
     }
@@ -314,7 +329,9 @@
     const spec = food || power || FOOD_PICKUPS.carrot;
     if (food) {
       game.carrots += pickup.type === 'carrot' || pickup.type === 'golden_carrot' ? 1 : 0;
+      const previousCombo = game.combo;
       game.combo = Math.min(8, game.combo + (spec.combo || 1));
+      if (game.combo >= 6 && game.combo > previousCombo) playSound('combo');
       maxComboReached = Math.max(maxComboReached, game.combo);
       game.comboTimer = 3.2 + (spec.time || 0);
       if (spec.scoreMultiplier) { game.scoreMultiplier = spec.scoreMultiplier; game.scoreMultiplierTimer = 7; }
@@ -338,7 +355,7 @@
     scoreEl.textContent = Math.floor(game.score).toLocaleString('es-AR');
     carrotEl.textContent = game.carrots;
     levelEl.textContent = game.level;
-    livesEl.textContent = `${'♥'.repeat(Math.max(0, game.lives))}${'♡'.repeat(Math.max(0, 3 - game.lives))}${game.shield ? ' 🛡️' : ''}${game.scoreMultiplier > 1 ? ' ×2' : ''}${game.wingTimer > 0 ? ' 🪽' : ''}${game.mintTimer > 0 ? ' 🌿' : ''}`;
+    livesEl.textContent = `${game.timeLeft !== null ? '⏱️ ' + Math.ceil(game.timeLeft) + 's · ' : ''}${'♥'.repeat(Math.max(0, game.lives))}${'♡'.repeat(Math.max(0, (currentMode === 'one_life' ? 1 : 3) - game.lives))}${game.shield ? ' 🛡️' : ''}${game.scoreMultiplier > 1 ? ' ×2' : ''}${game.wingTimer > 0 ? ' 🪽' : ''}${game.mintTimer > 0 ? ' 🌿' : ''}`;
   }
 
   async function endGame() {
@@ -372,6 +389,7 @@
       });
       const data = await response.json();
       overlayText.innerHTML = response.ok ? resultStory(data) : escapeHtml(data.error || 'No se pudo guardar el puntaje.');
+      if (response.ok && data.personal_best) playSound('record');
       loadLeaderboard();
     } catch (error) {
       overlayText.textContent = 'Terminaste la carrera, pero no pudimos guardar el puntaje.';
@@ -653,7 +671,7 @@
 
   async function loadLeaderboard() {
     try {
-      const response = await fetch('/api/leaderboard/');
+      const response = await fetch(`/api/leaderboard/?mode=${encodeURIComponent(currentMode)}`);
       const data = await response.json();
       if (!data.results.length) {
         liveLeaderboard.innerHTML = '<li class="empty-state">El primer puesto sigue libre.</li>';
@@ -687,15 +705,24 @@
     startGame();
   });
   shareButton?.addEventListener('click', () => { shareResult().catch(() => {}); });
-  soundButton.addEventListener('click', () => {
-    soundEnabled = !soundEnabled;
+  function renderSoundButton() {
     soundButton.setAttribute('aria-pressed', String(soundEnabled));
     soundButton.textContent = `Sonido: ${soundEnabled ? 'sí' : 'no'}`;
+  }
+  soundButton.addEventListener('click', () => {
+    soundEnabled = !soundEnabled;
+    localStorage.setItem(soundPreferenceKey, String(soundEnabled));
+    renderSoundButton();
+    if (soundEnabled) beep(700, .06, 'triangle', .025);
+  });
+  document.querySelectorAll('input[name=challengeMode]').forEach(input => {
+    input.addEventListener('change', () => { currentMode = input.value; loadLeaderboard(); });
   });
   document.addEventListener('visibilitychange', () => {
     if (document.hidden && game.running && !game.over) game.paused = true;
   });
 
+  renderSoundButton();
   resizeCanvas();
   reset();
   draw();

@@ -43,7 +43,11 @@ def game(request):
 def leaderboard(request):
     period = request.GET.get("period", "all")
     board = request.GET.get("board", "score")
-    scores = GameScore.objects.select_related("user", "user__player_profile")
+    mode = request.GET.get("mode", GameSession.MODE_NORMAL)
+    valid_modes = {key for key, _ in GameSession.GAME_MODES}
+    if mode not in valid_modes:
+        mode = GameSession.MODE_NORMAL
+    scores = GameScore.objects.select_related("user", "user__player_profile").filter(mode=mode)
     today = timezone.localdate()
     week_start = today - timedelta(days=today.weekday())
 
@@ -95,6 +99,8 @@ def leaderboard(request):
             "period_label": period_label,
             "board": board,
             "board_title": board_title,
+            "mode": mode,
+            "game_modes": GameSession.GAME_MODES,
             "my_position": my_position,
             "my_scores": my_scores,
         },
@@ -135,7 +141,18 @@ def profile(request):
     else:
         form = ProfileForm(instance=player_profile, user=request.user)
 
-    scores = request.user.scores.all()[:10]
+    scores = list(request.user.scores.all()[:10])
+    best_score = request.user.scores.order_by("-score", "created_at").first()
+    best_combo_score = request.user.scores.order_by("-max_combo", "created_at").first()
+    for item in scores:
+        badges = []
+        if best_score and item.pk == best_score.pk:
+            badges.append("récord")
+        if best_combo_score and item.pk == best_combo_score.pk and item.max_combo >= 5:
+            badges.append("combo")
+        if best_score and item.pk != best_score.pk and best_score.score and item.score >= best_score.score * 0.9:
+            badges.append("casi")
+        item.profile_badges = badges
     stats = request.user.scores.aggregate(
         games=Count("id"),
         best_score=Max("score"),
@@ -151,19 +168,43 @@ def profile(request):
             "stats": stats,
             "achievement_cards": achievements_for_profile(request.user),
             "daily_missions": daily_missions_for(request.user),
+            "best_score": best_score,
+            "daily_streak": _daily_streak(request.user),
         },
     )
+
+
+def _daily_streak(user):
+    dates = list(user.scores.datetimes("created_at", "day", order="DESC"))
+    streak = 0
+    expected = timezone.localdate()
+    for value in dates:
+        played_date = timezone.localtime(value).date()
+        if played_date == expected:
+            streak += 1
+            expected -= timedelta(days=1)
+        elif played_date < expected:
+            break
+    return streak
 
 
 @require_POST
 def api_start_session(request: HttpRequest):
     active_cutoff = timezone.now() - timedelta(hours=2)
     GameSession.objects.filter(used=False, started_at__lt=active_cutoff).update(used=True)
+    try:
+        data = json.loads(request.body or "{}")
+    except json.JSONDecodeError:
+        data = {}
+    mode = str(data.get("mode", GameSession.MODE_NORMAL))
+    if mode not in {key for key, _ in GameSession.GAME_MODES}:
+        mode = GameSession.MODE_NORMAL
     session = GameSession.objects.create(
         user=request.user if request.user.is_authenticated else None,
         user_agent=request.headers.get("User-Agent", "")[:255],
+        mode=mode,
     )
-    return JsonResponse({"token": str(session.token), "started_at": session.started_at.isoformat()})
+    return JsonResponse({"token": str(session.token), "started_at": session.started_at.isoformat(), "mode": session.mode})
 
 
 @require_POST
@@ -225,12 +266,13 @@ def api_submit_score(request: HttpRequest):
             carrots=carrots,
             level=level,
             max_combo=max_combo,
+            mode=game_session.mode,
             duration_ms=duration_ms,
         )
 
     unlocked = unlock_achievements_for(request.user) if request.user.is_authenticated else []
-    rank = GameScore.objects.filter(score__gt=record.score).count() + 1
-    next_rival_record = GameScore.objects.filter(score__gt=record.score).order_by("score", "created_at").first()
+    rank = GameScore.objects.filter(mode=record.mode, score__gt=record.score).count() + 1
+    next_rival_record = GameScore.objects.filter(mode=record.mode, score__gt=record.score).order_by("score", "created_at").first()
     next_rival = None
     if next_rival_record:
         next_rival = {
@@ -255,7 +297,7 @@ def api_submit_score(request: HttpRequest):
 @require_GET
 def api_leaderboard(request):
     rows = list(
-        GameScore.objects.values("nickname", "score", "carrots", "level", "created_at")[:10]
+        GameScore.objects.filter(mode=request.GET.get("mode", GameSession.MODE_NORMAL)).values("nickname", "score", "carrots", "level", "created_at")[:10]
     )
     for row in rows:
         row["created_at"] = row["created_at"].isoformat()

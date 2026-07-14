@@ -319,3 +319,19 @@ kbd { padding: 4px 7px; border: 1px solid var(--line); border-bottom-width: 3px;
   .achievement-grid { grid-template-columns: 1fr; }
   .mission-card, .live-board { grid-column: auto; }
 }
+.challenge-picker { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 14px 0; padding: 12px; border: 1px solid var(--line); border-radius: 18px; background: var(--cream); text-align: left; }
+.challenge-picker legend { padding: 0 6px; color: var(--leaf-dark); font-size: 11px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+.challenge-picker label { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 12px; font-weight: 700; }
+.burrow-header { align-items: stretch; }
+.burrow-bunny-card { display: flex; align-items: center; gap: 20px; min-width: 320px; padding: 24px; border: 1px solid var(--line); border-radius: 32px; background: linear-gradient(145deg, #fff, #f8faf5); box-shadow: var(--shadow); }
+.burrow-bunny-card strong { display: block; font-size: 28px; letter-spacing: -.04em; }
+.burrow-bunny-card small, .highlight-stat small, .form-note { display: block; color: var(--muted); }
+.color-caramel { background: #e8b778; }
+.color-patch { background: linear-gradient(135deg, #f8faf5 0 48%, #b98262 49% 64%, #f8faf5 65%); }
+.burrow-stats .highlight-stat { background: linear-gradient(145deg, #fff7ec, #fff); box-shadow: inset 0 0 0 2px rgba(237,133,64,.16); }
+.achievement-shelf { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0 24px; }
+.achievement-shelf span { display: grid; place-items: center; width: 54px; height: 54px; border-radius: 18px; background: var(--leaf-light); font-size: 28px; box-shadow: 0 10px 25px rgba(52,76,45,.08); }
+.run-tag { display: inline-block; margin-left: 7px; padding: 3px 8px; border-radius: 999px; color: #9a561f; background: #fff0dc; font-size: 11px; font-style: normal; font-weight: 900; text-transform: uppercase; }
+.profile-bunny.accessory-cap::after { content: '🧢'; position: absolute; transform: translate(0, -54px); font-size: 30px; }
+.profile-bunny.accessory-collar::after { content: '📿'; position: absolute; transform: translate(2px, 42px); font-size: 24px; }
+@media (max-width: 720px) { .challenge-picker { grid-template-columns: 1fr; } .burrow-bunny-card { min-width: 0; width: 100%; } }

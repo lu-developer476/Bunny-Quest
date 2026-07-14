@@ -6,7 +6,7 @@
 <section class="game-page container">
   <div class="game-intro">
     <div><span class="eyebrow">Bosque Saltarín</span><h1>Ayudá a Nube a recuperar la huerta.</h1></div>
-    <p>Espacio, flecha arriba o toque para saltar. Tenés doble salto. La gravedad, como siempre, no negocia.</p>
+    <p>Espacio, flecha arriba o toque para saltar. Elegí partida normal o un desafío corto con ranking propio.</p>
   </div>
 
   <div class="game-layout">
@@ -24,6 +24,14 @@
             <span class="overlay-bunny">🐇</span>
             <h2 id="overlayTitle">¿Listo para saltar?</h2>
             <p id="overlayText">Juntá zanahorias, esquivá troncos y no pierdas el ritmo.</p>
+            <fieldset class="challenge-picker" aria-label="Modo desafío">
+              <legend>Modo</legend>
+              <label><input type="radio" name="challengeMode" value="normal" checked> Normal</label>
+              <label><input type="radio" name="challengeMode" value="timed"> 60 segundos</label>
+              <label><input type="radio" name="challengeMode" value="one_life"> Una vida</label>
+              <label><input type="radio" name="challengeMode" value="high_carrots"> Zanahorias altas</label>
+              <label><input type="radio" name="challengeMode" value="fast_forest"> Bosque veloz</label>
+            </fieldset>
             <label class="nickname-field" for="nicknameInput">Tu apodo</label>
             <input id="nicknameInput" maxlength="24" value="{{ default_nickname }}" autocomplete="nickname">
             <button id="startGameButton" class="button button-primary" type="button">Empezar partida</button>
@@ -45,6 +53,7 @@
       <div class="tip-card"><span class="tip-number">01</span><h3>Saltá con intención</h3><p>El segundo salto te salva. Usarlo por reflejo te condena. Filosofía de conejo.</p></div>
       <div class="tip-card"><span class="tip-number">02</span><h3>Mantené el combo</h3><p>Cada comida suma distinto: zanahoria dorada ×2, heno seguro, lechuga romana extiende combo, escarola acelera el multiplicador, apio alarga saltos y pellets dan ráfagas.</p></div>
       <div class="tip-card"><span class="tip-number">03</span><h3>Power-ups raros</h3><p>Buscá tréboles escudo, hojas voladoras, menta para ralentizar el bosque y corazones para recuperar vidas.</p></div>
+      <div class="tip-card"><span class="tip-number">04</span><h3>Desafíos</h3><p>Probá carreras de 60 segundos, una sola vida, zanahorias altas o un bosque veloz. Cada modo guarda su ranking separado.</p></div>
       {% if daily_missions %}
         <div class="mission-card"><span class="eyebrow">Misiones de hoy</span>
           {% for mission in daily_missions %}
