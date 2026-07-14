@@ -28,6 +28,7 @@
             <input id="nicknameInput" maxlength="24" value="{{ default_nickname }}" autocomplete="nickname">
             <button id="startGameButton" class="button button-primary" type="button">Empezar partida</button>
             <button id="restartGameButton" class="button button-primary hidden" type="button">Jugar otra vez</button>
+            <button id="shareResultButton" class="button button-ghost hidden" type="button">Compartir resultado</button>
             <a id="rankingLink" class="text-link hidden" href="{% url 'leaderboard' %}">Ver ranking →</a>
           </div>
         </div>
@@ -42,7 +43,8 @@
 
     <aside class="game-side">
       <div class="tip-card"><span class="tip-number">01</span><h3>Saltá con intención</h3><p>El segundo salto te salva. Usarlo por reflejo te condena. Filosofía de conejo.</p></div>
-      <div class="tip-card"><span class="tip-number">02</span><h3>Mantené el combo</h3><p>Cada zanahoria seguida aumenta el multiplicador por unos segundos.</p></div>
+      <div class="tip-card"><span class="tip-number">02</span><h3>Mantené el combo</h3><p>Cada comida suma distinto: zanahoria dorada ×2, heno seguro, lechuga romana extiende combo, escarola acelera el multiplicador, apio alarga saltos y pellets dan ráfagas.</p></div>
+      <div class="tip-card"><span class="tip-number">03</span><h3>Power-ups raros</h3><p>Buscá tréboles escudo, hojas voladoras, menta para ralentizar el bosque y corazones para recuperar vidas.</p></div>
       {% if daily_missions %}
         <div class="mission-card"><span class="eyebrow">Misiones de hoy</span>
           {% for mission in daily_missions %}

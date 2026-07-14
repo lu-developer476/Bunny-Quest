@@ -212,6 +212,11 @@ def api_submit_score(request: HttpRequest):
         game_session.finished_at = timezone.now()
         game_session.save(update_fields=["used", "finished_at"])
 
+        previous_best = (
+            GameScore.objects.filter(user=request.user).aggregate(best=Max("score"))["best"]
+            if request.user.is_authenticated
+            else None
+        )
         record = GameScore.objects.create(
             session=game_session,
             user=request.user if request.user.is_authenticated else None,
@@ -225,12 +230,22 @@ def api_submit_score(request: HttpRequest):
 
     unlocked = unlock_achievements_for(request.user) if request.user.is_authenticated else []
     rank = GameScore.objects.filter(score__gt=record.score).count() + 1
+    next_rival_record = GameScore.objects.filter(score__gt=record.score).order_by("score", "created_at").first()
+    next_rival = None
+    if next_rival_record:
+        next_rival = {
+            "nickname": next_rival_record.nickname,
+            "score": next_rival_record.score,
+            "points_needed": max(1, next_rival_record.score - record.score + 1),
+        }
     return JsonResponse(
         {
             "ok": True,
             "id": record.pk,
             "rank": rank,
             "message": f"Puntaje guardado. Puesto #{rank}.",
+            "personal_best": previous_best is None or record.score > previous_best,
+            "next_rival": next_rival,
             "achievements": [item.achievement.name for item in unlocked],
         },
         status=201,

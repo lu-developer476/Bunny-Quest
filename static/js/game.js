@@ -10,6 +10,7 @@
   const startButton = document.getElementById('startGameButton');
   const restartButton = document.getElementById('restartGameButton');
   const rankingLink = document.getElementById('rankingLink');
+  const shareButton = document.getElementById('shareResultButton');
   const jumpButton = document.getElementById('touchJump');
   const soundButton = document.getElementById('soundButton');
   const csrfToken = document.getElementById('csrfToken').value;
@@ -29,6 +30,22 @@
   let soundEnabled = true;
   let audioContext = null;
   let maxComboReached = 1;
+  let finalShareText = '';
+  const FOOD_PICKUPS = {
+    carrot: {icon: '🥕', label: 'zanahoria', points: 100, combo: 1, color: '#ef8e3f', w: 30, h: 44},
+    golden_carrot: {icon: '🥕', label: 'zanahoria dorada', points: 320, combo: 2, scoreMultiplier: 2, color: '#f5c14d', w: 34, h: 48},
+    hay: {icon: '🌾', label: 'heno', points: 70, combo: 1, color: '#d8b765', w: 38, h: 34},
+    romaine: {icon: '🥬', label: 'lechuga romana', points: 150, combo: 1, time: .8, color: '#7fbd58', w: 36, h: 36},
+    escarole: {icon: '🥗', label: 'escarola', points: 190, combo: 2, color: '#9fd36f', w: 36, h: 36},
+    celery: {icon: '🌱', label: 'apio', points: 130, combo: 1, wing: 1.2, color: '#82bd66', w: 36, h: 42},
+    pellets: {icon: '🟤', label: 'pellets', points: 55, combo: 1, burst: 5, color: '#8b6546', w: 34, h: 30}
+  };
+  const POWERUPS = {
+    clover: {icon: '🛡️', label: 'trébol escudo', points: 120, color: '#53a85c', w: 38, h: 38},
+    wing_leaf: {icon: '🪽', label: 'hoja voladora', points: 130, color: '#bfe7cf', w: 44, h: 34},
+    mint: {icon: '🌿', label: 'menta', points: 110, color: '#62b987', w: 38, h: 38},
+    heart: {icon: '❤️', label: 'corazón', points: 80, color: '#e15d68', w: 36, h: 34}
+  };
   const bunnyColor = canvas.dataset.bunnyColor || 'snow';
   const bunnyAccessory = canvas.dataset.bunnyAccessory || 'none';
   const bunnyPalette = {
@@ -50,6 +67,14 @@
     level: 1,
     combo: 1,
     comboTimer: 0,
+    shield: 0,
+    scoreMultiplier: 1,
+    scoreMultiplierTimer: 0,
+    wingTimer: 0,
+    mintTimer: 0,
+    tutorialStep: 0,
+    tutorialTimer: 0,
+    toast: null,
     spawnTimer: 0,
     carrotTimer: 0,
     particles: [],
@@ -88,8 +113,9 @@
   function reset() {
     Object.assign(game, {
       running: false, paused: false, over: false, speed: 315, distance: 0,
-      score: 0, carrots: 0, lives: 3, level: 1, combo: 1, comboTimer: 0,
-      spawnTimer: .9, carrotTimer: .55, particles: [], obstacles: [], pickups: []
+      score: 0, carrots: 0, lives: 3, level: 1, combo: 1, comboTimer: 0, shield: 0,
+      scoreMultiplier: 1, scoreMultiplierTimer: 0, wingTimer: 0, mintTimer: 0, tutorialStep: 0, tutorialTimer: 3.8, toast: null,
+      spawnTimer: 2.2, carrotTimer: .75, particles: [], obstacles: [], pickups: []
     });
     Object.assign(game.rabbit, {x: 145, y: groundY - 72, w: 58, h: 72, vy: 0, jumps: 0, invuln: 0, squash: 0});
     maxComboReached = 1;
@@ -132,7 +158,8 @@
     if (!game.running || game.paused || game.over) return;
     const rabbit = game.rabbit;
     if (rabbit.jumps < 2) {
-      rabbit.vy = rabbit.jumps === 0 ? -670 : -590;
+      const wingBoost = game.wingTimer > 0 ? 1.18 : 1;
+      rabbit.vy = (rabbit.jumps === 0 ? -670 : -590) * wingBoost;
       rabbit.jumps += 1;
       rabbit.squash = .16;
       emitParticles(rabbit.x + 18, groundY - 4, 5, '#c7d8ae');
@@ -141,6 +168,12 @@
   }
 
   function spawnObstacle() {
+    if (game.tutorialStep === 0) {
+      game.tutorialStep = 1;
+      game.tutorialTimer = 3.2;
+      game.obstacles.push({x: WORLD_W + 70, y: groundY - 38, w: 58, h: 38, type: 'log', hit: false, soft: false, flap: 0, tutorial: true});
+      return;
+    }
     const options = game.level < 3 ? ['log', 'rock'] : ['log', 'rock', 'fox', 'puddle', 'branch', 'thorns', 'owl'];
     const type = options[Math.floor(Math.random() * options.length)];
     const specs = {
@@ -158,8 +191,19 @@
 
   function spawnCarrot() {
     const high = Math.random() < .45;
-    const y = high ? 270 + Math.random() * 60 : 360 + Math.random() * 32;
-    game.pickups.push({x: WORLD_W + 30, y, w: 30, h: 44, spin: Math.random() * 6, taken: false});
+    const y = game.tutorialStep < 2 ? 360 : (high ? 270 + Math.random() * 60 : 360 + Math.random() * 32);
+    let type = 'carrot';
+    const roll = Math.random();
+    if (game.distance > 700 && roll > .95) type = 'heart';
+    else if (game.distance > 450 && roll > .90) type = ['clover', 'wing_leaf', 'mint'][Math.floor(Math.random() * 3)];
+    else if (game.distance > 300 && roll > .76) type = ['golden_carrot', 'hay', 'romaine', 'escarole', 'celery', 'pellets'][Math.floor(Math.random() * 6)];
+    if (game.tutorialStep < 2) { type = 'carrot'; game.tutorialStep = 2; game.tutorialTimer = 4.2; }
+    const spec = FOOD_PICKUPS[type] || POWERUPS[type] || FOOD_PICKUPS.carrot;
+    game.pickups.push({x: WORLD_W + 30, y, w: spec.w, h: spec.h, type, spin: Math.random() * 6, taken: false});
+  }
+
+  function showToast(text, color = '#405a36') {
+    game.toast = {text, color, life: 1.8};
   }
 
   function intersects(a, b, inset = 8) {
@@ -175,15 +219,22 @@
 
   function update(dt) {
     const rabbit = game.rabbit;
-    game.distance += game.speed * dt;
+    const speedFactor = game.mintTimer > 0 ? .68 : 1;
+    game.distance += game.speed * speedFactor * dt;
     game.level = Math.min(100, Math.floor(game.distance / 2200) + 1);
     game.speed = Math.min(650, 315 + (game.level - 1) * 22);
-    game.score += dt * 22 * game.level;
+    game.score += dt * 22 * game.level * game.scoreMultiplier;
 
     rabbit.vy += 1780 * dt;
     rabbit.y += rabbit.vy * dt;
     rabbit.invuln = Math.max(0, rabbit.invuln - dt);
     rabbit.squash = Math.max(0, rabbit.squash - dt);
+    game.scoreMultiplierTimer = Math.max(0, game.scoreMultiplierTimer - dt);
+    if (game.scoreMultiplierTimer <= 0) game.scoreMultiplier = 1;
+    game.wingTimer = Math.max(0, game.wingTimer - dt);
+    game.mintTimer = Math.max(0, game.mintTimer - dt);
+    game.tutorialTimer = Math.max(0, game.tutorialTimer - dt);
+    if (game.toast) { game.toast.life -= dt; if (game.toast.life <= 0) game.toast = null; }
     if (rabbit.y >= groundY - rabbit.h) {
       rabbit.y = groundY - rabbit.h;
       if (rabbit.vy > 280) rabbit.squash = .12;
@@ -207,14 +258,20 @@
     }
 
     for (const obstacle of game.obstacles) {
-      obstacle.x -= game.speed * dt;
+      obstacle.x -= game.speed * speedFactor * (obstacle.tutorial ? .62 : 1) * dt;
       if (obstacle.type === 'owl') obstacle.y += Math.sin(game.distance * .02 + obstacle.flap) * 18 * dt;
       if (!obstacle.hit && rabbit.invuln <= 0 && intersects(rabbit, obstacle, obstacle.soft ? 4 : 12)) {
         obstacle.hit = true;
         rabbit.invuln = obstacle.soft ? .55 : 1.35;
         rabbit.vy = obstacle.soft ? -140 : -360;
         game.speed = obstacle.soft ? Math.max(260, game.speed - 90) : game.speed;
-        game.lives -= obstacle.soft ? 0 : 1;
+        if (!obstacle.soft && game.shield > 0) {
+          game.shield -= 1;
+          rabbit.invuln = 1.05;
+          showToast('🛡️ El trébol bloqueó el golpe', '#4f8b57');
+        } else {
+          game.lives -= obstacle.soft ? 0 : 1;
+        }
         game.combo = 1;
         game.comboTimer = 0;
         emitParticles(rabbit.x + 28, rabbit.y + 38, obstacle.soft ? 9 : 14, obstacle.soft ? '#5da7b1' : '#b66a4b');
@@ -224,17 +281,11 @@
     }
 
     for (const carrot of game.pickups) {
-      carrot.x -= game.speed * dt;
+      carrot.x -= game.speed * speedFactor * dt;
       carrot.spin += dt * 5;
       if (!carrot.taken && intersects(rabbit, carrot, 5)) {
         carrot.taken = true;
-        game.carrots += 1;
-        game.combo = Math.min(8, game.combo + 1);
-        maxComboReached = Math.max(maxComboReached, game.combo);
-        game.comboTimer = 3.2;
-        game.score += 100 * game.combo;
-        emitParticles(carrot.x + 15, carrot.y + 20, 10, '#ef8e3f');
-        beep(620 + game.combo * 35, .07, 'triangle', .035);
+        collectPickup(carrot);
       }
     }
 
@@ -250,17 +301,44 @@
     game.particles = game.particles.filter(item => item.life > 0);
 
     for (const cloud of game.clouds) {
-      cloud.x -= game.speed * .025 * cloud.size * dt;
+      cloud.x -= game.speed * speedFactor * .025 * cloud.size * dt;
       if (cloud.x < -160) cloud.x = WORLD_W + 120;
     }
     updateHud();
+  }
+
+
+  function collectPickup(pickup) {
+    const food = FOOD_PICKUPS[pickup.type] || null;
+    const power = POWERUPS[pickup.type] || null;
+    const spec = food || power || FOOD_PICKUPS.carrot;
+    if (food) {
+      game.carrots += pickup.type === 'carrot' || pickup.type === 'golden_carrot' ? 1 : 0;
+      game.combo = Math.min(8, game.combo + (spec.combo || 1));
+      maxComboReached = Math.max(maxComboReached, game.combo);
+      game.comboTimer = 3.2 + (spec.time || 0);
+      if (spec.scoreMultiplier) { game.scoreMultiplier = spec.scoreMultiplier; game.scoreMultiplierTimer = 7; }
+      if (spec.wing) game.wingTimer = Math.max(game.wingTimer, spec.wing);
+      game.score += (spec.points + (spec.burst || 0) * 15) * game.combo * game.scoreMultiplier;
+    } else if (pickup.type === 'clover') {
+      game.shield = 1; game.score += spec.points; showToast('🛡️ Escudo listo por un golpe', spec.color);
+    } else if (pickup.type === 'wing_leaf') {
+      game.wingTimer = 6; game.score += spec.points; showToast('🪽 Saltos más largos', spec.color);
+    } else if (pickup.type === 'mint') {
+      game.mintTimer = 5.5; game.score += spec.points; showToast('🌿 El bosque va más lento', spec.color);
+    } else if (pickup.type === 'heart') {
+      game.lives = Math.min(3, game.lives + 1); game.score += spec.points; showToast('❤️ Vida recuperada', spec.color);
+    }
+    if (pickup.type === 'golden_carrot') showToast('🥕 Zanahoria dorada: puntos ×2', spec.color);
+    emitParticles(pickup.x + pickup.w / 2, pickup.y + pickup.h / 2, 12, spec.color);
+    beep(620 + game.combo * 35, .07, 'triangle', .035);
   }
 
   function updateHud() {
     scoreEl.textContent = Math.floor(game.score).toLocaleString('es-AR');
     carrotEl.textContent = game.carrots;
     levelEl.textContent = game.level;
-    livesEl.textContent = '♥'.repeat(Math.max(0, game.lives)) + '♡'.repeat(Math.max(0, 3 - game.lives));
+    livesEl.textContent = `${'♥'.repeat(Math.max(0, game.lives))}${'♡'.repeat(Math.max(0, 3 - game.lives))}${game.shield ? ' 🛡️' : ''}${game.scoreMultiplier > 1 ? ' ×2' : ''}${game.wingTimer > 0 ? ' 🪽' : ''}${game.mintTimer > 0 ? ' 🌿' : ''}`;
   }
 
   async function endGame() {
@@ -274,6 +352,7 @@
     startButton.classList.add('hidden');
     restartButton.classList.remove('hidden');
     rankingLink.classList.remove('hidden');
+    shareButton?.classList.remove('hidden');
     nicknameInput.classList.add('hidden');
     document.querySelector('.nickname-field').classList.add('hidden');
 
@@ -292,10 +371,32 @@
         })
       });
       const data = await response.json();
-      overlayText.textContent = response.ok ? `${data.message} Juntaste ${game.carrots} zanahorias.${data.achievements?.length ? ` Logro desbloqueado: ${data.achievements.join(', ')}.` : ''}` : (data.error || 'No se pudo guardar el puntaje.');
+      overlayText.innerHTML = response.ok ? resultStory(data) : escapeHtml(data.error || 'No se pudo guardar el puntaje.');
       loadLeaderboard();
     } catch (error) {
       overlayText.textContent = 'Terminaste la carrera, pero no pudimos guardar el puntaje.';
+    }
+  }
+
+
+  function resultStory(data) {
+    const score = Math.floor(game.score).toLocaleString('es-AR');
+    const lines = [`Nube volvió con ${game.carrots} zanahorias y ${score} puntos.`];
+    if (data.personal_best) lines.push('Nuevo récord personal.');
+    if (data.next_rival) lines.push(`Te faltaron ${Number(data.next_rival.points_needed).toLocaleString('es-AR')} puntos para superar a ${escapeHtml(data.next_rival.nickname)}.`);
+    if (data.achievements?.length) lines.push(`Insignia desbloqueada: ${data.achievements.map(escapeHtml).join(', ')}.`);
+    lines.push(`Puesto #${data.rank} del ranking.`);
+    finalShareText = lines.join(' ');
+    return lines.map(line => `<span class="result-line">${line}</span>`).join('');
+  }
+
+  async function shareResult() {
+    const text = finalShareText || `Nube volvió con ${game.carrots} zanahorias y ${Math.floor(game.score).toLocaleString('es-AR')} puntos.`;
+    if (navigator.share) {
+      await navigator.share({title: 'Mi aventura en Bunny Quest', text, url: window.location.href});
+    } else {
+      await navigator.clipboard?.writeText(`${text} ${window.location.href}`);
+      showToast('Resultado copiado', '#405a36');
     }
   }
 
@@ -454,6 +555,7 @@
   }
 
   function drawCarrot(c) {
+    if (c.type && c.type !== 'carrot') return drawPickupIcon(c);
     ctx.save();
     ctx.translate(c.x + c.w / 2, c.y + c.h / 2);
     ctx.rotate(Math.sin(c.spin) * .18);
@@ -463,6 +565,21 @@
     ctx.beginPath(); ctx.moveTo(-5, 0); ctx.lineTo(5, 4); ctx.moveTo(-3, 9); ctx.lineTo(4, 12); ctx.stroke();
     ctx.strokeStyle = '#668b48'; ctx.lineWidth = 5; ctx.lineCap = 'round';
     ctx.beginPath(); ctx.moveTo(0, -10); ctx.lineTo(-9, -23); ctx.moveTo(0, -11); ctx.lineTo(2, -26); ctx.moveTo(1, -10); ctx.lineTo(11, -21); ctx.stroke();
+    ctx.restore();
+  }
+
+
+  function drawPickupIcon(p) {
+    const spec = FOOD_PICKUPS[p.type] || POWERUPS[p.type] || FOOD_PICKUPS.carrot;
+    ctx.save();
+    ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+    ctx.rotate(Math.sin(p.spin) * .14);
+    ctx.fillStyle = 'rgba(255,255,255,.82)';
+    ctx.strokeStyle = spec.color;
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.ellipse(0, 0, p.w * .55, p.h * .55, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.font = '26px system-ui'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(spec.icon, 0, 1);
     ctx.restore();
   }
 
@@ -485,6 +602,23 @@
     ctx.restore();
   }
 
+  function drawStatusBubbles() {
+    const labels = [];
+    if (game.shield) labels.push('🛡️ Escudo');
+    if (game.scoreMultiplier > 1) labels.push('🥕 ×2 puntos');
+    if (game.wingTimer > 0) labels.push('🪽 salto largo');
+    if (game.mintTimer > 0) labels.push('🌿 lento');
+    if (game.tutorialTimer > 0) labels.push(game.tutorialStep < 2 ? 'Tocá para saltar' : 'Agarrá la zanahoria: el combo sube hasta ×8');
+    if (game.toast) labels.push(game.toast.text);
+    if (!labels.length) return;
+    ctx.save();
+    ctx.fillStyle = 'rgba(255,255,255,.9)';
+    drawRoundedRect(24, 34, Math.min(540, 24 + labels.join(' · ').length * 10), 44, 22); ctx.fill();
+    ctx.fillStyle = game.toast?.color || '#405a36'; ctx.font = '700 18px system-ui'; ctx.textAlign = 'left';
+    ctx.fillText(labels.join(' · '), 42, 62);
+    ctx.restore();
+  }
+
   function drawPause() {
     if (!game.paused) return;
     ctx.fillStyle = 'rgba(32,50,28,.58)'; ctx.fillRect(0, 0, WORLD_W, WORLD_H);
@@ -499,6 +633,7 @@
     drawRabbit();
     drawParticles();
     drawCombo();
+    drawStatusBubbles();
     drawPause();
   }
 
@@ -551,6 +686,7 @@
     document.querySelector('.nickname-field').classList.remove('hidden');
     startGame();
   });
+  shareButton?.addEventListener('click', () => { shareResult().catch(() => {}); });
   soundButton.addEventListener('click', () => {
     soundEnabled = !soundEnabled;
     soundButton.setAttribute('aria-pressed', String(soundEnabled));
