@@ -22,7 +22,7 @@
       </a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="main-nav">Menú</button>
       <nav id="main-nav" class="main-nav" aria-label="Navegación principal">
-        <a href="{% url 'game' %}">Jugar</a>
+        <a href="{% url 'game' %}">Jugar demo</a>
         <a href="{% url 'leaderboard' %}">Ranking</a>
         {% if user.is_authenticated %}
           <a href="{% url 'profile' %}">Mi madriguera</a>

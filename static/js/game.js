@@ -8,6 +8,11 @@
   const overlayText = document.getElementById('overlayText');
   const nicknameInput = document.getElementById('nicknameInput');
   const startButton = document.getElementById('startGameButton');
+  const confirmModeButton = document.getElementById('confirmModeButton');
+  const backToModesButton = document.getElementById('backToModesButton');
+  const modeStep = document.getElementById('modeStep');
+  const nicknameStep = document.getElementById('nicknameStep');
+  const selectedModeName = document.getElementById('selectedModeName');
   const restartButton = document.getElementById('restartGameButton');
   const rankingLink = document.getElementById('rankingLink');
   const shareButton = document.getElementById('shareResultButton');
@@ -51,6 +56,14 @@
   const bunnyAccessory = canvas.dataset.bunnyAccessory || 'none';
   const selectedModeInput = document.querySelector('input[name=challengeMode]:checked');
   let currentMode = selectedModeInput?.value || 'normal';
+  const modeLabels = {
+    normal: 'Normal',
+    timed: '60 segundos',
+    one_life: 'Una vida',
+    high_carrots: 'Zanahorias altas',
+    fast_forest: 'Bosque veloz',
+    light_grey: 'Light grey'
+  };
   const bunnyPalette = {
     snow: {fur: '#fdfcf8', shade: '#f1eee5'},
     cocoa: {fur: '#c99d7e', shade: '#b98262'},
@@ -370,8 +383,8 @@
     restartButton.classList.remove('hidden');
     rankingLink.classList.remove('hidden');
     shareButton?.classList.remove('hidden');
-    nicknameInput.classList.add('hidden');
-    document.querySelector('.nickname-field').classList.add('hidden');
+    modeStep.classList.add('hidden');
+    nicknameStep.classList.add('hidden');
 
     try {
       const response = await fetch('/api/game/score/', {
@@ -439,7 +452,9 @@
       sunset: {sky: ['#ffe0ad', '#f3a26e', '#8b6179'], sun: '#f6b05d', hill: '#b77b62', grass: '#7e8f57', trim: '#596f43'},
       night: {sky: ['#1c2741', '#26375a', '#3c4d64'], sun: '#f4e9a6', hill: '#34465b', grass: '#314b3e', trim: '#22382f'}
     };
-    const palette = palettes[biome];
+    const palette = currentMode === 'light_grey'
+      ? {sky: ['#f4f5f6', '#d8dade', '#b9bdc2'], sun: '#f7f7f7', hill: '#a8adb3', grass: '#565b60', trim: '#181a1d'}
+      : palettes[biome];
     const sky = ctx.createLinearGradient(0, 0, 0, WORLD_H);
     sky.addColorStop(0, palette.sky[0]); sky.addColorStop(.72, palette.sky[1]); sky.addColorStop(1, palette.sky[2]);
     ctx.fillStyle = sky; ctx.fillRect(0, 0, WORLD_W, WORLD_H);
@@ -447,8 +462,8 @@
     ctx.fillStyle = palette.sun; ctx.beginPath(); ctx.arc(820, biome === 'sunset' ? 170 : 92, biome === 'night' ? 30 : 42, 0, Math.PI * 2); ctx.fill();
     if (biome !== 'night') for (const cloud of game.clouds) drawCloud(cloud.x, cloud.y, cloud.size);
 
-    if (biome === 'forest' || biome === 'night') {
-      ctx.fillStyle = biome === 'night' ? 'rgba(20,35,36,.5)' : 'rgba(67,98,55,.38)';
+    if (biome === 'forest' || biome === 'night' || currentMode === 'light_grey') {
+      ctx.fillStyle = currentMode === 'light_grey' ? 'rgba(18,20,22,.32)' : (biome === 'night' ? 'rgba(20,35,36,.5)' : 'rgba(67,98,55,.38)');
       for (let x = -40; x < WORLD_W; x += 82) {
         ctx.beginPath(); ctx.moveTo(x, groundY); ctx.lineTo(x + 34, 190 + Math.sin(x) * 18); ctx.lineTo(x + 72, groundY); ctx.fill();
       }
@@ -461,7 +476,7 @@
 
     ctx.fillStyle = palette.grass; ctx.fillRect(0, groundY, WORLD_W, WORLD_H - groundY);
     ctx.fillStyle = palette.trim; ctx.fillRect(0, groundY, WORLD_W, 8);
-    ctx.strokeStyle = biome === 'night' ? 'rgba(225,241,166,.22)' : 'rgba(82,105,58,.18)'; ctx.lineWidth = 2;
+    ctx.strokeStyle = currentMode === 'light_grey' ? 'rgba(12,14,16,.28)' : (biome === 'night' ? 'rgba(225,241,166,.22)' : 'rgba(82,105,58,.18)'); ctx.lineWidth = 2;
     const offset = -(game.distance * .8) % 70;
     for (let x = offset; x < WORLD_W; x += 70) { ctx.beginPath(); ctx.moveTo(x, 486); ctx.quadraticCurveTo(x + 24, 470, x + 48, 488); ctx.stroke(); }
     if (biome === 'night') {
@@ -698,10 +713,30 @@
   });
   jumpButton.addEventListener('pointerdown', event => { event.preventDefault(); jump(); });
   canvas.addEventListener('pointerdown', jump);
+  function syncModeSelection() {
+    selectedModeName.textContent = modeLabels[currentMode] || currentMode;
+    document.body.classList.toggle('light-grey-game', currentMode === 'light_grey');
+    draw();
+  }
+
+  function showNicknameStep() {
+    syncModeSelection();
+    modeStep.classList.add('hidden');
+    nicknameStep.classList.remove('hidden');
+    nicknameInput.focus();
+  }
+
+  function showModeStep() {
+    nicknameStep.classList.add('hidden');
+    modeStep.classList.remove('hidden');
+  }
+
   startButton.addEventListener('click', startGame);
+  confirmModeButton?.addEventListener('click', showNicknameStep);
+  backToModesButton?.addEventListener('click', showModeStep);
   restartButton.addEventListener('click', () => {
-    nicknameInput.classList.remove('hidden');
-    document.querySelector('.nickname-field').classList.remove('hidden');
+    modeStep.classList.add('hidden');
+    nicknameStep.classList.add('hidden');
     startGame();
   });
   shareButton?.addEventListener('click', () => { shareResult().catch(() => {}); });
@@ -716,7 +751,7 @@
     if (soundEnabled) beep(700, .06, 'triangle', .025);
   });
   document.querySelectorAll('input[name=challengeMode]').forEach(input => {
-    input.addEventListener('change', () => { currentMode = input.value; loadLeaderboard(); });
+    input.addEventListener('change', () => { currentMode = input.value; syncModeSelection(); loadLeaderboard(); });
   });
   document.addEventListener('visibilitychange', () => {
     if (document.hidden && game.running && !game.over) game.paused = true;
@@ -725,7 +760,7 @@
   renderSoundButton();
   resizeCanvas();
   reset();
-  draw();
+  syncModeSelection();
   loadLeaderboard();
 })();
 

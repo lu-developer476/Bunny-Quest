@@ -6,7 +6,7 @@
 <section class="game-page container">
   <div class="game-intro">
     <div><span class="eyebrow">Bosque Saltarín</span><h1>Ayudá a Nube a recuperar la huerta</h1></div>
-    <p>Espacio, flecha arriba o toque para saltar. Elegí partida normal o un desafío corto con ranking propio.</p>
+    <p>Espacio, flecha arriba o toque para saltar. Deslizá entre modos, elegí tu favorito y después escribí tu apodo.</p>
   </div>
 
   <div class="game-layout">
@@ -24,6 +24,7 @@
             <span class="overlay-bunny">🐇</span>
             <h2 id="overlayTitle">¿Listo para saltar?</h2>
             <p id="overlayText">Juntá zanahorias, esquivá troncos y no pierdas el ritmo.</p>
+            <div id="modeStep" class="mode-step">
             <fieldset class="challenge-picker challenge-slider" aria-label="Modo desafío">
               <legend>Modo</legend>
               <label class="challenge-card"><input type="radio" name="challengeMode" value="normal" checked><span>Normal</span><small>Clásico</small></label>
@@ -31,10 +32,17 @@
               <label class="challenge-card"><input type="radio" name="challengeMode" value="one_life"><span>Una vida</span><small>Sin errores</small></label>
               <label class="challenge-card"><input type="radio" name="challengeMode" value="high_carrots"><span>Zanahorias altas</span><small>Saltos precisos</small></label>
               <label class="challenge-card"><input type="radio" name="challengeMode" value="fast_forest"><span>Bosque veloz</span><small>Ritmo intenso</small></label>
+              <label class="challenge-card"><input type="radio" name="challengeMode" value="light_grey"><span>Light grey</span><small>Grises y negros</small></label>
             </fieldset>
-            <label class="nickname-field" for="nicknameInput">Tu apodo</label>
-            <input id="nicknameInput" maxlength="24" value="{{ default_nickname }}" autocomplete="nickname">
-            <button id="startGameButton" class="button button-primary" type="button">Empezar partida</button>
+            <button id="confirmModeButton" class="button button-primary" type="button">Elegir modo</button>
+            </div>
+            <div id="nicknameStep" class="nickname-step hidden">
+              <p class="selected-mode-copy">Modo elegido: <strong id="selectedModeName">Normal</strong></p>
+              <label class="nickname-field" for="nicknameInput">Tu apodo</label>
+              <input id="nicknameInput" maxlength="24" value="{{ default_nickname }}" autocomplete="nickname">
+              <button id="backToModesButton" class="button button-ghost" type="button">Cambiar modo</button>
+              <button id="startGameButton" class="button button-primary" type="button">Empezar partida</button>
+            </div>
             <button id="restartGameButton" class="button button-primary hidden" type="button">Jugar otra vez</button>
             <button id="shareResultButton" class="button button-ghost hidden" type="button">Compartir resultado</button>
             <a id="rankingLink" class="text-link hidden" href="{% url 'leaderboard' %}">Ver ranking →</a>

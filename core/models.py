@@ -77,12 +77,14 @@ class GameSession(models.Model):
     MODE_ONE_LIFE = "one_life"
     MODE_HIGH_CARROTS = "high_carrots"
     MODE_FAST_FOREST = "fast_forest"
+    MODE_LIGHT_GREY = "light_grey"
     GAME_MODES = [
         (MODE_NORMAL, "Normal"),
         (MODE_TIMED, "60 segundos"),
         (MODE_ONE_LIFE, "Una sola vida"),
         (MODE_HIGH_CARROTS, "Solo zanahorias altas"),
         (MODE_FAST_FOREST, "Bosque veloz"),
+        (MODE_LIGHT_GREY, "Light grey"),
     ]
 
     user_agent = models.CharField(max_length=255, blank=True)

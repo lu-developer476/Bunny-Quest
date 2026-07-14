@@ -439,3 +439,27 @@ kbd { padding: 4px 7px; border: 1px solid var(--line); border-bottom-width: 3px;
   .tip-slider { margin-inline: -20px; padding-inline: 20px; }
   .overlay-card { width: min(96%, 500px); }
 }
+
+
+/* Step-by-step mode selection: users swipe first, then enter a nickname. */
+.mode-step, .nickname-step { display: grid; gap: 12px; }
+.selected-mode-copy { margin: 0 0 4px !important; color: var(--muted); text-align: center; }
+.selected-mode-copy strong { color: var(--ink); }
+.nickname-step .button-ghost { margin-bottom: 0; }
+.challenge-slider {
+  scroll-padding-inline: 12px;
+  scrollbar-color: var(--leaf-dark) var(--line);
+}
+.challenge-slider::-webkit-scrollbar { height: 8px; }
+.challenge-slider::-webkit-scrollbar-track { border-radius: 999px; background: var(--line); }
+.challenge-slider::-webkit-scrollbar-thumb { border-radius: 999px; background: var(--leaf-dark); }
+.challenge-card { flex: 0 0 min(78%, 320px); min-height: 92px; }
+.challenge-card:has(input[value="light_grey"]) { background: linear-gradient(145deg, #f1f2f3, #d7d9dc); border-color: #aeb3b8; }
+.challenge-card:has(input[value="light_grey"]:checked) { color: #101214 !important; background: linear-gradient(145deg, #e9eaec, #b9bdc2); border-color: #25282b; box-shadow: inset 0 0 0 2px rgba(20,22,24,.24); }
+body.light-grey-game .game-shell { border-color: #c6c8ca; background: #f1f2f3; }
+body.light-grey-game .canvas-wrap { background: #d7d9dc; }
+body.light-grey-game .game-overlay { background: rgba(18,20,22,.52); }
+
+@media (max-width: 720px) {
+  .challenge-card { flex-basis: 84%; }
+}
