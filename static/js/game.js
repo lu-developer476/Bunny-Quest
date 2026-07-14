@@ -28,6 +28,15 @@
   let sessionToken = null;
   let soundEnabled = true;
   let audioContext = null;
+  let maxComboReached = 1;
+  const bunnyColor = canvas.dataset.bunnyColor || 'snow';
+  const bunnyAccessory = canvas.dataset.bunnyAccessory || 'none';
+  const bunnyPalette = {
+    snow: {fur: '#fdfcf8', shade: '#f1eee5'},
+    cocoa: {fur: '#c99d7e', shade: '#b98262'},
+    sand: {fur: '#ead7a7', shade: '#d8bc7f'},
+    moon: {fur: '#dfe2df', shade: '#cbd1ce'}
+  };
 
   const game = {
     running: false,
@@ -83,6 +92,7 @@
       spawnTimer: .9, carrotTimer: .55, particles: [], obstacles: [], pickups: []
     });
     Object.assign(game.rabbit, {x: 145, y: groundY - 72, w: 58, h: 72, vy: 0, jumps: 0, invuln: 0, squash: 0});
+    maxComboReached = 1;
     updateHud();
   }
 
@@ -209,6 +219,7 @@
         carrot.taken = true;
         game.carrots += 1;
         game.combo = Math.min(8, game.combo + 1);
+        maxComboReached = Math.max(maxComboReached, game.combo);
         game.comboTimer = 3.2;
         game.score += 100 * game.combo;
         emitParticles(carrot.x + 15, carrot.y + 20, 10, '#ef8e3f');
@@ -265,11 +276,12 @@
           score: Math.floor(game.score),
           carrots: game.carrots,
           level: game.level,
+          max_combo: maxComboReached,
           duration_ms: duration
         })
       });
       const data = await response.json();
-      overlayText.textContent = response.ok ? `${data.message} Juntaste ${game.carrots} zanahorias.` : (data.error || 'No se pudo guardar el puntaje.');
+      overlayText.textContent = response.ok ? `${data.message} Juntaste ${game.carrots} zanahorias.${data.achievements?.length ? ` Logro desbloqueado: ${data.achievements.join(', ')}.` : ''}` : (data.error || 'No se pudo guardar el puntaje.');
       loadLeaderboard();
     } catch (error) {
       overlayText.textContent = 'Terminaste la carrera, pero no pudimos guardar el puntaje.';
@@ -348,7 +360,8 @@
     ctx.scale(1 + squash - stretch, 1 - squash + stretch);
     ctx.translate(-r.w / 2, -r.h / 2);
 
-    ctx.fillStyle = '#fdfcf8';
+    const colors = bunnyPalette[bunnyColor] || bunnyPalette.snow;
+    ctx.fillStyle = colors.fur;
     ctx.strokeStyle = '#66574b';
     ctx.lineWidth = 3;
     ctx.beginPath(); ctx.ellipse(18, 15, 10, 27, -.16, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
@@ -356,8 +369,9 @@
     ctx.fillStyle = '#e9b8ac';
     ctx.beginPath(); ctx.ellipse(18, 14, 4, 18, -.16, 0, Math.PI * 2); ctx.fill();
     ctx.beginPath(); ctx.ellipse(40, 12, 4, 19, .15, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#fdfcf8';
+    ctx.fillStyle = colors.fur;
     ctx.beginPath(); ctx.ellipse(29, 45, 27, 28, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = colors.shade;
     ctx.beginPath(); ctx.ellipse(29, 67, 28, 17, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
     ctx.fillStyle = '#493f38';
     ctx.beginPath(); ctx.arc(20, 41, 3.2, 0, Math.PI * 2); ctx.arc(39, 41, 3.2, 0, Math.PI * 2); ctx.fill();
@@ -365,7 +379,31 @@
     ctx.beginPath(); ctx.moveTo(29, 48); ctx.lineTo(24, 52); ctx.lineTo(34, 52); ctx.closePath(); ctx.fill();
     ctx.strokeStyle = '#66574b'; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.moveTo(29, 52); ctx.lineTo(29, 58); ctx.stroke();
+    drawAccessory(bunnyAccessory);
     ctx.restore();
+  }
+
+  function drawAccessory(accessory) {
+    if (accessory === 'scarf') {
+      ctx.fillStyle = '#4f7046';
+      drawRoundedRect(12, 58, 34, 8, 4); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(42, 61); ctx.lineTo(55, 74); ctx.lineTo(42, 70); ctx.closePath(); ctx.fill();
+    } else if (accessory === 'flower') {
+      ctx.fillStyle = '#f4c973';
+      for (let i = 0; i < 5; i += 1) {
+        ctx.beginPath(); ctx.ellipse(12 + Math.cos(i * 1.26) * 5, 22 + Math.sin(i * 1.26) * 5, 4, 6, i, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.fillStyle = '#ed8540'; ctx.beginPath(); ctx.arc(12, 22, 3, 0, Math.PI * 2); ctx.fill();
+    } else if (accessory === 'bow') {
+      ctx.fillStyle = '#ed8540';
+      ctx.beginPath(); ctx.moveTo(22, 24); ctx.lineTo(8, 14); ctx.lineTo(9, 34); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(24, 24); ctx.lineTo(40, 14); ctx.lineTo(39, 34); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#b65e2c'; ctx.beginPath(); ctx.arc(24, 24, 4, 0, Math.PI * 2); ctx.fill();
+    } else if (accessory === 'clover') {
+      ctx.fillStyle = '#5f8f4d';
+      [[16,20],[22,20],[19,15],[19,25]].forEach(([x, y]) => { ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill(); });
+      ctx.strokeStyle = '#5f8f4d'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(19, 25); ctx.lineTo(14, 34); ctx.stroke();
+    }
   }
 
   function drawObstacle(o) {

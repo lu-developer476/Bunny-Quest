@@ -18,7 +18,7 @@
         <div><span>Vidas</span><strong id="livesValue">♥♥♥</strong></div>
       </div>
       <div class="canvas-wrap">
-        <canvas id="gameCanvas" width="960" height="540" aria-label="Juego del conejo"></canvas>
+        <canvas id="gameCanvas" width="960" height="540" aria-label="Juego del conejo" data-bunny-color="{{ player_profile.bunny_color|default:'snow' }}" data-bunny-accessory="{{ player_profile.bunny_accessory|default:'none' }}"></canvas>
         <div id="gameOverlay" class="game-overlay">
           <div class="overlay-card">
             <span class="overlay-bunny">🐇</span>
@@ -43,6 +43,13 @@
     <aside class="game-side">
       <div class="tip-card"><span class="tip-number">01</span><h3>Saltá con intención</h3><p>El segundo salto te salva. Usarlo por reflejo te condena. Filosofía de conejo.</p></div>
       <div class="tip-card"><span class="tip-number">02</span><h3>Mantené el combo</h3><p>Cada zanahoria seguida aumenta el multiplicador por unos segundos.</p></div>
+      {% if daily_missions %}
+        <div class="mission-card"><span class="eyebrow">Misiones de hoy</span>
+          {% for mission in daily_missions %}
+            <div class="mission-mini {% if mission.completed %}completed{% endif %}"><strong>{{ mission.title }}</strong><span>{{ mission.progress }}/{{ mission.goal }} {{ mission.unit }}</span><i style="--progress: {{ mission.percent }}%"></i></div>
+          {% endfor %}
+        </div>
+      {% endif %}
       <div class="live-board"><div class="card-header"><h3>Top 5</h3><a href="{% url 'leaderboard' %}">Ranking</a></div><ol id="liveLeaderboard" class="compact-ranking"><li class="empty-state">Cargando huellas…</li></ol></div>
     </aside>
   </div>

@@ -15,6 +15,7 @@ from django.views.decorators.http import require_GET, require_POST
 
 from .forms import ProfileForm, SignUpForm
 from .models import GameScore, GameSession
+from .services import achievements_for_profile, daily_missions_for, unlock_achievements_for
 
 
 def home(request):
@@ -32,7 +33,11 @@ def game(request):
     default_nickname = "Visitante"
     if request.user.is_authenticated:
         default_nickname = request.user.player_profile.bunny_name or request.user.username
-    return render(request, "core/game.html", {"default_nickname": default_nickname})
+    context = {"default_nickname": default_nickname}
+    if request.user.is_authenticated:
+        context["daily_missions"] = daily_missions_for(request.user)
+        context["player_profile"] = request.user.player_profile
+    return render(request, "core/game.html", context)
 
 
 def leaderboard(request):
@@ -77,13 +82,13 @@ def logout_view(request):
 def profile(request):
     player_profile = request.user.player_profile
     if request.method == "POST":
-        form = ProfileForm(request.POST, instance=player_profile)
+        form = ProfileForm(request.POST, instance=player_profile, user=request.user)
         if form.is_valid():
             form.save()
             messages.success(request, "Perfil actualizado.")
             return redirect("profile")
     else:
-        form = ProfileForm(instance=player_profile)
+        form = ProfileForm(instance=player_profile, user=request.user)
 
     scores = request.user.scores.all()[:10]
     stats = request.user.scores.aggregate(
@@ -95,7 +100,13 @@ def profile(request):
     return render(
         request,
         "core/profile.html",
-        {"form": form, "scores": scores, "stats": stats},
+        {
+            "form": form,
+            "scores": scores,
+            "stats": stats,
+            "achievement_cards": achievements_for_profile(request.user),
+            "daily_missions": daily_missions_for(request.user),
+        },
     )
 
 
@@ -120,6 +131,7 @@ def api_submit_score(request: HttpRequest):
         carrots = int(data.get("carrots", 0))
         level = int(data.get("level", 1))
         duration_ms = int(data.get("duration_ms", 0))
+        max_combo = int(data.get("max_combo", 1))
     except (ValueError, TypeError, json.JSONDecodeError):
         return JsonResponse({"error": "Datos de partida inválidos."}, status=400)
 
@@ -129,6 +141,8 @@ def api_submit_score(request: HttpRequest):
         return JsonResponse({"error": "Puntaje fuera de rango."}, status=400)
     if not (2_000 <= duration_ms <= 7_200_000):
         return JsonResponse({"error": "Duración de partida inválida."}, status=400)
+    if not (1 <= max_combo <= 50):
+        return JsonResponse({"error": "Combo fuera de rango."}, status=400)
 
     with transaction.atomic():
         try:
@@ -160,9 +174,11 @@ def api_submit_score(request: HttpRequest):
             score=score,
             carrots=carrots,
             level=level,
+            max_combo=max_combo,
             duration_ms=duration_ms,
         )
 
+    unlocked = unlock_achievements_for(request.user) if request.user.is_authenticated else []
     rank = GameScore.objects.filter(score__gt=record.score).count() + 1
     return JsonResponse(
         {
@@ -170,6 +186,7 @@ def api_submit_score(request: HttpRequest):
             "id": record.pk,
             "rank": rank,
             "message": f"Puntaje guardado. Puesto #{rank}.",
+            "achievements": [item.achievement.name for item in unlocked],
         },
         status=201,
     )
