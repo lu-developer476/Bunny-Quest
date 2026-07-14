@@ -141,10 +141,19 @@
   }
 
   function spawnObstacle() {
-    const type = Math.random() < .65 ? 'log' : 'rock';
-    const width = type === 'log' ? 62 + Math.random() * 28 : 45 + Math.random() * 20;
-    const height = type === 'log' ? 38 : 46 + Math.random() * 18;
-    game.obstacles.push({x: WORLD_W + 40, y: groundY - height, w: width, h: height, type, hit: false});
+    const options = game.level < 3 ? ['log', 'rock'] : ['log', 'rock', 'fox', 'puddle', 'branch', 'thorns', 'owl'];
+    const type = options[Math.floor(Math.random() * options.length)];
+    const specs = {
+      log: {w: 62 + Math.random() * 28, h: 38, y: groundY - 38},
+      rock: {w: 45 + Math.random() * 20, h: 46 + Math.random() * 18, y: groundY - 56},
+      fox: {w: 86, h: 42, y: groundY - 42},
+      puddle: {w: 92, h: 18, y: groundY - 14, soft: true},
+      branch: {w: 112, h: 28, y: groundY - 158},
+      thorns: {w: 100, h: 34, y: groundY - 34},
+      owl: {w: 62, h: 44, y: groundY - 215 - Math.random() * 35}
+    };
+    const spec = specs[type];
+    game.obstacles.push({x: WORLD_W + 40, y: spec.y, w: spec.w, h: spec.h, type, hit: false, soft: Boolean(spec.soft), flap: Math.random() * 6});
   }
 
   function spawnCarrot() {
@@ -199,15 +208,17 @@
 
     for (const obstacle of game.obstacles) {
       obstacle.x -= game.speed * dt;
-      if (!obstacle.hit && rabbit.invuln <= 0 && intersects(rabbit, obstacle, 12)) {
+      if (obstacle.type === 'owl') obstacle.y += Math.sin(game.distance * .02 + obstacle.flap) * 18 * dt;
+      if (!obstacle.hit && rabbit.invuln <= 0 && intersects(rabbit, obstacle, obstacle.soft ? 4 : 12)) {
         obstacle.hit = true;
-        rabbit.invuln = 1.35;
-        rabbit.vy = -360;
-        game.lives -= 1;
+        rabbit.invuln = obstacle.soft ? .55 : 1.35;
+        rabbit.vy = obstacle.soft ? -140 : -360;
+        game.speed = obstacle.soft ? Math.max(260, game.speed - 90) : game.speed;
+        game.lives -= obstacle.soft ? 0 : 1;
         game.combo = 1;
         game.comboTimer = 0;
-        emitParticles(rabbit.x + 28, rabbit.y + 38, 14, '#b66a4b');
-        beep(120, .18, 'sawtooth', .05);
+        emitParticles(rabbit.x + 28, rabbit.y + 38, obstacle.soft ? 9 : 14, obstacle.soft ? '#5da7b1' : '#b66a4b');
+        beep(obstacle.soft ? 210 : 120, obstacle.soft ? .09 : .18, 'sawtooth', .05);
         if (game.lives <= 0) endGame();
       }
     }
@@ -294,45 +305,49 @@
     ctx.roundRect(x, y, w, h, r);
   }
 
+  function currentBiome() {
+    if (game.level >= 15) return 'night';
+    if (game.level >= 10) return 'sunset';
+    if (game.level >= 5) return 'forest';
+    return 'meadow';
+  }
+
   function drawBackground() {
+    const biome = currentBiome();
+    const palettes = {
+      meadow: {sky: ['#f7fbf2', '#edf4df', '#dfeacb'], sun: '#f4c973', hill: '#d1dfba', grass: '#a9c482', trim: '#8eaa67'},
+      forest: {sky: ['#dfeeda', '#cfe2c4', '#b9d2a8'], sun: '#eecb76', hill: '#8fb06f', grass: '#6f985b', trim: '#527a45'},
+      sunset: {sky: ['#ffe0ad', '#f3a26e', '#8b6179'], sun: '#f6b05d', hill: '#b77b62', grass: '#7e8f57', trim: '#596f43'},
+      night: {sky: ['#1c2741', '#26375a', '#3c4d64'], sun: '#f4e9a6', hill: '#34465b', grass: '#314b3e', trim: '#22382f'}
+    };
+    const palette = palettes[biome];
     const sky = ctx.createLinearGradient(0, 0, 0, WORLD_H);
-    sky.addColorStop(0, '#f7fbf2');
-    sky.addColorStop(.72, '#edf4df');
-    sky.addColorStop(1, '#dfeacb');
-    ctx.fillStyle = sky;
-    ctx.fillRect(0, 0, WORLD_W, WORLD_H);
+    sky.addColorStop(0, palette.sky[0]); sky.addColorStop(.72, palette.sky[1]); sky.addColorStop(1, palette.sky[2]);
+    ctx.fillStyle = sky; ctx.fillRect(0, 0, WORLD_W, WORLD_H);
 
-    ctx.fillStyle = '#f4c973';
-    ctx.beginPath();
-    ctx.arc(820, 92, 42, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.fillStyle = palette.sun; ctx.beginPath(); ctx.arc(820, biome === 'sunset' ? 170 : 92, biome === 'night' ? 30 : 42, 0, Math.PI * 2); ctx.fill();
+    if (biome !== 'night') for (const cloud of game.clouds) drawCloud(cloud.x, cloud.y, cloud.size);
 
-    for (const cloud of game.clouds) drawCloud(cloud.x, cloud.y, cloud.size);
-
-    ctx.fillStyle = '#d1dfba';
-    ctx.beginPath();
-    ctx.moveTo(0, 355);
-    for (let x = 0; x <= WORLD_W; x += 80) {
-      ctx.quadraticCurveTo(x + 40, 300 + Math.sin((x + game.distance * .04) * .01) * 22, x + 80, 355);
+    if (biome === 'forest' || biome === 'night') {
+      ctx.fillStyle = biome === 'night' ? 'rgba(20,35,36,.5)' : 'rgba(67,98,55,.38)';
+      for (let x = -40; x < WORLD_W; x += 82) {
+        ctx.beginPath(); ctx.moveTo(x, groundY); ctx.lineTo(x + 34, 190 + Math.sin(x) * 18); ctx.lineTo(x + 72, groundY); ctx.fill();
+      }
     }
-    ctx.lineTo(WORLD_W, groundY);
-    ctx.lineTo(0, groundY);
-    ctx.closePath();
-    ctx.fill();
 
-    ctx.fillStyle = '#a9c482';
-    ctx.fillRect(0, groundY, WORLD_W, WORLD_H - groundY);
-    ctx.fillStyle = '#8eaa67';
-    ctx.fillRect(0, groundY, WORLD_W, 8);
+    ctx.fillStyle = palette.hill;
+    ctx.beginPath(); ctx.moveTo(0, 355);
+    for (let x = 0; x <= WORLD_W; x += 80) ctx.quadraticCurveTo(x + 40, 300 + Math.sin((x + game.distance * .04) * .01) * 22, x + 80, 355);
+    ctx.lineTo(WORLD_W, groundY); ctx.lineTo(0, groundY); ctx.closePath(); ctx.fill();
 
-    ctx.strokeStyle = 'rgba(82,105,58,.18)';
-    ctx.lineWidth = 2;
+    ctx.fillStyle = palette.grass; ctx.fillRect(0, groundY, WORLD_W, WORLD_H - groundY);
+    ctx.fillStyle = palette.trim; ctx.fillRect(0, groundY, WORLD_W, 8);
+    ctx.strokeStyle = biome === 'night' ? 'rgba(225,241,166,.22)' : 'rgba(82,105,58,.18)'; ctx.lineWidth = 2;
     const offset = -(game.distance * .8) % 70;
-    for (let x = offset; x < WORLD_W; x += 70) {
-      ctx.beginPath();
-      ctx.moveTo(x, 486);
-      ctx.quadraticCurveTo(x + 24, 470, x + 48, 488);
-      ctx.stroke();
+    for (let x = offset; x < WORLD_W; x += 70) { ctx.beginPath(); ctx.moveTo(x, 486); ctx.quadraticCurveTo(x + 24, 470, x + 48, 488); ctx.stroke(); }
+    if (biome === 'night') {
+      ctx.fillStyle = 'rgba(238,244,142,.8)';
+      for (let i = 0; i < 16; i += 1) { const x = (i * 73 + game.distance * .18) % WORLD_W; const y = 210 + Math.sin(game.distance * .01 + i) * 70; ctx.beginPath(); ctx.arc(x, y, 2.4, 0, Math.PI * 2); ctx.fill(); }
     }
   }
 
@@ -413,6 +428,23 @@
       ctx.fillStyle = '#b9794d'; ctx.beginPath(); ctx.arc(o.x + o.w - 7, o.y + o.h / 2, o.h * .42, 0, Math.PI * 2); ctx.fill();
       ctx.strokeStyle = '#74482f'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(o.x + o.w - 7, o.y + o.h / 2, o.h * .24, 0, Math.PI * 2); ctx.stroke();
       ctx.strokeStyle = '#6f4935'; ctx.beginPath(); ctx.moveTo(o.x + 18, o.y + 4); ctx.lineTo(o.x + 23, o.y + o.h - 4); ctx.stroke();
+    } else if (o.type === 'fox') {
+      ctx.fillStyle = '#b85f37'; drawRoundedRect(o.x, o.y + 8, o.w - 22, o.h - 8, 20); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(o.x + o.w - 28, o.y + 14); ctx.lineTo(o.x + o.w, o.y); ctx.lineTo(o.x + o.w - 6, o.y + 30); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#fff1dd'; ctx.beginPath(); ctx.ellipse(o.x + 18, o.y + 30, 18, 9, 0, 0, Math.PI * 2); ctx.fill();
+    } else if (o.type === 'puddle') {
+      ctx.fillStyle = '#5da7b1'; ctx.beginPath(); ctx.ellipse(o.x + o.w / 2, o.y + o.h / 2, o.w / 2, o.h, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,.42)'; ctx.beginPath(); ctx.ellipse(o.x + 28, o.y + 6, 18, 4, -.2, 0, Math.PI * 2); ctx.fill();
+    } else if (o.type === 'branch') {
+      ctx.strokeStyle = '#76513a'; ctx.lineWidth = 12; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(o.x, o.y + 16); ctx.lineTo(o.x + o.w, o.y + 7); ctx.stroke();
+      ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(o.x + 55, o.y + 12); ctx.lineTo(o.x + 78, o.y - 12); ctx.stroke();
+    } else if (o.type === 'thorns') {
+      ctx.fillStyle = '#506f3e';
+      for (let x = o.x; x < o.x + o.w; x += 20) { ctx.beginPath(); ctx.moveTo(x, groundY); ctx.lineTo(x + 10, o.y); ctx.lineTo(x + 20, groundY); ctx.closePath(); ctx.fill(); }
+    } else if (o.type === 'owl') {
+      ctx.fillStyle = '#6c5a4a'; ctx.beginPath(); ctx.ellipse(o.x + 31, o.y + 24, 25, 20, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#8b735f'; ctx.beginPath(); ctx.ellipse(o.x + 10, o.y + 22, 20, 8, -.5, 0, Math.PI * 2); ctx.ellipse(o.x + 52, o.y + 22, 20, 8, .5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#f6d76f'; ctx.beginPath(); ctx.arc(o.x + 24, o.y + 18, 4, 0, Math.PI * 2); ctx.arc(o.x + 38, o.y + 18, 4, 0, Math.PI * 2); ctx.fill();
     } else {
       ctx.fillStyle = '#7d8379';
       ctx.beginPath(); ctx.moveTo(o.x + 4, o.y + o.h); ctx.quadraticCurveTo(o.x, o.y + 20, o.x + 18, o.y + 7); ctx.quadraticCurveTo(o.x + o.w * .7, o.y - 7, o.x + o.w, o.y + o.h); ctx.closePath(); ctx.fill();
