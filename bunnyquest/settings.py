@@ -1,9 +1,9 @@
 from pathlib import Path
 from urllib.parse import urlparse
 import os
+import warnings
 
 import dj_database_url
-from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -71,17 +71,21 @@ TEMPLATES = [
 WSGI_APPLICATION = "bunnyquest.wsgi.application"
 ASGI_APPLICATION = "bunnyquest.asgi.application"
 
-DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
+DATABASE_URL = os.getenv("BUNNYQUEST_DATABASE_URL") or os.getenv("DATABASE_URL", "")
+DATABASE_URL = DATABASE_URL.strip()
+SQLITE_DATABASE = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
+}
+
 if DATABASE_URL:
     database_scheme = urlparse(DATABASE_URL).scheme
-    if not database_scheme:
-        raise ImproperlyConfigured(
-            "DATABASE_URL debe ser una URL completa de base de datos, por ejemplo "
-            "postgresql://USER:PASSWORD@HOST:PORT/DB_NAME. "
-            "En Render usá la Internal Database URL de PostgreSQL, no un token o secreto."
-        )
-
     try:
+        if not database_scheme:
+            raise ValueError("missing URL scheme")
+
         DATABASES = {
             "default": dj_database_url.config(
                 default=DATABASE_URL,
@@ -89,18 +93,16 @@ if DATABASE_URL:
                 conn_health_checks=True,
             )
         }
-    except ValueError as exc:
-        raise ImproperlyConfigured(
-            "DATABASE_URL no tiene un esquema soportado. En Render debe ser la "
-            "Internal Database URL de PostgreSQL (empieza con postgresql:// o postgres://)."
-        ) from exc
+    except ValueError:
+        warnings.warn(
+            "DATABASE_URL no es una URL completa de base de datos; se usará SQLite. "
+            "En Render configurá BUNNYQUEST_DATABASE_URL o DATABASE_URL con la "
+            "Internal Database URL de PostgreSQL (postgresql://USER:PASSWORD@HOST:PORT/DB_NAME).",
+            RuntimeWarning,
+        )
+        DATABASES = SQLITE_DATABASE
 else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
-    }
+    DATABASES = SQLITE_DATABASE
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
