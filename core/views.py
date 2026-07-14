@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import connection, transaction
-from django.db.models import Avg, Count, Max, Sum
+from django.db.models import Avg, Count, Max, Q, Sum
 from django.http import HttpRequest, JsonResponse
 from django.shortcuts import redirect, render
 from django.utils import timezone
@@ -42,17 +42,62 @@ def game(request):
 
 def leaderboard(request):
     period = request.GET.get("period", "all")
-    scores = GameScore.objects.select_related("user")
+    board = request.GET.get("board", "score")
+    scores = GameScore.objects.select_related("user", "user__player_profile")
+    today = timezone.localdate()
+    week_start = today - timedelta(days=today.weekday())
+
     if period == "today":
-        scores = scores.filter(created_at__date=timezone.localdate())
+        scores = scores.filter(created_at__date=today)
+        period_label = "hoy"
     elif period == "week":
-        scores = scores.filter(created_at__gte=timezone.now() - timedelta(days=7))
+        # Semana calendario: se puede “reiniciar” naturalmente cada lunes.
+        scores = scores.filter(created_at__date__gte=week_start)
+        period_label = "esta semana"
     else:
         period = "all"
+        period_label = "histórico"
+
+    if board == "carrots":
+        scores = scores.order_by("-carrots", "duration_ms", "created_at")
+        board_title = "Ranking de zanahorias"
+    elif board == "level":
+        scores = scores.order_by("-level", "-score", "created_at")
+        board_title = "Ranking de nivel máximo"
+    else:
+        board = "score"
+        scores = scores.order_by("-score", "created_at")
+        board_title = "Ranking por puntaje"
+
+    top_scores = list(scores[:100])
+    my_position = None
+    my_scores = []
+    if request.user.is_authenticated:
+        user_filter = Q(user=request.user)
+        my_best = scores.filter(user_filter).first()
+        if my_best:
+            better = scores.filter(pk__in=scores.values("pk"))
+            if board == "carrots":
+                better = better.filter(Q(carrots__gt=my_best.carrots) | Q(carrots=my_best.carrots, duration_ms__lt=my_best.duration_ms))
+            elif board == "level":
+                better = better.filter(Q(level__gt=my_best.level) | Q(level=my_best.level, score__gt=my_best.score))
+            else:
+                better = better.filter(score__gt=my_best.score)
+            my_position = better.count() + 1
+        my_scores = list(scores.filter(user_filter)[:5])
+
     return render(
         request,
         "core/leaderboard.html",
-        {"scores": scores[:100], "period": period},
+        {
+            "scores": top_scores,
+            "period": period,
+            "period_label": period_label,
+            "board": board,
+            "board_title": board_title,
+            "my_position": my_position,
+            "my_scores": my_scores,
+        },
     )
 
 

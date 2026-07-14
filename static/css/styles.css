@@ -124,7 +124,8 @@ h1, h2 { font-family: 'Fraunces', Georgia, serif; }
 
 .page-header { display: flex; align-items: end; justify-content: space-between; gap: 30px; padding-block: 84px 42px; }
 .page-header p { max-width: 540px; color: var(--muted); }
-.filter-tabs { display: inline-flex; gap: 6px; padding: 5px; margin-bottom: 22px; border: 1px solid var(--line); border-radius: 999px; background: var(--cream); }
+.ranking-toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 22px; }
+.filter-tabs { display: inline-flex; gap: 6px; padding: 5px; border: 1px solid var(--line); border-radius: 999px; background: var(--cream); }
 .filter-tabs a { padding: 9px 18px; border-radius: 999px; color: var(--muted); font-size: 13px; font-weight: 700; }
 .filter-tabs a.active { color: white; background: var(--leaf-dark); }
 .ranking-table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: white; box-shadow: var(--shadow); }
@@ -138,6 +139,14 @@ h1, h2 { font-family: 'Fraunces', Georgia, serif; }
 .position-2 { background: #dce1df; }
 .position-3 { background: #d9b28d; }
 .podium-row { background: rgba(248,250,245,.65); }
+.current-player-row { background: #fff7ec; box-shadow: inset 4px 0 0 var(--carrot); }
+.player-cell { display: flex; align-items: center; gap: 12px; }
+.mini-bunny { display: inline-grid; place-items: center; flex: 0 0 auto; width: 36px; height: 36px; border-radius: 46% 54% 52% 48%; background: var(--leaf-light); font-size: 18px; }
+.my-position-card, .my-runs-card { margin-bottom: 22px; padding: 24px; border: 1px solid var(--line); border-radius: 24px; background: linear-gradient(135deg, #fff, #f8faf5); box-shadow: 0 14px 45px rgba(52,76,45,.06); }
+.my-position-card strong { display: block; color: var(--leaf-dark); font-size: 44px; line-height: 1; letter-spacing: -.05em; }
+.my-position-card p, .my-runs-card h2 { margin-bottom: 0; color: var(--muted); }
+.my-runs-card { margin-top: 22px; }
+.my-runs-card h2 { font-size: 24px; }
 .empty-table { padding: 60px !important; text-align: center; color: var(--muted); }
 
 .game-page { padding-block: 54px 90px; }

@@ -4,22 +4,36 @@
 <section class="page-header container">
   <span class="eyebrow">Clasificación del bosque</span>
   <h1>Los saltos que dejaron huella.</h1>
-  <p>Los cien mejores puntajes, sin excusas ni zanahorias sobornadas.</p>
+  <p>Los cien mejores recorridos por puntaje, zanahorias o nivel; con tu conejo siempre visible si ya iniciaste sesión.</p>
 </section>
 <section class="section container">
-  <div class="filter-tabs" role="navigation" aria-label="Filtrar ranking">
-    <a class="{% if period == 'all' %}active{% endif %}" href="?period=all">Histórico</a>
-    <a class="{% if period == 'week' %}active{% endif %}" href="?period=week">7 días</a>
-    <a class="{% if period == 'today' %}active{% endif %}" href="?period=today">Hoy</a>
+  <div class="ranking-toolbar">
+    <div class="filter-tabs" role="navigation" aria-label="Filtrar ranking por período">
+      <a class="{% if period == 'all' %}active{% endif %}" href="?period=all&board={{ board }}">Histórico</a>
+      <a class="{% if period == 'week' %}active{% endif %}" href="?period=week&board={{ board }}">Semana</a>
+      <a class="{% if period == 'today' %}active{% endif %}" href="?period=today&board={{ board }}">Hoy</a>
+    </div>
+    <div class="filter-tabs" role="navigation" aria-label="Filtrar ranking por categoría">
+      <a class="{% if board == 'score' %}active{% endif %}" href="?period={{ period }}&board=score">Puntos</a>
+      <a class="{% if board == 'carrots' %}active{% endif %}" href="?period={{ period }}&board=carrots">Zanahorias</a>
+      <a class="{% if board == 'level' %}active{% endif %}" href="?period={{ period }}&board=level">Nivel máximo</a>
+    </div>
   </div>
+  {% if user.is_authenticated %}
+    <aside class="my-position-card" id="mi-posicion">
+      <span class="eyebrow">Mi posición · {{ period_label }}</span>
+      <strong>{% if my_position %}#{{ my_position }}{% else %}Sin marca todavía{% endif %}</strong>
+      <p>{{ board_title }}. {% if my_position %}Tu mejor carrera destacada aparece en la tabla y acá abajo.{% else %}Jugá una partida para entrar al claro competitivo.{% endif %}</p>
+    </aside>
+  {% endif %}
   <div class="ranking-table-wrap">
     <table class="ranking-table">
       <thead><tr><th>#</th><th>Jugador</th><th>Puntos</th><th>Zanahorias</th><th>Nivel</th><th>Fecha</th></tr></thead>
       <tbody>
       {% for item in scores %}
-        <tr class="{% if forloop.counter <= 3 %}podium-row{% endif %}">
+        <tr class="{% if forloop.counter <= 3 %}podium-row{% endif %}{% if item.user_id == user.id %} current-player-row{% endif %}">
           <td><span class="position position-{{ forloop.counter }}">{{ forloop.counter }}</span></td>
-          <td><strong>{{ item.nickname }}</strong>{% if item.user %}<small>@{{ item.user.username }}</small>{% endif %}</td>
+          <td class="player-cell"><span class="mini-bunny color-{{ item.user.player_profile.bunny_color|default:'snow' }}">🐰</span><span><strong>{{ item.nickname }}</strong>{% if item.user %}<small>@{{ item.user.username }}{% if item.user_id == user.id %} · vos{% endif %}</small>{% endif %}</span></td>
           <td class="score-cell">{{ item.score }}</td><td>🥕 {{ item.carrots }}</td><td>{{ item.level }}</td><td>{{ item.created_at|date:"d/m/Y H:i" }}</td>
         </tr>
       {% empty %}
@@ -28,5 +42,15 @@
       </tbody>
     </table>
   </div>
+  {% if my_scores %}
+    <div class="my-runs-card">
+      <h2>Mis mejores recorridos en este filtro</h2>
+      <ol class="compact-ranking">
+        {% for item in my_scores %}
+          <li><span class="rank-number">{{ forloop.counter }}</span><span class="rank-name">{{ item.nickname }}</span><strong>{{ item.score }} · 🥕 {{ item.carrots }} · Nv. {{ item.level }}</strong></li>
+        {% endfor %}
+      </ol>
+    </div>
+  {% endif %}
 </section>
 {% endblock %}
