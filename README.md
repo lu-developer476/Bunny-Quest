@@ -39,7 +39,7 @@ Copiá `.env.example` como referencia. Django toma directamente las variables de
 |---|---:|---|
 | `SECRET_KEY` | Sí | Generar valor aleatorio desde Render |
 | `DEBUG` | Sí | `False` |
-| `DATABASE_URL` | Sí | Internal Database URL de Render PostgreSQL |
+| `DATABASE_URL` | Sí | Internal Database URL de Render PostgreSQL; debe empezar con `postgresql://` o `postgres://` |
 | `PYTHON_VERSION` | Recomendada | `3.13.5` (también fijado en `runtime.txt`) |
 | `WEB_CONCURRENCY` | Recomendada | `4` |
 | `ALLOWED_HOSTS` | No | Render agrega `RENDER_EXTERNAL_HOSTNAME`; usar para dominios extra |
@@ -60,7 +60,7 @@ Variables mínimas:
 ```env
 SECRET_KEY=<Generate>
 DEBUG=False
-DATABASE_URL=<Internal Database URL de Render PostgreSQL>
+DATABASE_URL=<Internal Database URL de Render PostgreSQL, empieza con postgresql:// o postgres://>
 PYTHON_VERSION=3.13.5
 WEB_CONCURRENCY=4
 ```
