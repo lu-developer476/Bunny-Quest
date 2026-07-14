@@ -47,16 +47,8 @@
   <main>{% block content %}{% endblock %}</main>
 
   <footer class="site-footer">
-    <div class="container footer-grid">
-      <div>
-        <div class="brand footer-brand"><img src="{% static 'img/bunny-mark.svg' %}" alt="" width="36" height="36"><span>Conejo <strong>Aventura</strong></span></div>
-        <p>Un pequeño bosque digital con grandes saltos.</p>
-      </div>
-      <div class="footer-links">
-        <a href="{% url 'game' %}">Jugar</a>
-        <a href="{% url 'leaderboard' %}">Ranking</a>
-        <a href="/admin/">Administración</a>
-      </div>
+    <div class="container footer-grid footer-grid-simple">
+      <p>© 2026 Todos los derechos reservados • Built with Python &amp; Django • UX/UI Interface • Deployed on Render ®</p>
     </div>
   </footer>
   <script src="{% static 'js/site.js' %}" defer></script>
