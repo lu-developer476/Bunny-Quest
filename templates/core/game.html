@@ -5,7 +5,7 @@
 {% block content %}
 <section class="game-page container">
   <div class="game-intro">
-    <div><span class="eyebrow">Bosque Saltarín</span><h1>Ayudá a Nube a recuperar la huerta.</h1></div>
+    <div><span class="eyebrow">Bosque Saltarín</span><h1>Ayudá a Nube a recuperar la huerta</h1></div>
     <p>Espacio, flecha arriba o toque para saltar. Elegí partida normal o un desafío corto con ranking propio.</p>
   </div>
 
@@ -50,10 +50,12 @@
     </div>
 
     <aside class="game-side">
-      <div class="tip-card"><span class="tip-number">01</span><h3>Saltá con intención</h3><p>El segundo salto te salva. Usarlo por reflejo te condena. Filosofía de conejo.</p></div>
-      <div class="tip-card"><span class="tip-number">02</span><h3>Mantené el combo</h3><p>Cada comida suma distinto: zanahoria dorada ×2, heno seguro, lechuga romana extiende combo, escarola acelera el multiplicador, apio alarga saltos y pellets dan ráfagas.</p></div>
-      <div class="tip-card"><span class="tip-number">03</span><h3>Power-ups raros</h3><p>Buscá tréboles escudo, hojas voladoras, menta para ralentizar el bosque y corazones para recuperar vidas.</p></div>
-      <div class="tip-card"><span class="tip-number">04</span><h3>Desafíos</h3><p>Probá carreras de 60 segundos, una sola vida, zanahorias altas o un bosque veloz. Cada modo guarda su ranking separado.</p></div>
+      <div class="forest-story-panel">
+        <span class="eyebrow">Historia de Nube</span>
+        <h2>Una huerta que espera volver a casa</h2>
+        <p>Nube creció en una familia de conejos jardineros que cuidaba el claro del bosque. Tras la llegada del zorro, cada carrera recupera alimentos, protege senderos y acerca a la madriguera al reencuentro.</p>
+        <button class="button button-primary" type="button" data-open-game-modal>Guía y ranking</button>
+      </div>
       {% if daily_missions %}
         <div class="mission-card"><span class="eyebrow">Misiones de hoy</span>
           {% for mission in daily_missions %}
@@ -61,9 +63,23 @@
           {% endfor %}
         </div>
       {% endif %}
-      <div class="live-board"><div class="card-header"><h3>Top 5</h3><a href="{% url 'leaderboard' %}">Ranking</a></div><ol id="liveLeaderboard" class="compact-ranking"><li class="empty-state">Cargando huellas…</li></ol></div>
     </aside>
   </div>
+
+  <dialog id="gameInfoModal" class="game-info-modal" aria-labelledby="gameInfoTitle">
+    <div class="modal-card">
+      <button class="modal-close" type="button" data-close-game-modal aria-label="Cerrar">×</button>
+      <span class="eyebrow">Manual del bosque</span>
+      <h2 id="gameInfoTitle">Estrategia, objetivos y ranking</h2>
+      <div class="tip-slider" aria-label="Consejos de juego">
+        <article class="tip-card"><span class="tip-number">01</span><h3>Saltá con precisión</h3><p>Usá el doble salto como recurso táctico: reservándolo para obstáculos exigentes vas a sostener mejores recorridos y evitar errores tempranos.</p></article>
+        <article class="tip-card"><span class="tip-number">02</span><h3>Optimizá el combo</h3><p>Cada alimento tiene valor estratégico: priorizá zanahorias doradas, extendé rachas con lechuga romana y aprovechá escarola, apio y pellets según el ritmo del bosque.</p></article>
+        <article class="tip-card"><span class="tip-number">03</span><h3>Gestioná los power-ups</h3><p>Los tréboles protegen, las hojas elevan, la menta ralentiza el entorno y los corazones recuperan vidas. Activarlos en el momento correcto define la partida.</p></article>
+        <article class="tip-card"><span class="tip-number">04</span><h3>Elegí un desafío</h3><p>Competí en modo normal, 60 segundos, una vida, zanahorias altas o bosque veloz. Cada variante mantiene un ranking independiente para medir rendimiento real.</p></article>
+      </div>
+      <div class="live-board"><div class="card-header"><h3>Top 5</h3><a href="{% url 'leaderboard' %}">Ranking completo</a></div><ol id="liveLeaderboard" class="compact-ranking"><li class="empty-state">Cargando huellas…</li></ol></div>
+    </div>
+  </dialog>
 </section>
 <input type="hidden" id="csrfToken" value="{{ csrf_token }}">
 {% endblock %}

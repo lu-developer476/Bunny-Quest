@@ -115,7 +115,7 @@ def signup(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            messages.success(request, "¡Tu madriguera ya está lista!")
+            messages.success(request, "Cuenta creada. Ahora podés confirmar tu identidad del bosque, elegir usuario y nombrar a tu conejo.")
             return redirect("profile")
     else:
         form = SignUpForm()

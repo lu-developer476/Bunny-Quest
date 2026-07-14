@@ -728,3 +728,21 @@
   draw();
   loadLeaderboard();
 })();
+
+// Modal de guía y ranking.
+(() => {
+  const modal = document.getElementById('gameInfoModal');
+  const openButton = document.querySelector('[data-open-game-modal]');
+  const closeButton = document.querySelector('[data-close-game-modal]');
+  if (!modal || !openButton || !closeButton) return;
+
+  openButton.addEventListener('click', () => {
+    if (typeof modal.showModal === 'function') modal.showModal();
+    else modal.setAttribute('open', '');
+  });
+
+  closeButton.addEventListener('click', () => modal.close());
+  modal.addEventListener('click', (event) => {
+    if (event.target === modal) modal.close();
+  });
+})();
