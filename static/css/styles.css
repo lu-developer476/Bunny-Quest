@@ -203,12 +203,14 @@ kbd { padding: 4px 7px; border: 1px solid var(--line); border-bottom-width: 3px;
 .history-list small { color: var(--muted); }
 
 .auth-section { min-height: 680px; display: grid; grid-template-columns: 1fr 1fr; align-items: stretch; gap: 20px; padding-block: 60px 90px; }
+.auth-section-compact { min-height: 0; align-items: start; padding-block: 44px 70px; }
 .auth-art, .auth-card { border: 1px solid var(--line); border-radius: 32px; }
 .auth-art { display: flex; flex-direction: column; justify-content: end; padding: 52px; color: white; background: linear-gradient(145deg, #4b6b42, #2e472c); }
 .auth-art-green { background: linear-gradient(145deg, #e38a45, #b65e2c); }
 .auth-art > span { margin-bottom: auto; font-size: 80px; }
 .auth-art h1 { margin-bottom: 12px; font-size: 54px; }
 .auth-art p { max-width: 430px; color: rgba(255,255,255,.76); }
+.auth-section-compact .auth-art { min-height: 410px; }
 .auth-card { padding: 52px; background: white; }
 .auth-card h2 { font-size: 42px; }
 .styled-form p { margin: 0 0 18px; }
@@ -268,7 +270,8 @@ kbd { padding: 4px 7px; border: 1px solid var(--line); border-bottom-width: 3px;
   .overlay-card { padding: 22px; }
   .overlay-card h2 { font-size: 27px; }
   .auth-art, .auth-card { padding: 30px; }
-  .auth-art { min-height: 420px; }
+  .auth-section-compact { padding-block: 32px 54px; }
+  .auth-art, .auth-section-compact .auth-art { min-height: 360px; }
   .auth-art h1 { font-size: 42px; }
   .profile-header { align-items: flex-start; }
   .profile-bunny { width: 100px; height: 100px; font-size: 48px; }
