@@ -7,11 +7,19 @@ from django.db.models import Avg, Max, Sum
 
 
 class PlayerProfile(models.Model):
+    BUNNY_BREEDS = [
+        ("lop", "Belier"),
+        ("dwarf", "Enano neerlandés"),
+        ("angora", "Angora"),
+        ("rex", "Rex"),
+    ]
     BUNNY_COLORS = [
         ("snow", "Blanco nieve"),
         ("cocoa", "Cacao"),
         ("sand", "Arena"),
         ("moon", "Gris luna"),
+        ("caramel", "Caramelo"),
+        ("patch", "Manchado"),
     ]
     BUNNY_ACCESSORIES = [
         ("none", "Sin accesorio"),
@@ -19,10 +27,13 @@ class PlayerProfile(models.Model):
         ("flower", "Flor silvestre"),
         ("bow", "Moño zanahoria"),
         ("clover", "Trébol de la suerte"),
+        ("cap", "Gorrito de explorador"),
+        ("collar", "Collarín de flores"),
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="player_profile")
     bunny_name = models.CharField("nombre del conejo", max_length=24, default="Nube")
+    bunny_breed = models.CharField("raza", max_length=16, choices=BUNNY_BREEDS, default="lop")
     bunny_color = models.CharField("pelaje", max_length=12, choices=BUNNY_COLORS, default="snow")
     bunny_accessory = models.CharField(
         "accesorio",
@@ -61,7 +72,21 @@ class GameSession(models.Model):
     started_at = models.DateTimeField(auto_now_add=True)
     finished_at = models.DateTimeField(null=True, blank=True)
     used = models.BooleanField(default=False)
+    MODE_NORMAL = "normal"
+    MODE_TIMED = "timed"
+    MODE_ONE_LIFE = "one_life"
+    MODE_HIGH_CARROTS = "high_carrots"
+    MODE_FAST_FOREST = "fast_forest"
+    GAME_MODES = [
+        (MODE_NORMAL, "Normal"),
+        (MODE_TIMED, "60 segundos"),
+        (MODE_ONE_LIFE, "Una sola vida"),
+        (MODE_HIGH_CARROTS, "Solo zanahorias altas"),
+        (MODE_FAST_FOREST, "Bosque veloz"),
+    ]
+
     user_agent = models.CharField(max_length=255, blank=True)
+    mode = models.CharField(max_length=20, choices=GAME_MODES, default=MODE_NORMAL)
 
     class Meta:
         ordering = ["-started_at"]
@@ -88,13 +113,14 @@ class GameScore(models.Model):
         validators=[MinValueValidator(1), MaxValueValidator(100)]
     )
     max_combo = models.PositiveSmallIntegerField(default=1, validators=[MaxValueValidator(50)])
+    mode = models.CharField(max_length=20, choices=GameSession.GAME_MODES, default=GameSession.MODE_NORMAL, db_index=True)
     duration_ms = models.PositiveIntegerField(validators=[MaxValueValidator(7_200_000)])
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
 
     class Meta:
         ordering = ["-score", "created_at"]
         indexes = [
-            models.Index(fields=["-score", "created_at"], name="score_rank_idx"),
+            models.Index(fields=["mode", "-score", "created_at"], name="score_mode_rank_idx"),
             models.Index(fields=["-created_at"], name="score_recent_idx"),
         ]
         verbose_name = "puntaje"

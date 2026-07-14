@@ -9,14 +9,17 @@
 <section class="section container">
   <div class="ranking-toolbar">
     <div class="filter-tabs" role="navigation" aria-label="Filtrar ranking por período">
-      <a class="{% if period == 'all' %}active{% endif %}" href="?period=all&board={{ board }}">Histórico</a>
-      <a class="{% if period == 'week' %}active{% endif %}" href="?period=week&board={{ board }}">Semana</a>
-      <a class="{% if period == 'today' %}active{% endif %}" href="?period=today&board={{ board }}">Hoy</a>
+      <a class="{% if period == 'all' %}active{% endif %}" href="?period=all&board={{ board }}&mode={{ mode }}">Histórico</a>
+      <a class="{% if period == 'week' %}active{% endif %}" href="?period=week&board={{ board }}&mode={{ mode }}">Semana</a>
+      <a class="{% if period == 'today' %}active{% endif %}" href="?period=today&board={{ board }}&mode={{ mode }}">Hoy</a>
     </div>
     <div class="filter-tabs" role="navigation" aria-label="Filtrar ranking por categoría">
-      <a class="{% if board == 'score' %}active{% endif %}" href="?period={{ period }}&board=score">Puntos</a>
-      <a class="{% if board == 'carrots' %}active{% endif %}" href="?period={{ period }}&board=carrots">Zanahorias</a>
-      <a class="{% if board == 'level' %}active{% endif %}" href="?period={{ period }}&board=level">Nivel máximo</a>
+      <a class="{% if board == 'score' %}active{% endif %}" href="?period={{ period }}&board=score&mode={{ mode }}">Puntos</a>
+      <a class="{% if board == 'carrots' %}active{% endif %}" href="?period={{ period }}&board=carrots&mode={{ mode }}">Zanahorias</a>
+      <a class="{% if board == 'level' %}active{% endif %}" href="?period={{ period }}&board=level&mode={{ mode }}">Nivel máximo</a>
+    </div>
+    <div class="filter-tabs" role="navigation" aria-label="Filtrar ranking por modo">
+      {% for value, label in game_modes %}<a class="{% if mode == value %}active{% endif %}" href="?period={{ period }}&board={{ board }}&mode={{ value }}">{{ label }}</a>{% endfor %}
     </div>
   </div>
   {% if user.is_authenticated %}
@@ -28,16 +31,16 @@
   {% endif %}
   <div class="ranking-table-wrap">
     <table class="ranking-table">
-      <thead><tr><th>#</th><th>Jugador</th><th>Puntos</th><th>Zanahorias</th><th>Nivel</th><th>Fecha</th></tr></thead>
+      <thead><tr><th>#</th><th>Jugador</th><th>Puntos</th><th>Zanahorias</th><th>Nivel</th><th>Modo</th><th>Fecha</th></tr></thead>
       <tbody>
       {% for item in scores %}
         <tr class="{% if forloop.counter <= 3 %}podium-row{% endif %}{% if item.user_id == user.id %} current-player-row{% endif %}">
           <td><span class="position position-{{ forloop.counter }}">{{ forloop.counter }}</span></td>
           <td class="player-cell"><span class="mini-bunny color-{{ item.user.player_profile.bunny_color|default:'snow' }}">🐰</span><span><strong>{{ item.nickname }}</strong>{% if item.user %}<small>@{{ item.user.username }}{% if item.user_id == user.id %} · vos{% endif %}</small>{% endif %}</span></td>
-          <td class="score-cell">{{ item.score }}</td><td>🥕 {{ item.carrots }}</td><td>{{ item.level }}</td><td>{{ item.created_at|date:"d/m/Y H:i" }}</td>
+          <td class="score-cell">{{ item.score }}</td><td>🥕 {{ item.carrots }}</td><td>{{ item.level }}</td><td>{{ item.get_mode_display }}</td><td>{{ item.created_at|date:"d/m/Y H:i" }}</td>
         </tr>
       {% empty %}
-        <tr><td colspan="6" class="empty-table">No hay puntajes para este período. El bosque está sospechosamente tranquilo.</td></tr>
+        <tr><td colspan="7" class="empty-table">No hay puntajes para este período. El bosque está sospechosamente tranquilo.</td></tr>
       {% endfor %}
       </tbody>
     </table>

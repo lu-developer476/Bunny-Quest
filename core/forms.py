@@ -49,7 +49,7 @@ class ProfileForm(forms.ModelForm):
 
     class Meta:
         model = PlayerProfile
-        fields = ("bunny_name", "bunny_color", "bunny_accessory")
+        fields = ("bunny_name", "bunny_breed", "bunny_color", "bunny_accessory")
         widgets = {
             "bunny_name": forms.TextInput(attrs={"maxlength": 24}),
         }
