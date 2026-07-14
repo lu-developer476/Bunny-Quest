@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Jugar · Conejo Aventura{% endblock %}
+{% block head %}<meta name="robots" content="noindex">{% endblock %}
+{% block content %}
+<section class="game-page container">
+  <div class="game-intro">
+    <div><span class="eyebrow">Bosque Saltarín</span><h1>Ayudá a Nube a recuperar la huerta.</h1></div>
+    <p>Espacio, flecha arriba o toque para saltar. Tenés doble salto. La gravedad, como siempre, no negocia.</p>
+  </div>
+
+  <div class="game-layout">
+    <div class="game-shell">
+      <div class="game-hud" aria-live="polite">
+        <div><span>Puntos</span><strong id="scoreValue">0</strong></div>
+        <div><span>Zanahorias</span><strong id="carrotValue">0</strong></div>
+        <div><span>Nivel</span><strong id="levelValue">1</strong></div>
+        <div><span>Vidas</span><strong id="livesValue">♥♥♥</strong></div>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="gameCanvas" width="960" height="540" aria-label="Juego del conejo"></canvas>
+        <div id="gameOverlay" class="game-overlay">
+          <div class="overlay-card">
+            <span class="overlay-bunny">🐇</span>
+            <h2 id="overlayTitle">¿Listo para saltar?</h2>
+            <p id="overlayText">Juntá zanahorias, esquivá troncos y no pierdas el ritmo.</p>
+            <label class="nickname-field" for="nicknameInput">Tu apodo</label>
+            <input id="nicknameInput" maxlength="24" value="{{ default_nickname }}" autocomplete="nickname">
+            <button id="startGameButton" class="button button-primary" type="button">Empezar partida</button>
+            <button id="restartGameButton" class="button button-primary hidden" type="button">Jugar otra vez</button>
+            <a id="rankingLink" class="text-link hidden" href="{% url 'leaderboard' %}">Ver ranking →</a>
+          </div>
+        </div>
+        <button id="touchJump" class="touch-jump" type="button" aria-label="Saltar">SALTAR</button>
+      </div>
+      <div class="game-footer-bar">
+        <span><kbd>ESPACIO</kbd> Saltar</span>
+        <span><kbd>P</kbd> Pausa</span>
+        <button id="soundButton" type="button" aria-pressed="true">Sonido: sí</button>
+      </div>
+    </div>
+
+    <aside class="game-side">
+      <div class="tip-card"><span class="tip-number">01</span><h3>Saltá con intención</h3><p>El segundo salto te salva. Usarlo por reflejo te condena. Filosofía de conejo.</p></div>
+      <div class="tip-card"><span class="tip-number">02</span><h3>Mantené el combo</h3><p>Cada zanahoria seguida aumenta el multiplicador por unos segundos.</p></div>
+      <div class="live-board"><div class="card-header"><h3>Top 5</h3><a href="{% url 'leaderboard' %}">Ranking</a></div><ol id="liveLeaderboard" class="compact-ranking"><li class="empty-state">Cargando huellas…</li></ol></div>
+    </aside>
+  </div>
+</section>
+<input type="hidden" id="csrfToken" value="{{ csrf_token }}">
+{% endblock %}
+{% block scripts %}<script src="{% static 'js/game.js' %}" defer></script>{% endblock %}

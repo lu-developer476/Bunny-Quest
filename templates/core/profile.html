@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Mi madriguera · Conejo Aventura{% endblock %}
+{% block content %}
+<section class="page-header container profile-header">
+  <div><span class="eyebrow">Mi madriguera</span><h1>Hola, {{ user.username }}.</h1><p>Acá viven tus récords y la identidad absolutamente seria de tu conejo.</p></div>
+  <div class="profile-bunny color-{{ user.player_profile.bunny_color }}" aria-hidden="true">🐇</div>
+</section>
+<section class="section container">
+  <div class="stats-grid">
+    <div class="stat-card"><span>Mejor puntaje</span><strong>{{ stats.best_score|default:0 }}</strong></div>
+    <div class="stat-card"><span>Partidas</span><strong>{{ stats.games|default:0 }}</strong></div>
+    <div class="stat-card"><span>Zanahorias</span><strong>{{ stats.carrots|default:0 }}</strong></div>
+    <div class="stat-card"><span>Promedio</span><strong>{{ stats.average|floatformat:0|default:0 }}</strong></div>
+  </div>
+  <div class="profile-grid">
+    <div class="form-card">
+      <span class="eyebrow">Personalización</span><h2>Tu compañero</h2>
+      <form method="post" class="styled-form">{% csrf_token %}{{ form.as_p }}<button class="button button-primary" type="submit">Guardar cambios</button></form>
+    </div>
+    <div class="history-card">
+      <div class="card-header"><div><span class="eyebrow">Últimas carreras</span><h2>Historial</h2></div><a href="{% url 'game' %}">Jugar</a></div>
+      <ol class="history-list">
+        {% for item in scores %}<li><span><strong>{{ item.score }}</strong><small>{{ item.created_at|date:"d/m/Y H:i" }}</small></span><span>🥕 {{ item.carrots }} · Nv. {{ item.level }}</span></li>
+        {% empty %}<li class="empty-state">Todavía no jugaste. Nube empieza a sospechar que le temés a los troncos.</li>{% endfor %}
+      </ol>
+    </div>
+  </div>
+</section>
+{% endblock %}

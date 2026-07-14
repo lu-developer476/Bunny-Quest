@@ -1,0 +1,65 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8faf5">
+  <meta name="description" content="Conejo Aventura: un juego web animalista hecho con Django.">
+  <title>{% block title %}Conejo Aventura{% endblock %}</title>
+  <link rel="icon" href="{% static 'img/bunny-mark.svg' %}" type="image/svg+xml">
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="{% url 'home' %}" aria-label="Conejo Aventura, inicio">
+        <img src="{% static 'img/bunny-mark.svg' %}" alt="" width="42" height="42">
+        <span>Conejo <strong>Aventura</strong></span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="main-nav">Menú</button>
+      <nav id="main-nav" class="main-nav" aria-label="Navegación principal">
+        <a href="{% url 'game' %}">Jugar</a>
+        <a href="{% url 'leaderboard' %}">Ranking</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'profile' %}">Mi madriguera</a>
+          <form action="{% url 'logout' %}" method="post" class="nav-form">
+            {% csrf_token %}
+            <button type="submit" class="link-button">Salir</button>
+          </form>
+        {% else %}
+          <a href="{% url 'login' %}">Ingresar</a>
+          <a class="button button-small" href="{% url 'signup' %}">Crear cuenta</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  {% if messages %}
+    <div class="container messages" aria-live="polite">
+      {% for message in messages %}<div class="message {{ message.tags }}">{{ message }}</div>{% endfor %}
+    </div>
+  {% endif %}
+
+  <main>{% block content %}{% endblock %}</main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <div class="brand footer-brand"><img src="{% static 'img/bunny-mark.svg' %}" alt="" width="36" height="36"><span>Conejo <strong>Aventura</strong></span></div>
+        <p>Un pequeño bosque digital con grandes saltos.</p>
+      </div>
+      <div class="footer-links">
+        <a href="{% url 'game' %}">Jugar</a>
+        <a href="{% url 'leaderboard' %}">Ranking</a>
+        <a href="/admin/">Administración</a>
+      </div>
+    </div>
+  </footer>
+  <script src="{% static 'js/site.js' %}" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Crear cuenta · Conejo Aventura{% endblock %}
+{% block content %}
+<section class="auth-section container">
+  <div class="auth-art auth-art-green"><span>🥕</span><h1>Adoptá tu lugar en el bosque.</h1><p>Guardá récords, personalizá tu conejo y competí en el ranking.</p></div>
+  <div class="auth-card"><span class="eyebrow">Nueva madriguera</span><h2>Crear cuenta</h2><form method="post" class="styled-form">{% csrf_token %}{{ form.as_p }}<button class="button button-primary" type="submit">Crear mi cuenta</button></form><p class="auth-foot">¿Ya tenés una? <a href="{% url 'login' %}">Ingresá</a>.</p></div>
+</section>
+{% endblock %}

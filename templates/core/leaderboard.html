@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Ranking · Conejo Aventura{% endblock %}
+{% block content %}
+<section class="page-header container">
+  <span class="eyebrow">Clasificación del bosque</span>
+  <h1>Los saltos que dejaron huella.</h1>
+  <p>Los cien mejores puntajes, sin excusas ni zanahorias sobornadas.</p>
+</section>
+<section class="section container">
+  <div class="filter-tabs" role="navigation" aria-label="Filtrar ranking">
+    <a class="{% if period == 'all' %}active{% endif %}" href="?period=all">Histórico</a>
+    <a class="{% if period == 'week' %}active{% endif %}" href="?period=week">7 días</a>
+    <a class="{% if period == 'today' %}active{% endif %}" href="?period=today">Hoy</a>
+  </div>
+  <div class="ranking-table-wrap">
+    <table class="ranking-table">
+      <thead><tr><th>#</th><th>Jugador</th><th>Puntos</th><th>Zanahorias</th><th>Nivel</th><th>Fecha</th></tr></thead>
+      <tbody>
+      {% for item in scores %}
+        <tr class="{% if forloop.counter <= 3 %}podium-row{% endif %}">
+          <td><span class="position position-{{ forloop.counter }}">{{ forloop.counter }}</span></td>
+          <td><strong>{{ item.nickname }}</strong>{% if item.user %}<small>@{{ item.user.username }}</small>{% endif %}</td>
+          <td class="score-cell">{{ item.score }}</td><td>🥕 {{ item.carrots }}</td><td>{{ item.level }}</td><td>{{ item.created_at|date:"d/m/Y H:i" }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="empty-table">No hay puntajes para este período. El bosque está sospechosamente tranquilo.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}
