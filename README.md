@@ -52,7 +52,7 @@ Copiá `.env.example` como referencia. Django toma directamente las variables de
 
 - **Language / Runtime:** Python 3
 - **Build Command:** `./build.sh`
-- **Start Command:** `gunicorn bunnyquest.wsgi:application --bind 0.0.0.0:$PORT`
+- **Start Command:** `./start.sh`
 - **Health Check Path:** `/health/`
 
 Variables mínimas:
@@ -93,4 +93,5 @@ templates/            páginas HTML
 static/               CSS, JavaScript, SVG y PWA
 build.sh              build de Render
 render.yaml           infraestructura como código
+start.sh              arranque de Render usando gunicorn desde el entorno virtual
 ```
