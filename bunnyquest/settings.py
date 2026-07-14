@@ -69,11 +69,11 @@ TEMPLATES = [
 WSGI_APPLICATION = "bunnyquest.wsgi.application"
 ASGI_APPLICATION = "bunnyquest.asgi.application"
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
 if DATABASE_URL:
     DATABASES = {
-        "default": dj_database_url.parse(
-            DATABASE_URL,
+        "default": dj_database_url.config(
+            default=DATABASE_URL,
             conn_max_age=600,
             conn_health_checks=True,
         )
