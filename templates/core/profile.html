@@ -14,6 +14,7 @@
     <div class="stat-card"><span>Racha diaria</span><strong>{{ daily_streak }}</strong><small>días con partidas</small></div>
     <div class="stat-card"><span>Partidas</span><strong>{{ stats.games|default:0 }}</strong></div>
     <div class="stat-card"><span>Zanahorias</span><strong>{{ stats.carrots|default:0 }}</strong></div>
+    <div class="stat-card coin-stat"><span>Monedas</span><strong>🪙 {{ user.player_profile.coin_balance }}</strong><small>1 moneda cada 100 m recorridos</small></div>
   </div>
   <div class="profile-grid">
     <div class="form-card">
@@ -34,6 +35,18 @@
         {% endfor %}
       </div>
     </div>
+  </div>
+</section>
+
+<section class="section container shop-section">
+  <div class="section-heading"><div><span class="eyebrow">Tienda del bosque</span><h2>Accesorios rotativos</h2></div><p>Ganás monedas por distancia en cada nivel: 1 moneda cada 100 metros recorridos. La vidriera diaria y semanal se renueva automáticamente.</p></div>
+  <div class="shop-grid">
+    <article class="shop-panel"><div class="card-header"><h3>Renovación diaria</h3><small>Próxima: {{ shop_catalog.next_daily|date:"d/m H:i" }}</small></div>
+      <div class="shop-items">{% for item in shop_catalog.daily %}<form method="post" action="{% url 'buy_accessory' %}" class="shop-item {% if item.owned %}owned{% endif %}">{% csrf_token %}<input type="hidden" name="accessory" value="{{ item.accessory }}"><span class="shop-preview accessory-{{ item.accessory }}">🐇</span><div><strong>{{ item.name }}</strong><small>{{ item.tag }} · 🪙 {{ item.price }}</small></div><button class="button button-small" type="submit" {% if item.owned %}disabled{% endif %}>{% if item.owned %}Obtenido{% else %}Comprar{% endif %}</button></form>{% endfor %}</div>
+    </article>
+    <article class="shop-panel"><div class="card-header"><h3>Selección semanal</h3><small>Próxima: {{ shop_catalog.next_weekly|date:"d/m H:i" }}</small></div>
+      <div class="shop-items">{% for item in shop_catalog.weekly %}<form method="post" action="{% url 'buy_accessory' %}" class="shop-item {% if item.owned %}owned{% endif %}">{% csrf_token %}<input type="hidden" name="accessory" value="{{ item.accessory }}"><span class="shop-preview accessory-{{ item.accessory }}">🐇</span><div><strong>{{ item.name }}</strong><small>{{ item.tag }} · 🪙 {{ item.price }}</small></div><button class="button button-small" type="submit" {% if item.owned %}disabled{% endif %}>{% if item.owned %}Obtenido{% else %}Comprar{% endif %}</button></form>{% endfor %}</div>
+    </article>
   </div>
 </section>
 <section class="section container profile-rewards">

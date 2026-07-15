@@ -5,17 +5,18 @@ from uuid import UUID
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
-from django.db import connection, transaction
+from django.db import connection, models, transaction
 from django.db.models import Avg, Count, Max, Q, Sum
 from django.http import HttpRequest, JsonResponse
 from django.shortcuts import redirect, render
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils import timezone
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_GET, require_POST
 
 from .forms import ProfileForm, SignUpForm
-from .models import GameScore, GameSession
-from .services import achievements_for_profile, daily_missions_for, unlock_achievements_for
+from .models import AccessoryPurchase, GameScore, GameSession, PlayerProfile
+from .services import achievements_for_profile, coins_for_distance, daily_missions_for, shop_catalog_for, unlock_achievements_for
 
 
 def home(request):
@@ -38,6 +39,23 @@ def game(request):
         context["daily_missions"] = daily_missions_for(request.user)
         context["player_profile"] = request.user.player_profile
     return render(request, "core/game.html", context)
+
+
+@require_POST
+def set_theme(request):
+    theme = request.POST.get("theme", PlayerProfile.THEME_WHITE)
+    valid_themes = {key for key, _ in PlayerProfile.THEME_CHOICES}
+    if theme not in valid_themes:
+        theme = PlayerProfile.THEME_WHITE
+    request.session["theme"] = theme
+    if request.user.is_authenticated:
+        profile = request.user.player_profile
+        profile.preferred_theme = theme
+        profile.save(update_fields=["preferred_theme"])
+    next_url = request.POST.get("next") or request.META.get("HTTP_REFERER") or "home"
+    if not url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+        next_url = "home"
+    return redirect(next_url)
 
 
 def leaderboard(request):
@@ -170,6 +188,7 @@ def profile(request):
             "daily_missions": daily_missions_for(request.user),
             "best_score": best_score,
             "daily_streak": _daily_streak(request.user),
+            "shop_catalog": shop_catalog_for(request.user),
         },
     )
 
@@ -218,6 +237,7 @@ def api_submit_score(request: HttpRequest):
         level = int(data.get("level", 1))
         duration_ms = int(data.get("duration_ms", 0))
         max_combo = int(data.get("max_combo", 1))
+        distance_m = int(data.get("distance_m", 0))
     except (ValueError, TypeError, json.JSONDecodeError):
         return JsonResponse({"error": "Datos de partida inválidos."}, status=400)
 
@@ -229,6 +249,8 @@ def api_submit_score(request: HttpRequest):
         return JsonResponse({"error": "Duración de partida inválida."}, status=400)
     if not (1 <= max_combo <= 50):
         return JsonResponse({"error": "Combo fuera de rango."}, status=400)
+    if not (0 <= distance_m <= 1_000_000):
+        return JsonResponse({"error": "Distancia fuera de rango."}, status=400)
 
     with transaction.atomic():
         try:
@@ -248,6 +270,9 @@ def api_submit_score(request: HttpRequest):
         max_plausible_score = max(10_000, int(elapsed_ms / 1000 * 3_600) + 10_000)
         if score > max_plausible_score:
             return JsonResponse({"error": "El puntaje no supera la validación del bosque."}, status=400)
+        max_plausible_distance = int(elapsed_ms / 1000 * 900) + 1500
+        if distance_m > max_plausible_distance:
+            return JsonResponse({"error": "La distancia no supera la validación del bosque."}, status=400)
 
         game_session.used = True
         game_session.finished_at = timezone.now()
@@ -268,7 +293,14 @@ def api_submit_score(request: HttpRequest):
             max_combo=max_combo,
             mode=game_session.mode,
             duration_ms=duration_ms,
+            distance_m=distance_m,
         )
+        coins_earned = 0
+        if request.user.is_authenticated:
+            coins_earned = coins_for_distance(distance_m)
+            profile = request.user.player_profile
+            profile.coin_balance = models.F("coin_balance") + coins_earned
+            profile.save(update_fields=["coin_balance"])
 
     unlocked = unlock_achievements_for(request.user) if request.user.is_authenticated else []
     rank = GameScore.objects.filter(mode=record.mode, score__gt=record.score).count() + 1
@@ -289,6 +321,7 @@ def api_submit_score(request: HttpRequest):
             "personal_best": previous_best is None or record.score > previous_best,
             "next_rival": next_rival,
             "achievements": [item.achievement.name for item in unlocked],
+            "coins_earned": coins_earned,
         },
         status=201,
     )
@@ -302,6 +335,36 @@ def api_leaderboard(request):
     for row in rows:
         row["created_at"] = row["created_at"].isoformat()
     return JsonResponse({"results": rows})
+
+
+@login_required
+@require_POST
+def buy_accessory(request):
+    accessory = request.POST.get("accessory", "")
+    catalog = shop_catalog_for(request.user)
+    available = {item["accessory"]: item for group in (catalog["daily"], catalog["weekly"]) for item in group}
+    item = available.get(accessory)
+    if not item:
+        messages.error(request, "Ese accesorio no está disponible en la tienda actual.")
+        return redirect("profile")
+    if item["owned"]:
+        messages.info(request, "Ese accesorio ya está en tu colección.")
+        return redirect("profile")
+    profile = request.user.player_profile
+    if profile.coin_balance < item["price"]:
+        messages.error(request, "No tenés suficientes monedas todavía.")
+        return redirect("profile")
+    with transaction.atomic():
+        profile = PlayerProfile.objects.select_for_update().get(pk=profile.pk)
+        if profile.coin_balance < item["price"]:
+            messages.error(request, "No tenés suficientes monedas todavía.")
+            return redirect("profile")
+        AccessoryPurchase.objects.get_or_create(user=request.user, accessory=accessory)
+        profile.coin_balance -= item["price"]
+        profile.bunny_accessory = accessory
+        profile.save(update_fields=["coin_balance", "bunny_accessory"])
+    messages.success(request, f"Compraste {item['name']} y lo equipamos en tu conejo.")
+    return redirect("profile")
 
 
 @require_GET

@@ -4,7 +4,7 @@ from datetime import datetime, time, timedelta
 from django.db.models import Count, Max, Sum
 from django.utils import timezone
 
-from .models import Achievement, PlayerAchievement
+from .models import Achievement, PlayerAchievement, PlayerProfile
 
 
 ACHIEVEMENT_SEEDS = [
@@ -150,3 +150,48 @@ def daily_missions_for(user):
         DailyMission("daily-games", "Tres senderos", "Jugá 3 partidas hoy.", 3, games_today, "partidas"),
         DailyMission("weekly-level", "Rama alta", "Llegá al nivel 8 esta semana.", 8, best_level_week, "nivel"),
     ]
+
+SHOP_ACCESSORIES = [
+    {"accessory": "cap", "price": 120, "rotation": "daily", "tag": "Exploración"},
+    {"accessory": "collar", "price": 140, "rotation": "daily", "tag": "Elegante"},
+    {"accessory": "crown", "price": 260, "rotation": "weekly", "tag": "Premium"},
+    {"accessory": "glasses", "price": 180, "rotation": "daily", "tag": "Intelectual"},
+    {"accessory": "backpack", "price": 220, "rotation": "weekly", "tag": "Aventura"},
+    {"accessory": "star", "price": 160, "rotation": "daily", "tag": "Brillante"},
+    {"accessory": "moon_pin", "price": 190, "rotation": "weekly", "tag": "Nocturno"},
+    {"accessory": "rainbow", "price": 210, "rotation": "weekly", "tag": "Colorido"},
+]
+
+
+def coins_for_distance(distance_m):
+    return max(0, int(distance_m) // 100)
+
+
+def _rotated_items(items, seed, count):
+    if not items:
+        return []
+    offset = seed % len(items)
+    rotated = items[offset:] + items[:offset]
+    return rotated[: min(count, len(rotated))]
+
+
+def shop_catalog_for(user=None):
+    today = timezone.localdate()
+    week_seed = int(today.strftime("%G%V"))
+    daily = _rotated_items([item for item in SHOP_ACCESSORIES if item["rotation"] == "daily"], today.toordinal(), 3)
+    weekly = _rotated_items([item for item in SHOP_ACCESSORIES if item["rotation"] == "weekly"], week_seed, 3)
+    choice_labels = dict(PlayerProfile.BUNNY_ACCESSORIES)
+    owned = set()
+    if user and user.is_authenticated:
+        owned.update(user.accessory_purchases.values_list("accessory", flat=True))
+        owned.update(user.achievements.exclude(achievement__accessory_reward="").values_list("achievement__accessory_reward", flat=True))
+        owned.add(user.player_profile.bunny_accessory)
+        owned.add("none")
+    def hydrate(item):
+        return {**item, "name": choice_labels.get(item["accessory"], item["accessory"]), "owned": item["accessory"] in owned}
+    return {
+        "daily": [hydrate(item) for item in daily],
+        "weekly": [hydrate(item) for item in weekly],
+        "next_daily": datetime.combine(today + timedelta(days=1), time.min),
+        "next_weekly": datetime.combine(today + timedelta(days=7 - today.weekday()), time.min),
+    }

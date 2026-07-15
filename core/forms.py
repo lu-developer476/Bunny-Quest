@@ -52,12 +52,13 @@ class ProfileForm(forms.ModelForm):
                 user.achievements.exclude(achievement__accessory_reward="")
                 .values_list("achievement__accessory_reward", flat=True)
             )
+            unlocked.update(user.accessory_purchases.values_list("accessory", flat=True))
         current = self.instance.bunny_accessory if self.instance and self.instance.pk else "none"
         unlocked.add(current)
         self.fields["bunny_accessory"].choices = [
             choice for choice in PlayerProfile.BUNNY_ACCESSORIES if choice[0] in unlocked
         ]
-        self.fields["bunny_accessory"].help_text = "Desbloqueás más accesorios consiguiendo insignias."
+        self.fields["bunny_accessory"].help_text = "Desbloqueás más accesorios con insignias o comprándolos en la tienda."
 
     def clean_username(self):
         username = self.cleaned_data["username"].strip()
@@ -80,7 +81,7 @@ class ProfileForm(forms.ModelForm):
 
     class Meta:
         model = PlayerProfile
-        fields = ("username", "bunny_name", "bunny_breed", "bunny_color", "bunny_accessory")
+        fields = ("username", "bunny_name", "bunny_breed", "bunny_color", "bunny_accessory", "preferred_theme")
         widgets = {
             "bunny_name": forms.TextInput(attrs={"maxlength": 24}),
         }

@@ -29,6 +29,12 @@ class PlayerProfile(models.Model):
         ("clover", "Trébol de la suerte"),
         ("cap", "Gorrito de explorador"),
         ("collar", "Collarín de flores"),
+        ("crown", "Corona de tréboles"),
+        ("glasses", "Anteojos redondos"),
+        ("backpack", "Mochila viajera"),
+        ("star", "Estrella de sendero"),
+        ("moon_pin", "Pin lunar"),
+        ("rainbow", "Cinta arcoíris"),
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="player_profile")
@@ -41,6 +47,15 @@ class PlayerProfile(models.Model):
         choices=BUNNY_ACCESSORIES,
         default="none",
     )
+    THEME_WHITE = "white"
+    THEME_LIGHT_GREY = "light_grey"
+    THEME_CHOICES = [
+        (THEME_WHITE, "Blanco original"),
+        (THEME_LIGHT_GREY, "Light grey"),
+    ]
+
+    coin_balance = models.PositiveIntegerField("monedas", default=0)
+    preferred_theme = models.CharField("tema", max_length=20, choices=THEME_CHOICES, default=THEME_WHITE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -77,14 +92,12 @@ class GameSession(models.Model):
     MODE_ONE_LIFE = "one_life"
     MODE_HIGH_CARROTS = "high_carrots"
     MODE_FAST_FOREST = "fast_forest"
-    MODE_LIGHT_GREY = "light_grey"
     GAME_MODES = [
         (MODE_NORMAL, "Normal"),
         (MODE_TIMED, "60 segundos"),
         (MODE_ONE_LIFE, "Una sola vida"),
         (MODE_HIGH_CARROTS, "Solo zanahorias altas"),
         (MODE_FAST_FOREST, "Bosque veloz"),
-        (MODE_LIGHT_GREY, "Light grey"),
     ]
 
     user_agent = models.CharField(max_length=255, blank=True)
@@ -117,6 +130,7 @@ class GameScore(models.Model):
     max_combo = models.PositiveSmallIntegerField(default=1, validators=[MaxValueValidator(50)])
     mode = models.CharField(max_length=20, choices=GameSession.GAME_MODES, default=GameSession.MODE_NORMAL, db_index=True)
     duration_ms = models.PositiveIntegerField(validators=[MaxValueValidator(7_200_000)])
+    distance_m = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(1_000_000)])
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
 
     class Meta:
@@ -182,3 +196,18 @@ class PlayerAchievement(models.Model):
 
     def __str__(self):
         return f"{self.user.username} · {self.achievement.name}"
+
+
+class AccessoryPurchase(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="accessory_purchases")
+    accessory = models.CharField(max_length=16, choices=PlayerProfile.BUNNY_ACCESSORIES)
+    purchased_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "accessory")
+        ordering = ["-purchased_at"]
+        verbose_name = "accesorio comprado"
+        verbose_name_plural = "accesorios comprados"
+
+    def __str__(self):
+        return f"{self.user.username} · {self.accessory}"
