@@ -1010,3 +1010,68 @@ body.theme-light-grey .theme-selector select { background: #f7f8f9; }
   .canvas-wrap { height: clamp(280px, 50dvh, 390px); }
   .touch-jump { width: 56px; height: 56px; bottom: 38px; }
 }
+
+/* Mobile setup overlay: show one complete mode card at a time on narrow screens. */
+@media (max-width: 720px) {
+  .game-overlay {
+    padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
+  }
+
+  .overlay-card {
+    width: min(100%, 520px);
+    max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    padding: clamp(16px, 4vw, 22px);
+  }
+
+  .overlay-card h2 {
+    font-size: clamp(27px, 8vw, 34px);
+    line-height: 1.05;
+  }
+
+  .mode-selector {
+    padding: 12px 38px 14px;
+  }
+
+  .mode-selector .challenge-slider {
+    overflow-x: auto;
+    padding: 4px 0 10px;
+    scroll-padding-inline: 0;
+  }
+
+  .mode-selector .challenge-slider::before,
+  .mode-selector .challenge-slider::after {
+    display: none;
+  }
+
+  .mode-selector .challenge-card {
+    flex: 0 0 100%;
+    min-width: 100%;
+    min-height: 78px;
+    transform: none;
+    opacity: .48;
+  }
+
+  .mode-selector .challenge-card.is-selected,
+  .mode-selector .challenge-card:has(input:checked) {
+    transform: none;
+    opacity: 1;
+  }
+
+  .mode-selector-prev { left: 6px; }
+  .mode-selector-next { right: 6px; }
+}
+
+@media (max-width: 420px) {
+  .mode-selector {
+    padding-inline: 34px;
+  }
+
+  .mode-selector .challenge-card {
+    flex-basis: 100%;
+    min-width: 100%;
+  }
+
+  .mode-selector .challenge-slider {
+    scroll-padding-inline: 0;
+  }
+}
