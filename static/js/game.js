@@ -120,9 +120,11 @@
 
   function resizeCanvas() {
     const rect = canvas.getBoundingClientRect();
+    const cssWidth = rect.width || canvas.clientWidth || WORLD_W;
+    const cssHeight = rect.height || cssWidth * (WORLD_H / WORLD_W);
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = Math.round(rect.width * dpr);
-    canvas.height = Math.round(rect.width * (WORLD_H / WORLD_W) * dpr);
+    canvas.width = Math.round(cssWidth * dpr);
+    canvas.height = Math.round(cssHeight * dpr);
     ctx.setTransform(canvas.width / WORLD_W, 0, 0, canvas.height / WORLD_H, 0, 0);
   }
 
@@ -801,6 +803,10 @@
   }
 
   window.addEventListener('resize', resizeCanvas);
+  window.addEventListener('orientationchange', resizeCanvas);
+  if ('ResizeObserver' in window) {
+    new ResizeObserver(resizeCanvas).observe(canvas);
+  }
   document.addEventListener('keydown', event => {
     if (['Space', 'ArrowUp', 'KeyW'].includes(event.code)) { event.preventDefault(); jump(); }
     if (event.code === 'KeyP') togglePause();
