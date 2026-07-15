@@ -52,8 +52,13 @@
     mint: {icon: '🌿', label: 'menta', points: 110, color: '#62b987', w: 38, h: 38},
     heart: {icon: '❤️', label: 'corazón', points: 80, color: '#e15d68', w: 36, h: 34}
   };
-  const bunnyColor = canvas.dataset.bunnyColor || 'snow';
-  const bunnyAccessory = canvas.dataset.bunnyAccessory || 'none';
+  const defaultBunny = {color: canvas.dataset.bunnyColor || 'snow', accessory: canvas.dataset.bunnyAccessory || 'none'};
+  const customBunny = {
+    color: canvas.dataset.customBunnyColor || defaultBunny.color,
+    accessory: canvas.dataset.customBunnyAccessory || defaultBunny.accessory,
+    name: canvas.dataset.customBunnyName || 'Personalizado'
+  };
+  let activeBunny = {...defaultBunny};
   const selectedModeInput = document.querySelector('input[name=challengeMode]:checked');
   let currentMode = selectedModeInput?.value || 'normal';
   const modeLabels = {
@@ -68,7 +73,9 @@
     snow: {fur: '#fdfcf8', shade: '#f1eee5'},
     cocoa: {fur: '#c99d7e', shade: '#b98262'},
     sand: {fur: '#ead7a7', shade: '#d8bc7f'},
-    moon: {fur: '#dfe2df', shade: '#cbd1ce'}
+    moon: {fur: '#dfe2df', shade: '#cbd1ce'},
+    caramel: {fur: '#e8b778', shade: '#ca8f52'},
+    patch: {fur: '#fdfcf8', shade: '#b98262', patch: true}
   };
 
   const game = {
@@ -509,7 +516,7 @@
     ctx.scale(1 + squash - stretch, 1 - squash + stretch);
     ctx.translate(-r.w / 2, -r.h / 2);
 
-    const colors = bunnyPalette[bunnyColor] || bunnyPalette.snow;
+    const colors = bunnyPalette[activeBunny.color] || bunnyPalette.snow;
     ctx.fillStyle = colors.fur;
     ctx.strokeStyle = '#66574b';
     ctx.lineWidth = 3;
@@ -520,6 +527,10 @@
     ctx.beginPath(); ctx.ellipse(40, 12, 4, 19, .15, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = colors.fur;
     ctx.beginPath(); ctx.ellipse(29, 45, 27, 28, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    if (colors.patch) {
+      ctx.fillStyle = colors.shade;
+      ctx.beginPath(); ctx.ellipse(42, 43, 11, 13, -.45, 0, Math.PI * 2); ctx.fill();
+    }
     ctx.fillStyle = colors.shade;
     ctx.beginPath(); ctx.ellipse(29, 67, 28, 17, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
     ctx.fillStyle = '#493f38';
@@ -528,7 +539,7 @@
     ctx.beginPath(); ctx.moveTo(29, 48); ctx.lineTo(24, 52); ctx.lineTo(34, 52); ctx.closePath(); ctx.fill();
     ctx.strokeStyle = '#66574b'; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.moveTo(29, 52); ctx.lineTo(29, 58); ctx.stroke();
-    drawAccessory(bunnyAccessory);
+    drawAccessory(activeBunny.accessory);
     ctx.restore();
   }
 
@@ -552,6 +563,13 @@
       ctx.fillStyle = '#5f8f4d';
       [[16,20],[22,20],[19,15],[19,25]].forEach(([x, y]) => { ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill(); });
       ctx.strokeStyle = '#5f8f4d'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(19, 25); ctx.lineTo(14, 34); ctx.stroke();
+    } else if (accessory === 'cap') {
+      ctx.fillStyle = '#45639a';
+      drawRoundedRect(12, 19, 34, 10, 5); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(42, 26, 14, 4, .1, 0, Math.PI * 2); ctx.fill();
+    } else if (accessory === 'collar') {
+      ctx.strokeStyle = '#d88bc6'; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(29, 58, 19, .05, Math.PI - .05); ctx.stroke();
+      ctx.fillStyle = '#f4d8ef'; ctx.beginPath(); ctx.arc(29, 70, 4, 0, Math.PI * 2); ctx.fill();
     }
   }
 
@@ -749,6 +767,13 @@
     localStorage.setItem(soundPreferenceKey, String(soundEnabled));
     renderSoundButton();
     if (soundEnabled) beep(700, .06, 'triangle', .025);
+  });
+  document.querySelectorAll('input[name=runnerBunny]').forEach(input => {
+    input.addEventListener('change', () => {
+      activeBunny = input.value === 'custom' ? {...customBunny} : {...defaultBunny};
+      draw();
+    });
+    if (input.checked) activeBunny = input.value === 'custom' ? {...customBunny} : {...defaultBunny};
   });
   document.querySelectorAll('input[name=challengeMode]').forEach(input => {
     input.addEventListener('change', () => { currentMode = input.value; syncModeSelection(); loadLeaderboard(); });
