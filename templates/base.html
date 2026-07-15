@@ -7,7 +7,9 @@
   <meta name="theme-color" content="#f8faf5">
   <meta name="description" content="Conejo Aventura: un juego web animalista hecho con Django.">
   <title>{% block title %}Conejo Aventura{% endblock %}</title>
-  <link rel="icon" href="{% static 'img/bunny-mark.svg' %}" type="image/svg+xml">
+  <link rel="icon" href="{% static 'img/bunny-mark.svg' %}" type="image/svg+xml" sizes="any">
+  <link rel="mask-icon" href="{% static 'img/bunny-mark.svg' %}" color="#4f7046">
+  <link rel="manifest" href="{% static 'site.webmanifest' %}">
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
   {% block head %}{% endblock %}
 </head>

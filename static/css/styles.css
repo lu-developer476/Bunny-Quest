@@ -690,6 +690,8 @@ body.theme-light-grey .theme-selector select { background: #f7f8f9; }
   position: relative;
   margin: 14px 0 12px;
   padding: 14px 50px 18px;
+  max-width: 100%;
+  overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 24px;
   background: linear-gradient(145deg, var(--cream), #fff);
@@ -701,6 +703,8 @@ body.theme-light-grey .theme-selector select { background: #f7f8f9; }
 .mode-selector .challenge-slider {
   margin: 0;
   padding: 4px 0 10px;
+  width: 100%;
+  max-width: 100%;
   border: 0;
   background: transparent;
   scroll-snap-type: x mandatory;
@@ -711,6 +715,7 @@ body.theme-light-grey .theme-selector select { background: #f7f8f9; }
 .mode-selector legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 .mode-selector .challenge-card {
   flex: 0 0 min(72%, 220px);
+  max-width: 100%;
   min-height: 116px;
   align-items: center !important;
   justify-content: center;
@@ -755,6 +760,7 @@ body.theme-light-grey .theme-selector select { background: #f7f8f9; }
 .mode-selector-dots { display: flex; justify-content: center; gap: 6px; margin-top: 2px; }
 .mode-selector-dots span { width: 7px; height: 7px; border-radius: 999px; background: var(--line); transition: width .2s, background .2s; }
 .mode-selector-dots span.active { width: 20px; background: var(--leaf-dark); }
+.canvas-wrap:has(.game-overlay:not(.hidden)) .touch-jump { display: none; }
 @media (max-width: 720px) {
   .mode-selector { padding-inline: 42px; border-radius: 20px; }
   .mode-selector-hint { display: none; }
@@ -789,27 +795,27 @@ body.theme-light-grey .theme-selector select { background: #f7f8f9; }
   .overlay-card p { margin-bottom: 14px; }
   .mode-selector {
     margin: 10px 0;
-    padding: 12px 40px 14px;
+    padding: 10px 34px 12px;
     border-radius: 18px;
   }
   .mode-selector-top { margin-bottom: 6px; }
   .mode-selector .challenge-slider { padding-bottom: 8px; }
   .mode-selector .challenge-card {
-    flex-basis: min(76%, 230px);
+    flex-basis: min(74%, 210px);
     min-height: 82px;
     padding: 14px 12px;
   }
   .mode-selector .challenge-card span { font-size: 16px; }
   .mode-selector .challenge-card small { font-size: 11px; }
-  .mode-selector .challenge-slider { scroll-padding-inline: calc(50% - min(76%, 230px) / 2); }
+  .mode-selector .challenge-slider { scroll-padding-inline: calc(50% - min(74%, 210px) / 2); }
   .mode-selector-arrow { top: 58%; }
 }
 
 @media (max-width: 420px) {
   .overlay-card { width: 100%; padding: 18px; border-radius: 22px; }
-  .mode-selector { padding-inline: 34px; }
-  .mode-selector .challenge-card { flex-basis: 78%; min-height: 76px; }
-  .mode-selector .challenge-slider { scroll-padding-inline: 11%; }
+  .mode-selector { padding-inline: 30px; }
+  .mode-selector .challenge-card { flex-basis: 76%; min-height: 76px; }
+  .mode-selector .challenge-slider { scroll-padding-inline: 12%; }
   .mode-selector-dots { margin-top: 0; }
 }
 
@@ -898,15 +904,15 @@ body.theme-light-grey .theme-selector select { background: #f7f8f9; }
     padding-block: 10px;
   }
   .mode-selector {
-    padding: 10px 34px 12px;
+    padding: 10px 30px 12px;
   }
   .mode-selector .challenge-card {
-    flex-basis: min(82%, 230px);
+    flex-basis: min(78%, 210px);
     min-height: 74px;
     padding: 12px 10px;
   }
   .mode-selector .challenge-slider {
-    scroll-padding-inline: calc(50% - min(82%, 230px) / 2);
+    scroll-padding-inline: calc(50% - min(78%, 210px) / 2);
   }
   .mode-selector-arrow {
     width: 30px;
@@ -932,10 +938,10 @@ body.theme-light-grey .theme-selector select { background: #f7f8f9; }
     font-size: 14px;
   }
   .mode-selector {
-    padding-inline: 30px;
+    padding-inline: 28px;
   }
   .mode-selector .challenge-card {
-    flex-basis: 88%;
+    flex-basis: 78%;
     min-height: 70px;
   }
   .mode-selector .challenge-card span {
