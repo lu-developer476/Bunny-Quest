@@ -812,3 +812,137 @@ body.theme-light-grey .theme-selector select { background: #f7f8f9; }
   .mode-selector .challenge-slider { scroll-padding-inline: 11%; }
   .mode-selector-dots { margin-top: 0; }
 }
+
+/* Game setup wizard: keep each decision readable inside the actual play area. */
+.game-setup-progress {
+  display: none;
+}
+.bunny-step,
+.mode-step,
+.nickname-step {
+  min-width: 0;
+}
+.bunny-step .button,
+.mode-step .button,
+.nickname-step .button {
+  min-height: 46px;
+}
+.mode-step .button-ghost {
+  margin-top: 0;
+}
+@media (max-width: 980px) {
+  .canvas-wrap {
+    min-height: clamp(390px, 62vw, 540px);
+  }
+  #gameCanvas {
+    min-height: clamp(390px, 62vw, 540px);
+    object-fit: cover;
+  }
+  .game-overlay {
+    align-items: center;
+    padding: clamp(10px, 2vw, 18px);
+  }
+  .overlay-card {
+    width: min(560px, calc(100% - 16px));
+    max-height: min(calc(100% - 20px), calc(100dvh - 28px));
+    padding: clamp(18px, 3vw, 26px);
+    border-radius: clamp(20px, 3vw, 28px);
+  }
+  .overlay-card h2 {
+    font-size: clamp(26px, 4.8vw, 36px);
+  }
+  .overlay-card p {
+    font-size: clamp(14px, 2.5vw, 17px);
+    line-height: 1.45;
+  }
+  .bunny-runner-picker {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .mode-selector {
+    margin-block: 8px 10px;
+    padding: 12px 40px 14px;
+  }
+  .mode-selector .challenge-card {
+    flex-basis: min(70%, 240px);
+    min-height: 84px;
+    padding: 13px 12px;
+  }
+  .mode-selector .challenge-slider {
+    scroll-padding-inline: calc(50% - min(70%, 240px) / 2);
+  }
+}
+@media (max-width: 720px) {
+  .canvas-wrap {
+    min-height: clamp(410px, 92vw, 560px);
+  }
+  #gameCanvas {
+    min-height: clamp(410px, 92vw, 560px);
+  }
+  .game-overlay {
+    align-items: center;
+    padding: 10px;
+  }
+  .overlay-card {
+    width: 100%;
+    max-height: calc(100% - 16px);
+    padding: 16px;
+  }
+  .bunny-runner-picker {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin: 8px 0 10px;
+    padding: 10px;
+  }
+  .bunny-runner-card {
+    min-height: 64px;
+    padding-block: 10px;
+  }
+  .mode-selector {
+    padding: 10px 34px 12px;
+  }
+  .mode-selector .challenge-card {
+    flex-basis: min(82%, 230px);
+    min-height: 74px;
+    padding: 12px 10px;
+  }
+  .mode-selector .challenge-slider {
+    scroll-padding-inline: calc(50% - min(82%, 230px) / 2);
+  }
+  .mode-selector-arrow {
+    width: 30px;
+    height: 30px;
+    font-size: 23px;
+  }
+}
+@media (max-width: 420px) {
+  .canvas-wrap {
+    min-height: 430px;
+  }
+  #gameCanvas {
+    min-height: 430px;
+  }
+  .overlay-card {
+    padding: 14px;
+  }
+  .overlay-card h2 {
+    font-size: 25px;
+  }
+  .overlay-card p {
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+  .mode-selector {
+    padding-inline: 30px;
+  }
+  .mode-selector .challenge-card {
+    flex-basis: 88%;
+    min-height: 70px;
+  }
+  .mode-selector .challenge-card span {
+    font-size: 15px;
+  }
+  .mode-selector-dots span {
+    width: 6px;
+    height: 6px;
+  }
+}

@@ -9,7 +9,10 @@
   const nicknameInput = document.getElementById('nicknameInput');
   const startButton = document.getElementById('startGameButton');
   const confirmModeButton = document.getElementById('confirmModeButton');
+  const confirmBunnyButton = document.getElementById('confirmBunnyButton');
+  const backToBunnyButton = document.getElementById('backToBunnyButton');
   const backToModesButton = document.getElementById('backToModesButton');
+  const bunnyStep = document.getElementById('bunnyStep');
   const modeStep = document.getElementById('modeStep');
   const nicknameStep = document.getElementById('nicknameStep');
   const selectedModeName = document.getElementById('selectedModeName');
@@ -393,6 +396,7 @@
     restartButton.classList.remove('hidden');
     rankingLink.classList.remove('hidden');
     shareButton?.classList.remove('hidden');
+    bunnyStep?.classList.add('hidden');
     modeStep.classList.add('hidden');
     nicknameStep.classList.add('hidden');
 
@@ -845,22 +849,33 @@
     selectModeByIndex(nearestIndex, {scroll: false});
   }
 
+  function showBunnyStep() {
+    bunnyStep?.classList.remove('hidden');
+    modeStep.classList.add('hidden');
+    nicknameStep.classList.add('hidden');
+  }
+
   function showNicknameStep() {
     syncModeSelection();
+    bunnyStep?.classList.add('hidden');
     modeStep.classList.add('hidden');
     nicknameStep.classList.remove('hidden');
     nicknameInput.focus();
   }
 
   function showModeStep() {
+    bunnyStep?.classList.add('hidden');
     nicknameStep.classList.add('hidden');
     modeStep.classList.remove('hidden');
   }
 
   startButton.addEventListener('click', startGame);
+  confirmBunnyButton?.addEventListener('click', showModeStep);
+  backToBunnyButton?.addEventListener('click', showBunnyStep);
   confirmModeButton?.addEventListener('click', showNicknameStep);
   backToModesButton?.addEventListener('click', showModeStep);
   restartButton.addEventListener('click', () => {
+    bunnyStep?.classList.add('hidden');
     modeStep.classList.add('hidden');
     nicknameStep.classList.add('hidden');
     startGame();
