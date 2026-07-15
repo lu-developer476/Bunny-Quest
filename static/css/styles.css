@@ -708,18 +708,18 @@ body.theme-light-grey .theme-selector select { background: #f7f8f9; }
   border: 0;
   background: transparent;
   scroll-snap-type: x mandatory;
-  scroll-padding-inline: calc(50% - min(72%, 220px) / 2);
+  scroll-padding-inline: calc(50% - min(56%, 170px) / 2);
   scrollbar-width: none;
 }
 .mode-selector .challenge-slider::-webkit-scrollbar { display: none; }
 .mode-selector legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 .mode-selector .challenge-card {
-  flex: 0 0 min(72%, 220px);
+  flex: 0 0 min(56%, 170px);
   max-width: 100%;
-  min-height: 116px;
+  min-height: 88px;
   align-items: center !important;
   justify-content: center;
-  padding: 18px 16px;
+  padding: 14px 12px;
   text-align: center;
   opacity: .58;
   transform: scale(.9);
@@ -727,8 +727,8 @@ body.theme-light-grey .theme-selector select { background: #f7f8f9; }
   scroll-snap-align: center;
 }
 .mode-selector .challenge-card input { position: absolute; opacity: 0; pointer-events: none; }
-.mode-selector .challenge-card span { font-size: 19px; font-weight: 900; }
-.mode-selector .challenge-card small { margin-top: 4px; font-size: 12px; }
+.mode-selector .challenge-card span { font-size: 17px; font-weight: 900; }
+.mode-selector .challenge-card small { margin-top: 3px; font-size: 11px; }
 .mode-selector .challenge-card.is-selected,
 .mode-selector .challenge-card:has(input:checked) {
   opacity: 1;
@@ -764,16 +764,16 @@ body.theme-light-grey .theme-selector select { background: #f7f8f9; }
 @media (max-width: 720px) {
   .mode-selector { padding-inline: 42px; border-radius: 20px; }
   .mode-selector-hint { display: none; }
-  .mode-selector .challenge-card { flex-basis: min(82%, 250px); min-height: 104px; }
-  .mode-selector .challenge-slider { scroll-padding-inline: calc(50% - min(82%, 250px) / 2); }
+  .mode-selector .challenge-card { flex-basis: min(60%, 180px); min-height: 84px; }
+  .mode-selector .challenge-slider { scroll-padding-inline: calc(50% - min(60%, 180px) / 2); }
 }
 @media (max-width: 420px) {
   .mode-selector { padding-inline: 34px; }
   .mode-selector-arrow { width: 32px; height: 32px; font-size: 24px; }
   .mode-selector-prev { left: 6px; }
   .mode-selector-next { right: 6px; }
-  .mode-selector .challenge-card { flex-basis: 88%; }
-  .mode-selector .challenge-slider { scroll-padding-inline: 6%; }
+  .mode-selector .challenge-card { flex-basis: min(62%, 170px); }
+  .mode-selector .challenge-slider { scroll-padding-inline: calc(50% - min(62%, 170px) / 2); }
 }
 
 /* Tablet/mobile tuning for the difficulty picker inside the game overlay. */
@@ -781,8 +781,8 @@ body.theme-light-grey .theme-selector select { background: #f7f8f9; }
   .game-overlay { align-items: start; overflow-y: auto; padding: clamp(12px, 2.4vw, 22px); }
   .overlay-card { width: min(680px, 96%); max-height: calc(100dvh - 28px); overflow-y: auto; padding: clamp(22px, 4vw, 30px); }
   .mode-selector { padding: 14px 46px 16px; }
-  .mode-selector .challenge-card { flex-basis: min(58%, 260px); min-height: 96px; }
-  .mode-selector .challenge-slider { scroll-padding-inline: calc(50% - min(58%, 260px) / 2); }
+  .mode-selector .challenge-card { flex-basis: min(44%, 190px); min-height: 82px; }
+  .mode-selector .challenge-slider { scroll-padding-inline: calc(50% - min(44%, 190px) / 2); }
 }
 
 @media (max-width: 720px) {
@@ -801,21 +801,21 @@ body.theme-light-grey .theme-selector select { background: #f7f8f9; }
   .mode-selector-top { margin-bottom: 6px; }
   .mode-selector .challenge-slider { padding-bottom: 8px; }
   .mode-selector .challenge-card {
-    flex-basis: min(74%, 210px);
-    min-height: 82px;
-    padding: 14px 12px;
+    flex-basis: min(58%, 170px);
+    min-height: 72px;
+    padding: 12px 10px;
   }
   .mode-selector .challenge-card span { font-size: 16px; }
   .mode-selector .challenge-card small { font-size: 11px; }
-  .mode-selector .challenge-slider { scroll-padding-inline: calc(50% - min(74%, 210px) / 2); }
+  .mode-selector .challenge-slider { scroll-padding-inline: calc(50% - min(58%, 170px) / 2); }
   .mode-selector-arrow { top: 58%; }
 }
 
 @media (max-width: 420px) {
   .overlay-card { width: 100%; padding: 18px; border-radius: 22px; }
   .mode-selector { padding-inline: 30px; }
-  .mode-selector .challenge-card { flex-basis: 76%; min-height: 76px; }
-  .mode-selector .challenge-slider { scroll-padding-inline: 12%; }
+  .mode-selector .challenge-card { flex-basis: min(60%, 160px); min-height: 68px; }
+  .mode-selector .challenge-slider { scroll-padding-inline: calc(50% - min(60%, 160px) / 2); }
   .mode-selector-dots { margin-top: 0; }
 }
 
@@ -875,12 +875,12 @@ body.theme-light-grey .theme-selector select { background: #f7f8f9; }
     padding: 12px 40px 14px;
   }
   .mode-selector .challenge-card {
-    flex-basis: min(70%, 240px);
-    min-height: 84px;
-    padding: 13px 12px;
+    flex-basis: min(52%, 180px);
+    min-height: 76px;
+    padding: 12px 10px;
   }
   .mode-selector .challenge-slider {
-    scroll-padding-inline: calc(50% - min(70%, 240px) / 2);
+    scroll-padding-inline: calc(50% - min(52%, 180px) / 2);
   }
 }
 @media (max-width: 720px) {
@@ -913,12 +913,12 @@ body.theme-light-grey .theme-selector select { background: #f7f8f9; }
     padding: 10px 30px 12px;
   }
   .mode-selector .challenge-card {
-    flex-basis: min(78%, 210px);
-    min-height: 74px;
-    padding: 12px 10px;
+    flex-basis: min(58%, 165px);
+    min-height: 68px;
+    padding: 10px 9px;
   }
   .mode-selector .challenge-slider {
-    scroll-padding-inline: calc(50% - min(78%, 210px) / 2);
+    scroll-padding-inline: calc(50% - min(58%, 165px) / 2);
   }
   .mode-selector-arrow {
     width: 30px;
@@ -947,8 +947,8 @@ body.theme-light-grey .theme-selector select { background: #f7f8f9; }
     padding-inline: 28px;
   }
   .mode-selector .challenge-card {
-    flex-basis: 78%;
-    min-height: 70px;
+    flex-basis: min(62%, 150px);
+    min-height: 64px;
   }
   .mode-selector .challenge-card span {
     font-size: 15px;
@@ -957,4 +957,27 @@ body.theme-light-grey .theme-selector select { background: #f7f8f9; }
     width: 6px;
     height: 6px;
   }
+}
+
+/* Keep the selected challenge card compact and centered in the overlay carousel. */
+.mode-selector .challenge-slider::before,
+.mode-selector .challenge-slider::after {
+  content: '';
+  flex: 0 0 calc(50% - min(56%, 170px) / 2);
+}
+
+@media (max-width: 980px) {
+  .mode-selector .challenge-slider::before,
+  .mode-selector .challenge-slider::after { flex-basis: calc(50% - min(52%, 180px) / 2); }
+}
+
+@media (max-width: 720px) {
+  .mode-selector .challenge-slider::before,
+  .mode-selector .challenge-slider::after { flex-basis: calc(50% - min(58%, 165px) / 2); }
+}
+
+@media (max-width: 420px) {
+  .mode-selector .challenge-slider { scroll-padding-inline: calc(50% - min(62%, 150px) / 2); }
+  .mode-selector .challenge-slider::before,
+  .mode-selector .challenge-slider::after { flex-basis: calc(50% - min(62%, 150px) / 2); }
 }
