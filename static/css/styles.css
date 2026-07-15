@@ -549,3 +549,60 @@ body.light-grey-game .game-overlay { background: rgba(18,20,22,.52); }
 .runner-bunny-preview.color-moon { background: #dce1df; }
 .runner-bunny-preview.color-caramel { background: #e8b778; }
 .runner-bunny-preview.color-patch { background: linear-gradient(135deg, #f8faf5 0 48%, #b98262 49% 64%, #f8faf5 65%); }
+
+/* Site theme: Light grey is now an app-wide visual theme, not a game mode. */
+body.theme-light-grey {
+  --ink: #151719;
+  --muted: #4d5358;
+  --cream: #eceeef;
+  --white: #f7f8f9;
+  --line: #d4d7da;
+  --leaf: #2f3438;
+  --leaf-dark: #151719;
+  --leaf-light: #d9dcdf;
+  color: var(--ink);
+  background: #e6e8ea;
+}
+body.theme-light-grey::before { opacity: .22; background-image: radial-gradient(circle at 20px 20px, rgba(20,22,24,.08) 2px, transparent 2.5px); }
+body.theme-light-grey .site-header { background: rgba(238,240,242,.9); border-bottom-color: #c8ccd0; }
+body.theme-light-grey .story-card,
+body.theme-light-grey .forest-story-panel { background: linear-gradient(145deg, #3f4449, #16191c); }
+body.theme-light-grey .button-primary,
+body.theme-light-grey .button-small { background: #151719; }
+
+.coin-stat { background: linear-gradient(145deg, #fff8df, #fff); box-shadow: inset 0 0 0 2px rgba(204,151,42,.16); }
+.shop-section { padding-top: 20px; }
+.shop-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.shop-panel { padding: 28px; border: 1px solid var(--line); border-radius: var(--radius); background: white; box-shadow: var(--shadow); }
+.shop-panel h3 { margin: 0; font-size: 26px; }
+.shop-panel .card-header small { color: var(--muted); font-weight: 700; }
+.shop-items { display: grid; gap: 12px; margin-top: 20px; }
+.shop-item { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; margin: 0; padding: 14px; border: 1px solid var(--line); border-radius: 20px; background: var(--cream); }
+.shop-item.owned { opacity: .72; }
+.shop-item .button[disabled] { cursor: default; opacity: .65; transform: none; }
+.shop-preview { position: relative; display: grid; place-items: center; width: 58px; height: 58px; border-radius: 46% 54% 52% 48%; background: var(--leaf-light); font-size: 30px; }
+.shop-item strong { display: block; line-height: 1.15; }
+.shop-item small { color: var(--muted); font-size: 12px; }
+.shop-preview::after { position: absolute; font-size: 22px; }
+.shop-preview.accessory-cap::after { content: '🧢'; transform: translate(0, -28px); }
+.shop-preview.accessory-collar::after { content: '📿'; transform: translate(1px, 24px); }
+.shop-preview.accessory-crown::after { content: '👑'; transform: translate(0, -29px); }
+.shop-preview.accessory-glasses::after { content: '👓'; transform: translate(0, -2px); }
+.shop-preview.accessory-backpack::after { content: '🎒'; transform: translate(28px, 6px); }
+.shop-preview.accessory-star::after { content: '⭐'; transform: translate(-24px, -22px); }
+.shop-preview.accessory-moon_pin::after { content: '🌙'; transform: translate(-23px, -22px); }
+.shop-preview.accessory-rainbow::after { content: '🌈'; transform: translate(0, -30px); }
+.profile-bunny.accessory-crown::after { content: '👑'; position: absolute; transform: translate(0, -56px); font-size: 31px; }
+.profile-bunny.accessory-glasses::after { content: '👓'; position: absolute; transform: translate(0, -10px); font-size: 30px; }
+.profile-bunny.accessory-backpack::after { content: '🎒'; position: absolute; transform: translate(52px, 6px); font-size: 28px; }
+.profile-bunny.accessory-star::after { content: '⭐'; position: absolute; transform: translate(-44px, -44px); font-size: 28px; }
+.profile-bunny.accessory-moon_pin::after { content: '🌙'; position: absolute; transform: translate(-42px, -42px); font-size: 28px; }
+.profile-bunny.accessory-rainbow::after { content: '🌈'; position: absolute; transform: translate(0, -54px); font-size: 30px; }
+@media (max-width: 860px) { .shop-grid { grid-template-columns: 1fr; } .shop-item { grid-template-columns: auto 1fr; } .shop-item .button { grid-column: 1 / -1; width: 100%; } }
+
+.theme-selector { display: inline-flex; align-items: center; gap: 8px; padding: 5px 8px; border: 1px solid var(--line); border-radius: 999px; background: var(--cream); }
+.theme-selector label { color: var(--muted); font-size: 11px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+.theme-selector select { min-height: 34px; padding: 0 28px 0 12px; border: 0; border-radius: 999px; color: var(--ink); background: white; font-size: 13px; font-weight: 800; outline: none; cursor: pointer; }
+.theme-selector select:focus { box-shadow: 0 0 0 3px rgba(79,112,70,.14); }
+body.theme-light-grey .theme-selector select { background: #f7f8f9; }
+@media (max-width: 720px) { .theme-selector { width: 100%; justify-content: space-between; } .theme-selector select { flex: 1; } }

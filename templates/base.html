@@ -11,7 +11,8 @@
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
   {% block head %}{% endblock %}
 </head>
-<body>
+{% firstof request.session.theme user.player_profile.preferred_theme 'white' as active_theme %}
+<body class="{% if active_theme == 'light_grey' %}theme-light-grey{% endif %}">
   <div class="ambient ambient-one" aria-hidden="true"></div>
   <div class="ambient ambient-two" aria-hidden="true"></div>
   <header class="site-header">
@@ -24,6 +25,16 @@
       <nav id="main-nav" class="main-nav" aria-label="Navegación principal">
         <a href="{% url 'game' %}">Jugar demo</a>
         <a href="{% url 'leaderboard' %}">Ranking</a>
+        <form action="{% url 'set_theme' %}" method="post" class="theme-selector" aria-label="Selector de tema">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.get_full_path }}">
+          <label for="themeSelect">Tema</label>
+          <select id="themeSelect" name="theme" onchange="this.form.submit()">
+            <option value="white" {% if active_theme == 'white' %}selected{% endif %}>Original</option>
+            <option value="light_grey" {% if active_theme == 'light_grey' %}selected{% endif %}>Light Grey</option>
+          </select>
+          <noscript><button type="submit" class="link-button">Aplicar</button></noscript>
+        </form>
         {% if user.is_authenticated %}
           <a href="{% url 'profile' %}">Mi madriguera</a>
           <form action="{% url 'logout' %}" method="post" class="nav-form">

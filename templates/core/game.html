@@ -18,7 +18,7 @@
         <div><span>Vidas</span><strong id="livesValue">♥♥♥</strong></div>
       </div>
       <div class="canvas-wrap">
-        <canvas id="gameCanvas" width="960" height="540" aria-label="Juego del conejo" data-bunny-color="snow" data-bunny-accessory="none" data-custom-bunny-color="{{ player_profile.bunny_color|default:'snow' }}" data-custom-bunny-accessory="{{ player_profile.bunny_accessory|default:'none' }}" data-custom-bunny-name="{{ player_profile.bunny_name|default:'Nube' }}"></canvas>
+        <canvas id="gameCanvas" width="960" height="540" aria-label="Juego del conejo" data-bunny-color="snow" data-bunny-accessory="none" data-custom-bunny-color="{{ player_profile.bunny_color|default:'snow' }}" data-custom-bunny-accessory="{{ player_profile.bunny_accessory|default:'none' }}" data-custom-bunny-name="{{ player_profile.bunny_name|default:'Nube' }}" data-theme="{{ player_profile.preferred_theme|default:'white' }}"></canvas>
         <div id="gameOverlay" class="game-overlay">
           <div class="overlay-card">
             <span class="overlay-bunny">🐇</span>
@@ -39,7 +39,6 @@
               <label class="challenge-card"><input type="radio" name="challengeMode" value="one_life"><span>Una vida</span><small>Sin errores</small></label>
               <label class="challenge-card"><input type="radio" name="challengeMode" value="high_carrots"><span>Zanahorias altas</span><small>Saltos precisos</small></label>
               <label class="challenge-card"><input type="radio" name="challengeMode" value="fast_forest"><span>Bosque veloz</span><small>Ritmo intenso</small></label>
-              <label class="challenge-card"><input type="radio" name="challengeMode" value="light_grey"><span>Light grey</span><small>Grises y negros</small></label>
             </fieldset>
             <button id="confirmModeButton" class="button button-primary" type="button">Elegir modo</button>
             </div>

@@ -61,13 +61,13 @@
   let activeBunny = {...defaultBunny};
   const selectedModeInput = document.querySelector('input[name=challengeMode]:checked');
   let currentMode = selectedModeInput?.value || 'normal';
+  const currentTheme = canvas.dataset.theme || 'white';
   const modeLabels = {
     normal: 'Normal',
     timed: '60 segundos',
     one_life: 'Una vida',
     high_carrots: 'Zanahorias altas',
-    fast_forest: 'Bosque veloz',
-    light_grey: 'Light grey'
+    fast_forest: 'Bosque veloz'
   };
   const bunnyPalette = {
     snow: {fur: '#fdfcf8', shade: '#f1eee5'},
@@ -404,7 +404,8 @@
           carrots: game.carrots,
           level: game.level,
           max_combo: maxComboReached,
-          duration_ms: duration
+          duration_ms: duration,
+          distance_m: Math.floor(game.distance)
         })
       });
       const data = await response.json();
@@ -423,6 +424,7 @@
     if (data.personal_best) lines.push('Nuevo récord personal.');
     if (data.next_rival) lines.push(`Te faltaron ${Number(data.next_rival.points_needed).toLocaleString('es-AR')} puntos para superar a ${escapeHtml(data.next_rival.nickname)}.`);
     if (data.achievements?.length) lines.push(`Insignia desbloqueada: ${data.achievements.map(escapeHtml).join(', ')}.`);
+    if (data.coins_earned) lines.push(`Ganaste 🪙 ${Number(data.coins_earned).toLocaleString('es-AR')} por ${Math.floor(game.distance).toLocaleString('es-AR')} m recorridos.`);
     lines.push(`Puesto #${data.rank} del ranking.`);
     finalShareText = lines.join(' ');
     return lines.map(line => `<span class="result-line">${line}</span>`).join('');
@@ -459,7 +461,7 @@
       sunset: {sky: ['#ffe0ad', '#f3a26e', '#8b6179'], sun: '#f6b05d', hill: '#b77b62', grass: '#7e8f57', trim: '#596f43'},
       night: {sky: ['#1c2741', '#26375a', '#3c4d64'], sun: '#f4e9a6', hill: '#34465b', grass: '#314b3e', trim: '#22382f'}
     };
-    const palette = currentMode === 'light_grey'
+    const palette = currentTheme === 'light_grey'
       ? {sky: ['#f4f5f6', '#d8dade', '#b9bdc2'], sun: '#f7f7f7', hill: '#a8adb3', grass: '#565b60', trim: '#181a1d'}
       : palettes[biome];
     const sky = ctx.createLinearGradient(0, 0, 0, WORLD_H);
@@ -469,8 +471,8 @@
     ctx.fillStyle = palette.sun; ctx.beginPath(); ctx.arc(820, biome === 'sunset' ? 170 : 92, biome === 'night' ? 30 : 42, 0, Math.PI * 2); ctx.fill();
     if (biome !== 'night') for (const cloud of game.clouds) drawCloud(cloud.x, cloud.y, cloud.size);
 
-    if (biome === 'forest' || biome === 'night' || currentMode === 'light_grey') {
-      ctx.fillStyle = currentMode === 'light_grey' ? 'rgba(18,20,22,.32)' : (biome === 'night' ? 'rgba(20,35,36,.5)' : 'rgba(67,98,55,.38)');
+    if (biome === 'forest' || biome === 'night' || currentTheme === 'light_grey') {
+      ctx.fillStyle = currentTheme === 'light_grey' ? 'rgba(18,20,22,.32)' : (biome === 'night' ? 'rgba(20,35,36,.5)' : 'rgba(67,98,55,.38)');
       for (let x = -40; x < WORLD_W; x += 82) {
         ctx.beginPath(); ctx.moveTo(x, groundY); ctx.lineTo(x + 34, 190 + Math.sin(x) * 18); ctx.lineTo(x + 72, groundY); ctx.fill();
       }
@@ -483,7 +485,7 @@
 
     ctx.fillStyle = palette.grass; ctx.fillRect(0, groundY, WORLD_W, WORLD_H - groundY);
     ctx.fillStyle = palette.trim; ctx.fillRect(0, groundY, WORLD_W, 8);
-    ctx.strokeStyle = currentMode === 'light_grey' ? 'rgba(12,14,16,.28)' : (biome === 'night' ? 'rgba(225,241,166,.22)' : 'rgba(82,105,58,.18)'); ctx.lineWidth = 2;
+    ctx.strokeStyle = currentTheme === 'light_grey' ? 'rgba(12,14,16,.28)' : (biome === 'night' ? 'rgba(225,241,166,.22)' : 'rgba(82,105,58,.18)'); ctx.lineWidth = 2;
     const offset = -(game.distance * .8) % 70;
     for (let x = offset; x < WORLD_W; x += 70) { ctx.beginPath(); ctx.moveTo(x, 486); ctx.quadraticCurveTo(x + 24, 470, x + 48, 488); ctx.stroke(); }
     if (biome === 'night') {
@@ -733,7 +735,7 @@
   canvas.addEventListener('pointerdown', jump);
   function syncModeSelection() {
     selectedModeName.textContent = modeLabels[currentMode] || currentMode;
-    document.body.classList.toggle('light-grey-game', currentMode === 'light_grey');
+    document.body.classList.toggle('light-grey-game', currentTheme === 'light_grey');
     draw();
   }
 
