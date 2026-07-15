@@ -18,12 +18,19 @@
         <div><span>Vidas</span><strong id="livesValue">♥♥♥</strong></div>
       </div>
       <div class="canvas-wrap">
-        <canvas id="gameCanvas" width="960" height="540" aria-label="Juego del conejo" data-bunny-color="{{ player_profile.bunny_color|default:'snow' }}" data-bunny-accessory="{{ player_profile.bunny_accessory|default:'none' }}"></canvas>
+        <canvas id="gameCanvas" width="960" height="540" aria-label="Juego del conejo" data-bunny-color="snow" data-bunny-accessory="none" data-custom-bunny-color="{{ player_profile.bunny_color|default:'snow' }}" data-custom-bunny-accessory="{{ player_profile.bunny_accessory|default:'none' }}" data-custom-bunny-name="{{ player_profile.bunny_name|default:'Nube' }}"></canvas>
         <div id="gameOverlay" class="game-overlay">
           <div class="overlay-card">
             <span class="overlay-bunny">🐇</span>
             <h2 id="overlayTitle">¿Listo para saltar?</h2>
             <p id="overlayText">Juntá zanahorias, esquivá troncos y no pierdas el ritmo.</p>
+            {% if user.is_authenticated %}
+            <fieldset class="bunny-runner-picker" aria-label="Conejo para jugar">
+              <legend>Conejo</legend>
+              <label class="bunny-runner-card"><input type="radio" name="runnerBunny" value="nube"><span class="runner-bunny-preview color-snow accessory-none">🐇</span><strong>Nube</strong><small>El clásico</small></label>
+              <label class="bunny-runner-card"><input type="radio" name="runnerBunny" value="custom" checked><span class="runner-bunny-preview color-{{ player_profile.bunny_color }} accessory-{{ player_profile.bunny_accessory }}">🐇</span><strong>{{ player_profile.bunny_name|default:'Personalizado' }}</strong><small>Tu compañero</small></label>
+            </fieldset>
+            {% endif %}
             <div id="modeStep" class="mode-step">
             <fieldset class="challenge-picker challenge-slider" aria-label="Modo desafío">
               <legend>Modo</legend>
