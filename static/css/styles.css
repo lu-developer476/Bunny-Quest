@@ -845,12 +845,18 @@ body.theme-light-grey .theme-selector select { background: #f7f8f9; }
     object-fit: cover;
   }
   .game-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
     align-items: center;
-    padding: clamp(10px, 2vw, 18px);
+    min-height: 100dvh;
+    padding: clamp(16px, 4vw, 30px);
+    overflow-y: auto;
+    background: rgba(37,54,33,.62);
   }
   .overlay-card {
     width: min(560px, calc(100% - 16px));
-    max-height: min(calc(100% - 20px), calc(100dvh - 28px));
+    max-height: calc(100dvh - 32px);
     padding: clamp(18px, 3vw, 26px);
     border-radius: clamp(20px, 3vw, 28px);
   }
@@ -886,11 +892,11 @@ body.theme-light-grey .theme-selector select { background: #f7f8f9; }
   }
   .game-overlay {
     align-items: center;
-    padding: 10px;
+    padding: 12px;
   }
   .overlay-card {
-    width: 100%;
-    max-height: calc(100% - 16px);
+    width: min(100%, 560px);
+    max-height: calc(100dvh - 24px);
     padding: 16px;
   }
   .bunny-runner-picker {
