@@ -981,3 +981,32 @@ body.theme-light-grey .theme-selector select { background: #f7f8f9; }
   .mode-selector .challenge-slider::before,
   .mode-selector .challenge-slider::after { flex-basis: calc(50% - min(62%, 150px) / 2); }
 }
+
+/* Mobile game fit: keep the HUD, canvas and controls visible in one compact block. */
+@media (max-width: 720px) {
+  .game-page.container { width: 100%; padding: 10px 10px 36px; }
+  .game-intro { margin-bottom: 10px; }
+  .game-intro .eyebrow,
+  .game-intro h1 { display: none; }
+  .game-intro p { max-width: none; font-size: 13px; line-height: 1.45; }
+  .game-shell { border-radius: 22px; }
+  .game-hud { grid-template-columns: repeat(4, 1fr); }
+  .game-hud div { padding: 9px 10px; }
+  .game-hud span { font-size: 8px; letter-spacing: .08em; }
+  .game-hud strong { margin-top: 1px; font-size: 16px; line-height: 1.15; }
+  .canvas-wrap { aspect-ratio: auto; height: clamp(300px, 54dvh, 430px); }
+  .touch-jump { width: 62px; height: 62px; right: 10px; bottom: 42px; font-size: 10px; }
+  .game-footer-bar { min-height: 38px; padding: 8px 12px; justify-content: flex-end; }
+  .game-footer-bar button { margin-left: 0; font-size: 11px; }
+  .game-side { margin-top: 14px; }
+  .forest-story-panel { padding: 22px; border-radius: 22px; }
+}
+
+@media (max-width: 420px) {
+  .game-page.container { padding-inline: 8px; }
+  .game-intro p { font-size: 12px; }
+  .game-hud div { padding: 8px 7px; }
+  .game-hud strong { font-size: 15px; }
+  .canvas-wrap { height: clamp(280px, 50dvh, 390px); }
+  .touch-jump { width: 56px; height: 56px; bottom: 38px; }
+}
