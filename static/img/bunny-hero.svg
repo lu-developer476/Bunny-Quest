@@ -20,9 +20,9 @@
       <path d="M98 223v14m0 0c-8 9-18 10-27 4m27-4c8 9 18 10 28 4" stroke="#5C5047" stroke-linecap="round" stroke-width="5"/>
       <circle cx="48" cy="218" r="8" fill="#F0B7AD" opacity=".65"/>
       <circle cx="148" cy="218" r="8" fill="#F0B7AD" opacity=".65"/>
-      <path d="M163 284c-19 16-29 47-23 70 5 19 22 27 42 19 14-16 21-43 17-65-4-21-19-31-36-24z" fill="#FFFDF8" stroke="#5C5047" stroke-linecap="round" stroke-linejoin="round" stroke-width="8"/>
-      <path d="M222 289c22 13 35 42 31 65-3 20-20 30-41 24-16-14-25-39-24-62 1-22 16-34 34-27z" fill="#FFFDF8" stroke="#5C5047" stroke-linecap="round" stroke-linejoin="round" stroke-width="8"/>
-      <path d="M151 357c12 8 27 9 42 1M168 363c-1-13 3-29 11-44M206 361c14 6 28 5 41-4M226 363c-4-12-10-27-19-41" stroke="#5C5047" stroke-linecap="round" stroke-width="4" opacity=".55"/>
+      <path d="M144 338c18-20 55-27 78-16 20 9 22 29 6 45-20 11-58 12-78 2-18-9-20-22-6-31z" fill="#FFFDF8" stroke="#5C5047" stroke-linecap="round" stroke-linejoin="round" stroke-width="8"/>
+      <path d="M203 336c23-17 62-19 81-4 16 13 13 33-7 45-23 8-59 3-77-11-16-13-15-23 3-30z" fill="#FFFDF8" stroke="#5C5047" stroke-linecap="round" stroke-linejoin="round" stroke-width="8"/>
+      <path d="M153 359c18 8 43 7 65-4M171 364c7-12 20-23 37-31M212 362c20 9 45 9 66 0M238 365c-9-12-22-22-38-31" stroke="#5C5047" stroke-linecap="round" stroke-width="4" opacity=".55"/>
       <path d="M332 309c42 3 72 19 86 47-35 11-78 5-129-19" fill="#FFFDF8" stroke="#5C5047" stroke-linecap="round" stroke-linejoin="round" stroke-width="8"/>
       <path d="M209 254c25 27 57 37 96 29" stroke="#DDE9D1" stroke-linecap="round" stroke-width="11"/>
     </g>
