@@ -522,60 +522,127 @@
     ctx.translate(-r.w / 2, -r.h / 2);
 
     const colors = bunnyPalette[activeBunny.color] || bunnyPalette.snow;
-    ctx.fillStyle = colors.fur;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    // Side-profile runner: nose to the right and backpack/tail to the left.
+    // The silhouette leaves five clear accessory zones: head, neck, body, back and paws.
+    drawBackAccessory(activeBunny.accessory);
+
+    ctx.fillStyle = colors.shade;
     ctx.strokeStyle = '#66574b';
     ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.ellipse(18, 15, 10, 27, -.16, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    ctx.beginPath(); ctx.ellipse(40, 13, 10, 29, .15, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    ctx.fillStyle = '#e9b8ac';
-    ctx.beginPath(); ctx.ellipse(18, 14, 4, 18, -.16, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(40, 12, 4, 19, .15, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(16, 66, 12, 7, -.08, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(48, 67, 15, 7, -.08, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
     ctx.fillStyle = colors.fur;
-    ctx.beginPath(); ctx.ellipse(29, 45, 27, 28, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(23, 47, 25, 20, -.13, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
     if (colors.patch) {
       ctx.fillStyle = colors.shade;
-      ctx.beginPath(); ctx.ellipse(42, 43, 11, 13, -.45, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(20, 42, 10, 12, -.35, 0, Math.PI * 2); ctx.fill();
     }
-    ctx.fillStyle = colors.shade;
-    ctx.beginPath(); ctx.ellipse(29, 67, 28, 17, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = colors.fur;
+    ctx.beginPath(); ctx.ellipse(48, 31, 19, 17, .06, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(65, 33, 8, 6, .12, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.arc(5, 48, 8, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+    ctx.save();
+    ctx.translate(42, 15);
+    ctx.rotate(-.32);
+    ctx.beginPath(); ctx.ellipse(0, 0, 7, 25, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#e9b8ac';
+    ctx.beginPath(); ctx.ellipse(0, 1, 3, 17, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    ctx.save();
+    ctx.translate(55, 16);
+    ctx.rotate(.18);
+    ctx.fillStyle = colors.fur;
+    ctx.beginPath(); ctx.ellipse(0, 0, 7, 24, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#e9b8ac';
+    ctx.beginPath(); ctx.ellipse(0, 1, 3, 16, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+
     ctx.fillStyle = '#493f38';
-    ctx.beginPath(); ctx.arc(20, 41, 3.2, 0, Math.PI * 2); ctx.arc(39, 41, 3.2, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(57, 29, 3.1, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#d98d84';
-    ctx.beginPath(); ctx.moveTo(29, 48); ctx.lineTo(24, 52); ctx.lineTo(34, 52); ctx.closePath(); ctx.fill();
-    ctx.strokeStyle = '#66574b'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(29, 52); ctx.lineTo(29, 58); ctx.stroke();
-    drawAccessory(activeBunny.accessory);
+    ctx.beginPath(); ctx.ellipse(70, 34, 3.4, 2.5, .1, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#66574b'; ctx.lineWidth = 1.6;
+    ctx.beginPath(); ctx.moveTo(66, 39); ctx.quadraticCurveTo(60, 42, 54, 39); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(68, 34); ctx.lineTo(77, 31); ctx.moveTo(68, 36); ctx.lineTo(78, 37); ctx.stroke();
+
+    drawBodyAccessory(activeBunny.accessory);
+    drawNeckAccessory(activeBunny.accessory);
+    drawHeadAccessory(activeBunny.accessory);
+    drawBootAccessory(activeBunny.accessory);
     ctx.restore();
   }
 
-  function drawAccessory(accessory) {
+  function accessorySlot(accessory) {
+    if (['cap', 'crown', 'flower', 'bow', 'clover', 'star', 'moon_pin', 'rainbow', 'glasses'].includes(accessory)) return 'head';
+    if (['scarf', 'collar'].includes(accessory)) return 'neck';
+    if (['backpack'].includes(accessory)) return 'back';
+    return 'body';
+  }
+
+  function drawBackAccessory(accessory) {
+    if (accessory !== 'backpack') return;
+    ctx.fillStyle = '#b65e2c';
+    ctx.strokeStyle = '#6f4935';
+    ctx.lineWidth = 2.5;
+    drawRoundedRect(-2, 35, 22, 27, 8); ctx.fill(); ctx.stroke();
+    ctx.strokeStyle = '#f0b37c'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(18, 42, 9, -1.25, 1.1); ctx.stroke();
+  }
+
+  function drawBodyAccessory(accessory) {
+    if (accessorySlot(accessory) !== 'body') return;
+    if (accessory === 'none') return;
+    const isPin = accessory === 'star' || accessory === 'moon_pin';
+    ctx.fillStyle = accessory === 'rainbow' ? '#f4d58d' : '#6f8d64';
+    ctx.strokeStyle = '#4f7046';
+    ctx.lineWidth = 2;
+    drawRoundedRect(12, 37, 34, 23, 10); ctx.fill(); ctx.stroke();
+    if (isPin) {
+      ctx.fillStyle = accessory === 'star' ? '#f5c14d' : '#d7d8ff';
+      ctx.beginPath(); ctx.arc(34, 42, 4.5, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+
+  function drawNeckAccessory(accessory) {
     if (accessory === 'scarf') {
       ctx.fillStyle = '#4f7046';
-      drawRoundedRect(12, 58, 34, 8, 4); ctx.fill();
-      ctx.beginPath(); ctx.moveTo(42, 61); ctx.lineTo(55, 74); ctx.lineTo(42, 70); ctx.closePath(); ctx.fill();
-    } else if (accessory === 'flower') {
-      ctx.fillStyle = '#f4c973';
-      for (let i = 0; i < 5; i += 1) {
-        ctx.beginPath(); ctx.ellipse(12 + Math.cos(i * 1.26) * 5, 22 + Math.sin(i * 1.26) * 5, 4, 6, i, 0, Math.PI * 2); ctx.fill();
-      }
-      ctx.fillStyle = '#ed8540'; ctx.beginPath(); ctx.arc(12, 22, 3, 0, Math.PI * 2); ctx.fill();
-    } else if (accessory === 'bow') {
-      ctx.fillStyle = '#ed8540';
-      ctx.beginPath(); ctx.moveTo(22, 24); ctx.lineTo(8, 14); ctx.lineTo(9, 34); ctx.closePath(); ctx.fill();
-      ctx.beginPath(); ctx.moveTo(24, 24); ctx.lineTo(40, 14); ctx.lineTo(39, 34); ctx.closePath(); ctx.fill();
-      ctx.fillStyle = '#b65e2c'; ctx.beginPath(); ctx.arc(24, 24, 4, 0, Math.PI * 2); ctx.fill();
-    } else if (accessory === 'clover') {
-      ctx.fillStyle = '#5f8f4d';
-      [[16,20],[22,20],[19,15],[19,25]].forEach(([x, y]) => { ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill(); });
-      ctx.strokeStyle = '#5f8f4d'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(19, 25); ctx.lineTo(14, 34); ctx.stroke();
-    } else if (accessory === 'cap') {
-      ctx.fillStyle = '#45639a';
-      drawRoundedRect(12, 19, 34, 10, 5); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(42, 26, 14, 4, .1, 0, Math.PI * 2); ctx.fill();
+      drawRoundedRect(35, 43, 22, 8, 4); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(38, 49); ctx.lineTo(22, 63); ctx.lineTo(36, 56); ctx.closePath(); ctx.fill();
     } else if (accessory === 'collar') {
-      ctx.strokeStyle = '#d88bc6'; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(29, 58, 19, .05, Math.PI - .05); ctx.stroke();
-      ctx.fillStyle = '#f4d8ef'; ctx.beginPath(); ctx.arc(29, 70, 4, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#d88bc6'; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(39, 45, 14, -.9, .95); ctx.stroke();
+      ctx.fillStyle = '#f4d8ef'; ctx.beginPath(); ctx.arc(39, 56, 4, 0, Math.PI * 2); ctx.fill();
     }
+  }
+
+  function drawHeadAccessory(accessory) {
+    if (accessory === 'cap') {
+      ctx.fillStyle = '#45639a';
+      drawRoundedRect(38, 13, 30, 10, 5); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(67, 23, 13, 4, .1, 0, Math.PI * 2); ctx.fill();
+    } else if (accessory === 'crown') {
+      ctx.fillStyle = '#f5c14d';
+      ctx.beginPath(); ctx.moveTo(36, 15); ctx.lineTo(42, 2); ctx.lineTo(49, 15); ctx.lineTo(56, 2); ctx.lineTo(63, 16); ctx.closePath(); ctx.fill();
+    } else if (accessory === 'glasses') {
+      ctx.strokeStyle = '#243123'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(57, 29, 6, 0, Math.PI * 2); ctx.moveTo(63, 29); ctx.lineTo(69, 29); ctx.stroke();
+    } else if (accessory === 'flower' || accessory === 'clover' || accessory === 'bow' || accessory === 'star' || accessory === 'moon_pin' || accessory === 'rainbow') {
+      const glyph = {flower: '🌼', clover: '☘️', bow: '🎀', star: '⭐', moon_pin: '🌙', rainbow: '🌈'}[accessory];
+      ctx.font = '18px system-ui';
+      ctx.fillText(glyph, accessory === 'rainbow' ? 34 : 31, 18);
+    }
+  }
+
+  function drawBootAccessory(accessory) {
+    if (!['rainbow', 'backpack', 'cap'].includes(accessory)) return;
+    ctx.fillStyle = accessory === 'rainbow' ? '#ed8540' : '#45639a';
+    drawRoundedRect(5, 63, 20, 8, 4); ctx.fill();
+    drawRoundedRect(38, 63, 24, 8, 4); ctx.fill();
   }
 
   function drawObstacle(o) {
