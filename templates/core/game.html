@@ -32,15 +32,24 @@
             </fieldset>
             {% endif %}
             <div id="modeStep" class="mode-step">
-            <fieldset class="challenge-picker challenge-slider" aria-label="Modo desafío">
-              <legend>Modo</legend>
-              <label class="challenge-card"><input type="radio" name="challengeMode" value="normal" checked><span>Normal</span><small>Clásico</small></label>
-              <label class="challenge-card"><input type="radio" name="challengeMode" value="timed"><span>60 segundos</span><small>Contrarreloj</small></label>
-              <label class="challenge-card"><input type="radio" name="challengeMode" value="one_life"><span>Una vida</span><small>Sin errores</small></label>
-              <label class="challenge-card"><input type="radio" name="challengeMode" value="high_carrots"><span>Zanahorias altas</span><small>Saltos precisos</small></label>
-              <label class="challenge-card"><input type="radio" name="challengeMode" value="fast_forest"><span>Bosque veloz</span><small>Ritmo intenso</small></label>
-            </fieldset>
-            <button id="confirmModeButton" class="button button-primary" type="button">Elegir modo</button>
+            <div class="mode-selector" aria-label="Selector de modo desafío">
+              <div class="mode-selector-top">
+                <span class="mode-selector-label">Modo</span>
+                <span class="mode-selector-hint">Deslizá o usá las flechas</span>
+              </div>
+              <button class="mode-selector-arrow mode-selector-prev" type="button" aria-label="Modo anterior" data-mode-direction="-1">‹</button>
+              <fieldset class="challenge-picker challenge-slider" aria-label="Modo desafío">
+                <legend>Modo desafío</legend>
+                <label class="challenge-card"><input type="radio" name="challengeMode" value="normal" checked><span>Normal</span><small>Clásico</small></label>
+                <label class="challenge-card"><input type="radio" name="challengeMode" value="timed"><span>60 segundos</span><small>Contrarreloj</small></label>
+                <label class="challenge-card"><input type="radio" name="challengeMode" value="one_life"><span>Una vida</span><small>Sin errores</small></label>
+                <label class="challenge-card"><input type="radio" name="challengeMode" value="high_carrots"><span>Zanahorias altas</span><small>Saltos precisos</small></label>
+                <label class="challenge-card"><input type="radio" name="challengeMode" value="fast_forest"><span>Bosque veloz</span><small>Ritmo intenso</small></label>
+              </fieldset>
+              <button class="mode-selector-arrow mode-selector-next" type="button" aria-label="Modo siguiente" data-mode-direction="1">›</button>
+              <div class="mode-selector-dots" aria-hidden="true"></div>
+            </div>
+            <button id="confirmModeButton" class="button button-primary" type="button">Elegir modo seleccionado</button>
             </div>
             <div id="nicknameStep" class="nickname-step hidden">
               <p class="selected-mode-copy">Modo elegido: <strong id="selectedModeName">Normal</strong></p>
