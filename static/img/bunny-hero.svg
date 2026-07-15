@@ -9,8 +9,8 @@
       <ellipse cx="224" cy="331" rx="142" ry="40" fill="#617F4C" opacity=".18"/>
       <circle cx="408" cy="220" r="34" fill="#FFFDF8" stroke="#5C5047" stroke-width="8"/>
       <g transform="translate(-46 0)">
-        <path d="M203 336c23-17 62-19 81-4 16 13 13 33-7 45-23 8-59 3-77-11-16-13-15-23 3-30z" fill="#FFFDF8" stroke="#5C5047" stroke-linecap="round" stroke-linejoin="round" stroke-width="8"/>
-        <path d="M212 362c20 9 45 9 66 0M238 365c-9-12-22-22-38-31" stroke="#5C5047" stroke-linecap="round" stroke-width="4" opacity=".55"/>
+        <path d="M162 337c23-17 62-19 81-4 16 13 13 33-7 45-23 8-59 3-77-11-16-13-15-23 3-30z" fill="#FFFDF8" stroke="#5C5047" stroke-linecap="round" stroke-linejoin="round" stroke-width="8"/>
+        <path d="M171 363c20 9 45 9 66 0M197 366c-9-12-22-22-38-31" stroke="#5C5047" stroke-linecap="round" stroke-width="4" opacity=".55"/>
       </g>
       <path d="M120 215c30-70 105-106 181-86 58 15 99 58 108 111 9 57-21 101-80 119-57 18-132 8-179-25-44-30-53-72-30-119z" fill="#FFFDF8" stroke="#5C5047" stroke-width="8"/>
       <path d="M75 149c-31-54-34-98-8-107 27-9 47 32 44 96" fill="#FFFDF8" stroke="#5C5047" stroke-width="8"/>
