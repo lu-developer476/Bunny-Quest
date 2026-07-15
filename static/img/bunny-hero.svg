@@ -7,8 +7,8 @@
     </g>
     <g transform="translate(124 82)">
       <ellipse cx="224" cy="331" rx="142" ry="40" fill="#617F4C" opacity=".18"/>
+      <circle cx="408" cy="220" r="34" fill="#FFFDF8" stroke="#5C5047" stroke-width="8"/>
       <path d="M120 215c30-70 105-106 181-86 58 15 99 58 108 111 9 57-21 101-80 119-57 18-132 8-179-25-44-30-53-72-30-119z" fill="#FFFDF8" stroke="#5C5047" stroke-width="8"/>
-      <path d="M107 235c-46-3-78 21-79 57-1 37 32 60 77 51 33-7 54-30 54-59 0-28-20-47-52-49z" fill="#FFFDF8" stroke="#5C5047" stroke-width="8"/>
       <path d="M75 149c-31-54-34-98-8-107 27-9 47 32 44 96" fill="#FFFDF8" stroke="#5C5047" stroke-width="8"/>
       <path d="M111 144c1-62 22-101 50-94 29 8 28 68-5 129" fill="#FFFDF8" stroke="#5C5047" stroke-width="8"/>
       <path d="M80 143c-18-41-18-70-3-75 16-4 29 26 23 72M121 143c4-43 18-69 33-64 15 6 12 43-9 86" fill="#E8B1A7"/>
@@ -20,6 +20,8 @@
       <path d="M98 223v14m0 0c-8 9-18 10-27 4m27-4c8 9 18 10 28 4" stroke="#5C5047" stroke-linecap="round" stroke-width="5"/>
       <circle cx="48" cy="218" r="8" fill="#F0B7AD" opacity=".65"/>
       <circle cx="148" cy="218" r="8" fill="#F0B7AD" opacity=".65"/>
+      <path d="M64 265c-23 27-27 59-7 77 19 17 48 2 56-31" fill="#FFFDF8" stroke="#5C5047" stroke-linecap="round" stroke-linejoin="round" stroke-width="8"/>
+      <path d="M119 265c19 29 18 61-4 78-21 15-48-4-52-38" fill="#FFFDF8" stroke="#5C5047" stroke-linecap="round" stroke-linejoin="round" stroke-width="8"/>
       <path d="M332 309c42 3 72 19 86 47-35 11-78 5-129-19" fill="#FFFDF8" stroke="#5C5047" stroke-linecap="round" stroke-linejoin="round" stroke-width="8"/>
       <path d="M209 254c25 27 57 37 96 29" stroke="#DDE9D1" stroke-linecap="round" stroke-width="11"/>
     </g>
