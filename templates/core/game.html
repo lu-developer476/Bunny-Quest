@@ -24,8 +24,13 @@
             <span class="overlay-bunny">🐇</span>
             <h2 id="overlayTitle">¿Listo para saltar?</h2>
             <p id="overlayText">Juntá zanahorias, esquivá troncos y no pierdas el ritmo.</p>
+            <button id="restartGameButton" class="button button-primary hidden" type="button">Jugar otra vez</button>
+            <button id="shareResultButton" class="button button-ghost hidden" type="button">Compartir resultado</button>
+            <a id="rankingLink" class="text-link hidden" href="{% url 'leaderboard' %}">Ver ranking →</a>
+          </div>
+          <div class="setup-popups" aria-label="Configuración de la partida">
             {% if user.is_authenticated %}
-            <div id="bunnyStep" class="bunny-step">
+            <div id="bunnyStep" class="bunny-step setup-popup">
               <fieldset class="bunny-runner-picker" aria-label="Conejo para jugar">
                 <legend>Elegí tu conejo</legend>
                 <label class="bunny-runner-card"><input type="radio" name="runnerBunny" value="nube"><span class="runner-bunny-preview color-snow accessory-none">🐇</span><strong>Nube</strong><small>El clásico</small></label>
@@ -34,7 +39,7 @@
               <button id="confirmBunnyButton" class="button button-primary" type="button">Aceptar conejo</button>
             </div>
             {% endif %}
-            <div id="modeStep" class="mode-step{% if user.is_authenticated %} hidden{% endif %}">
+            <div id="modeStep" class="mode-step setup-popup{% if user.is_authenticated %} hidden{% endif %}">
             <div class="mode-selector" aria-label="Selector de modo desafío">
               <div class="mode-selector-top">
                 <span class="mode-selector-label">Modo</span>
@@ -55,16 +60,13 @@
             {% if user.is_authenticated %}<button id="backToBunnyButton" class="button button-ghost" type="button">Cambiar conejo</button>{% endif %}
             <button id="confirmModeButton" class="button button-primary" type="button">Aceptar modo</button>
             </div>
-            <div id="nicknameStep" class="nickname-step hidden">
+            <div id="nicknameStep" class="nickname-step setup-popup hidden">
               <p class="selected-mode-copy">Modo elegido: <strong id="selectedModeName">Normal</strong></p>
               <label class="nickname-field" for="nicknameInput">Tu apodo</label>
               <input id="nicknameInput" maxlength="24" value="{{ default_nickname }}" autocomplete="nickname">
               <button id="backToModesButton" class="button button-ghost" type="button">Cambiar modo</button>
               <button id="startGameButton" class="button button-primary" type="button">Empezar partida</button>
             </div>
-            <button id="restartGameButton" class="button button-primary hidden" type="button">Jugar otra vez</button>
-            <button id="shareResultButton" class="button button-ghost hidden" type="button">Compartir resultado</button>
-            <a id="rankingLink" class="text-link hidden" href="{% url 'leaderboard' %}">Ver ranking →</a>
           </div>
         </div>
         <button id="touchJump" class="touch-jump" type="button" aria-label="Saltar">SALTAR</button>
