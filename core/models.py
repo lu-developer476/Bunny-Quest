@@ -42,10 +42,10 @@ class PlayerProfile(models.Model):
     bunny_breed = models.CharField("raza", max_length=16, choices=BUNNY_BREEDS, default="lop")
     bunny_color = models.CharField("pelaje", max_length=12, choices=BUNNY_COLORS, default="snow")
     bunny_accessory = models.CharField(
-        "accesorio",
-        max_length=16,
-        choices=BUNNY_ACCESSORIES,
+        "accesorios",
+        max_length=100,
         default="none",
+        help_text="Hasta 5 accesorios separados por comas.",
     )
     THEME_WHITE = "white"
     THEME_LIGHT_GREY = "light_grey"
@@ -64,6 +64,24 @@ class PlayerProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.username} · {self.bunny_name}"
+
+    @property
+    def equipped_accessories(self):
+        return [item for item in self.bunny_accessory.split(",") if item and item != "none"]
+
+    @property
+    def equipped_accessories_csv(self):
+        equipped = self.equipped_accessories[:5]
+        return ",".join(equipped) if equipped else "none"
+
+    @property
+    def equipped_accessories_display(self):
+        labels = dict(self.BUNNY_ACCESSORIES)
+        equipped = self.equipped_accessories
+        return ", ".join(labels.get(item, item) for item in equipped) if equipped else labels["none"]
+
+    def get_bunny_accessory_display(self):
+        return self.equipped_accessories_display
 
     @property
     def stats(self):
