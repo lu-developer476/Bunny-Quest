@@ -20,6 +20,8 @@
   const restartButton = document.getElementById('restartGameButton');
   const rankingLink = document.getElementById('rankingLink');
   const shareButton = document.getElementById('shareResultButton');
+  const closeResultButton = document.getElementById('closeResultButton');
+  const closeSetupButton = document.getElementById('closeSetupButton');
   const pauseButton = document.getElementById('pauseGameButton');
   const quickRestartButton = document.getElementById('quickRestartGameButton');
   const soundButton = document.getElementById('soundButton');
@@ -73,6 +75,19 @@
     high_carrots: 'Zanahorias altas',
     fast_forest: 'Bosque veloz'
   };
+
+  const MODE_LIVES = {
+    normal: {start: 2, max: 5},
+    timed: {start: 5, max: 5},
+    one_life: {start: 1, max: 1},
+    high_carrots: {start: 2, max: 5},
+    fast_forest: {start: 2, max: 5}
+  };
+
+  function livesForMode(mode = currentMode) {
+    return MODE_LIVES[mode] || MODE_LIVES.normal;
+  }
+
   const bunnyPalette = {
     snow: {fur: '#fdfcf8', shade: '#f1eee5'},
     cocoa: {fur: '#c99d7e', shade: '#b98262'},
@@ -151,7 +166,7 @@
   function reset() {
     Object.assign(game, {
       running: false, paused: false, over: false, speed: 315, distance: 0,
-      score: 0, carrots: 0, lives: currentMode === 'one_life' ? 1 : 3, level: 1, combo: 1, comboTimer: 0, shield: 0,
+      score: 0, carrots: 0, lives: livesForMode().start, level: 1, combo: 1, comboTimer: 0, shield: 0,
       scoreMultiplier: 1, scoreMultiplierTimer: 0, wingTimer: 0, mintTimer: 0, tutorialStep: 0, tutorialTimer: 3.8, toast: null,
       spawnTimer: 2.2, carrotTimer: .75, particles: [], obstacles: [], pickups: [], timeLeft: currentMode === 'timed' ? 60 : null
     });
@@ -221,12 +236,12 @@
       rock: {w: 45 + Math.random() * 20, h: 46 + Math.random() * 18, y: groundY - 56},
       fox: {w: 86, h: 42, y: groundY - 42},
       puddle: {w: 92, h: 18, y: groundY - 14, soft: true},
-      branch: {w: 112, h: 28, y: groundY - 158},
+      branch: {w: 112, h: 28, y: groundY - 158, wind: true},
       thorns: {w: 100, h: 34, y: groundY - 34},
       owl: {w: 62, h: 44, y: groundY - 215 - Math.random() * 35}
     };
     const spec = specs[type];
-    game.obstacles.push({x: WORLD_W + 40, y: spec.y, w: spec.w, h: spec.h, type, hit: false, soft: Boolean(spec.soft), flap: Math.random() * 6});
+    game.obstacles.push({x: WORLD_W + 40, y: spec.y, baseY: spec.y, w: spec.w, h: spec.h, type, hit: false, soft: Boolean(spec.soft), flap: Math.random() * 6, wind: Boolean(spec.wind)});
   }
 
   function spawnCarrot() {
@@ -303,6 +318,7 @@
     for (const obstacle of game.obstacles) {
       obstacle.x -= game.speed * speedFactor * (obstacle.tutorial ? .62 : 1) * dt;
       if (obstacle.type === 'owl') obstacle.y += Math.sin(game.distance * .02 + obstacle.flap) * 18 * dt;
+      if (obstacle.type === 'branch') obstacle.y = obstacle.baseY + Math.sin(game.distance * .018 + obstacle.flap) * 12;
       if (!obstacle.hit && rabbit.invuln <= 0 && intersects(rabbit, obstacle, obstacle.soft ? 4 : 12)) {
         obstacle.hit = true;
         rabbit.invuln = obstacle.soft ? .55 : 1.35;
@@ -372,7 +388,7 @@
     } else if (pickup.type === 'mint') {
       game.mintTimer = 5.5; game.score += spec.points;
     } else if (pickup.type === 'heart') {
-      game.lives = Math.min(3, game.lives + 1); game.score += spec.points;
+      game.lives = Math.min(livesForMode().max, game.lives + 1); game.score += spec.points;
     }
     emitParticles(pickup.x + pickup.w / 2, pickup.y + pickup.h / 2, 12, spec.color);
     beep(620 + game.combo * 35, .07, 'triangle', .035);
@@ -382,7 +398,7 @@
     scoreEl.textContent = Math.floor(game.score).toLocaleString('es-AR');
     carrotEl.textContent = game.carrots;
     levelEl.textContent = game.level;
-    livesEl.textContent = `${game.timeLeft !== null ? '⏱️ ' + Math.ceil(game.timeLeft) + 's · ' : ''}${'♥'.repeat(Math.max(0, game.lives))}${'♡'.repeat(Math.max(0, (currentMode === 'one_life' ? 1 : 3) - game.lives))}${game.shield ? ' 🛡️' : ''}${game.scoreMultiplier > 1 ? ' ×2' : ''}${game.wingTimer > 0 ? ' 🪽' : ''}${game.mintTimer > 0 ? ' 🌿' : ''}`;
+    livesEl.textContent = `${game.timeLeft !== null ? '⏱️ ' + Math.ceil(game.timeLeft) + 's · ' : ''}${'♥'.repeat(Math.max(0, game.lives))}${'♡'.repeat(Math.max(0, livesForMode().max - game.lives))}${game.shield ? ' 🛡️' : ''}${game.scoreMultiplier > 1 ? ' ×2' : ''}${game.wingTimer > 0 ? ' 🪽' : ''}${game.mintTimer > 0 ? ' 🌿' : ''}`;
   }
 
   async function endGame() {
@@ -397,6 +413,7 @@
     restartButton.classList.remove('hidden');
     rankingLink.classList.remove('hidden');
     shareButton?.classList.remove('hidden');
+    closeResultButton?.classList.remove('hidden');
     bunnyStep?.classList.add('hidden');
     modeStep.classList.add('hidden');
     nicknameStep.classList.add('hidden');
@@ -709,6 +726,11 @@
       ctx.fillStyle = '#5da7b1'; ctx.beginPath(); ctx.ellipse(o.x + o.w / 2, o.y + o.h / 2, o.w / 2, o.h, 0, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = 'rgba(255,255,255,.42)'; ctx.beginPath(); ctx.ellipse(o.x + 28, o.y + 6, 18, 4, -.2, 0, Math.PI * 2); ctx.fill();
     } else if (o.type === 'branch') {
+      ctx.strokeStyle = 'rgba(255,255,255,.58)'; ctx.lineWidth = 2; ctx.lineCap = 'round';
+      for (let i = 0; i < 3; i += 1) {
+        const wy = o.y - 24 + i * 18 + Math.sin(game.distance * .03 + o.flap + i) * 5;
+        ctx.beginPath(); ctx.moveTo(o.x - 28 + i * 12, wy); ctx.quadraticCurveTo(o.x + 18, wy - 10, o.x + 64, wy); ctx.stroke();
+      }
       ctx.strokeStyle = '#76513a'; ctx.lineWidth = 12; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(o.x, o.y + 16); ctx.lineTo(o.x + o.w, o.y + 7); ctx.stroke();
       ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(o.x + 55, o.y + 12); ctx.lineTo(o.x + 78, o.y - 12); ctx.stroke();
     } else if (o.type === 'thorns') {
@@ -876,6 +898,10 @@
     draw();
   }
 
+  function closeGameOverlay() {
+    overlay.classList.add('hidden');
+  }
+
   function showBunnyStep() {
     bunnyStep?.classList.remove('hidden');
     modeStep.classList.add('hidden');
@@ -908,6 +934,8 @@
     startGame();
   });
   shareButton?.addEventListener('click', () => { shareResult().catch(() => {}); });
+  closeResultButton?.addEventListener('click', closeGameOverlay);
+  closeSetupButton?.addEventListener('click', closeGameOverlay);
   function renderSoundButton() {
     soundButton.setAttribute('aria-pressed', String(soundEnabled));
     soundButton.textContent = `Sonido: ${soundEnabled ? 'sí' : 'no'}`;
