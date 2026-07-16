@@ -2,11 +2,13 @@ import json
 from datetime import timedelta
 
 from django.contrib.auth.models import User
+from django.http import QueryDict
 from django.test import Client, TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from .models import GameScore, GameSession, PlayerAchievement, PlayerProfile
+from .forms import ProfileForm
+from .models import AccessoryPurchase, GameScore, GameSession, PlayerAchievement, PlayerProfile
 
 
 class PublicPagesTests(TestCase):
@@ -111,3 +113,51 @@ class RewardsTests(TestCase):
         self.assertContains(response, "Misiones diarias")
         self.assertContains(response, "Insignias del bosque")
         self.assertContains(response, "Desbloqueás más accesorios")
+
+
+
+class AccessoryEquipmentTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user("sol", password="StrongPass123!")
+        self.profile = self.user.player_profile
+        for accessory in ["scarf", "flower", "bow", "clover", "cap", "collar"]:
+            AccessoryPurchase.objects.create(user=self.user, accessory=accessory)
+
+    def test_profile_form_allows_up_to_five_equipped_accessories(self):
+        data = QueryDict(mutable=True)
+        data.update({
+            "username": "sol",
+            "bunny_name": "Nube",
+            "bunny_breed": "lop",
+            "bunny_color": "snow",
+            "preferred_theme": "white",
+        })
+        data.setlist("bunny_accessory", ["scarf", "flower", "bow", "clover", "cap"])
+        form = ProfileForm(
+            data=data,
+            instance=self.profile,
+            user=self.user,
+        )
+
+        self.assertTrue(form.is_valid(), form.errors)
+        profile = form.save()
+        self.assertEqual(profile.equipped_accessories, ["scarf", "flower", "bow", "clover", "cap"])
+
+    def test_profile_form_rejects_more_than_five_equipped_accessories(self):
+        data = QueryDict(mutable=True)
+        data.update({
+            "username": "sol",
+            "bunny_name": "Nube",
+            "bunny_breed": "lop",
+            "bunny_color": "snow",
+            "preferred_theme": "white",
+        })
+        data.setlist("bunny_accessory", ["scarf", "flower", "bow", "clover", "cap", "collar"])
+        form = ProfileForm(
+            data=data,
+            instance=self.profile,
+            user=self.user,
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("Podés equipar hasta 5 accesorios", form.errors["bunny_accessory"][0])

@@ -587,23 +587,23 @@
     ctx.fillStyle = colors.fur;
     ctx.beginPath(); ctx.ellipse(50, 35, 18, 15, .04, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
     ctx.fillStyle = colors.fur;
-    ctx.beginPath(); ctx.ellipse(65, 38, 8.5, 6.2, .12, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(64, 37.5, 6.2, 4.6, .12, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
 
     ctx.fillStyle = '#493f38';
-    ctx.beginPath(); ctx.arc(57, 33, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(57, 30.5, 3, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = 'rgba(255,255,255,.75)';
-    ctx.beginPath(); ctx.arc(58, 32, 1, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(58, 29.5, 1, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#c9797d';
-    ctx.beginPath(); ctx.ellipse(70, 38, 3.7, 2.8, .04, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(68.8, 37.5, 2.3, 1.7, .04, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = 'rgba(255,255,255,.45)';
-    ctx.beginPath(); ctx.arc(71, 37, .9, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(69.4, 37, .55, 0, Math.PI * 2); ctx.fill();
     ctx.strokeStyle = '#66574b'; ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(66, 43); ctx.quadraticCurveTo(61, 47, 55, 44); ctx.stroke();
     ctx.strokeStyle = '#5e5148'; ctx.lineWidth = 1.25;
     ctx.beginPath();
-    ctx.moveTo(67, 37); ctx.lineTo(78, 33);
-    ctx.moveTo(68, 39); ctx.lineTo(80, 39);
-    ctx.moveTo(67, 41); ctx.lineTo(78, 45);
+    ctx.moveTo(66.5, 37); ctx.lineTo(73.5, 34.5);
+    ctx.moveTo(67, 38.5); ctx.lineTo(75, 38.5);
+    ctx.moveTo(66.5, 40); ctx.lineTo(73.5, 43);
     ctx.stroke();
 
     accessories.forEach(drawBodyAccessory);

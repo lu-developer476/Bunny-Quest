@@ -40,12 +40,22 @@ class SignUpForm(UserCreationForm):
 
 class ProfileForm(forms.ModelForm):
     username = forms.CharField(label="Usuario", max_length=150)
+    bunny_accessory = forms.MultipleChoiceField(
+        label="Accesorios",
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+    )
 
     def __init__(self, *args, user=None, **kwargs):
         self.user = user
         super().__init__(*args, **kwargs)
         if user is not None:
             self.fields["username"].initial = user.username
+        self.fields["bunny_accessory"] = forms.MultipleChoiceField(
+            label="Accesorios",
+            required=False,
+            widget=forms.CheckboxSelectMultiple,
+        )
         unlocked = {"none"}
         if user is not None:
             unlocked.update(
@@ -53,12 +63,20 @@ class ProfileForm(forms.ModelForm):
                 .values_list("achievement__accessory_reward", flat=True)
             )
             unlocked.update(user.accessory_purchases.values_list("accessory", flat=True))
-        current = self.instance.bunny_accessory if self.instance and self.instance.pk else "none"
-        unlocked.add(current)
+        current = set(self.instance.equipped_accessories if self.instance and self.instance.pk else [])
+        unlocked.update(current)
         self.fields["bunny_accessory"].choices = [
-            choice for choice in PlayerProfile.BUNNY_ACCESSORIES if choice[0] in unlocked
+            choice for choice in PlayerProfile.BUNNY_ACCESSORIES if choice[0] in unlocked and choice[0] != "none"
         ]
-        self.fields["bunny_accessory"].help_text = "Desbloqueás más accesorios con insignias o comprándolos en la tienda."
+        self.fields["bunny_accessory"].initial = list(current)
+        self.fields["bunny_accessory"].help_text = "Desbloqueás más accesorios con insignias o comprándolos en la tienda. Podés equipar hasta 5 a la vez."
+
+    def clean_bunny_accessory(self):
+        selected = [item for item in self.cleaned_data.get("bunny_accessory", []) if item != "none"]
+        unique_selected = list(dict.fromkeys(selected))
+        if len(unique_selected) > 5:
+            raise forms.ValidationError("Podés equipar hasta 5 accesorios a la vez.")
+        return unique_selected
 
     def clean_username(self):
         username = self.cleaned_data["username"].strip()
@@ -72,7 +90,11 @@ class ProfileForm(forms.ModelForm):
         return username
 
     def save(self, commit=True):
-        profile = super().save(commit=commit)
+        profile = super().save(commit=False)
+        accessories = self.cleaned_data.get("bunny_accessory", [])[:5]
+        profile.bunny_accessory = ",".join(accessories) if accessories else "none"
+        if commit:
+            profile.save()
         if self.user is not None:
             self.user.username = self.cleaned_data["username"]
             if commit:

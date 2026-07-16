@@ -361,9 +361,17 @@ def buy_accessory(request):
             return redirect("profile")
         AccessoryPurchase.objects.get_or_create(user=request.user, accessory=accessory)
         profile.coin_balance -= item["price"]
-        profile.bunny_accessory = accessory
+        equipped = profile.equipped_accessories
+        equipped_after_purchase = accessory in equipped
+        if accessory not in equipped and len(equipped) < 5:
+            equipped.append(accessory)
+            equipped_after_purchase = True
+        profile.bunny_accessory = ",".join(equipped) if equipped else "none"
         profile.save(update_fields=["coin_balance", "bunny_accessory"])
-    messages.success(request, f"Compraste {item['name']} y lo equipamos en tu conejo.")
+    if equipped_after_purchase:
+        messages.success(request, f"Compraste {item['name']} y lo equipamos en tus conejos.")
+    else:
+        messages.success(request, f"Compraste {item['name']}. Podés equiparlo desde Personalización cuando liberes un espacio.")
     return redirect("profile")
 
 

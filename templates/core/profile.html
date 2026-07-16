@@ -4,7 +4,7 @@
 <section class="page-header container profile-header burrow-header">
   <div><span class="eyebrow">Mi madriguera</span><h1>Hola, {{ user.username }}.</h1><p>Tu refugio reúne identidad, récords, racha diaria, vitrina de logros y recuerdos de las últimas carreras.</p></div>
   <article class="burrow-bunny-card">
-    <span class="profile-bunny color-{{ user.player_profile.bunny_color }} accessory-{{ user.player_profile.bunny_accessory }}" aria-hidden="true">🐇</span>
+    <span class="profile-bunny color-{{ user.player_profile.bunny_color }} accessory-{{ user.player_profile.equipped_accessories.0|default:'none' }}" aria-hidden="true">🐇</span>
     <div><strong>{{ user.player_profile.bunny_name }}</strong><small>{{ user.player_profile.get_bunny_breed_display }} · {{ user.player_profile.get_bunny_color_display }}</small><small>{{ user.player_profile.get_bunny_accessory_display }}</small></div>
   </article>
 </section>
