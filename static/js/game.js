@@ -16,9 +16,7 @@
   const modeStep = document.getElementById('modeStep');
   const nicknameStep = document.getElementById('nicknameStep');
   const selectedModeName = document.getElementById('selectedModeName');
-  const modeSlider = document.querySelector('.challenge-slider');
-  const modeCards = Array.from(document.querySelectorAll('.challenge-card'));
-  const modeDots = document.querySelector('.mode-selector-dots');
+  const modeSelect = document.getElementById('challengeModeSelect');
   const restartButton = document.getElementById('restartGameButton');
   const rankingLink = document.getElementById('rankingLink');
   const shareButton = document.getElementById('shareResultButton');
@@ -65,8 +63,7 @@
     name: canvas.dataset.customBunnyName || 'Personalizado'
   };
   let activeBunny = {...defaultBunny};
-  const selectedModeInput = document.querySelector('input[name=challengeMode]:checked');
-  let currentMode = selectedModeInput?.value || 'normal';
+  let currentMode = modeSelect?.value || 'normal';
   const currentTheme = canvas.dataset.theme || 'white';
   const modeLabels = {
     normal: 'Normal',
@@ -813,46 +810,11 @@
   });
   jumpButton.addEventListener('pointerdown', event => { event.preventDefault(); jump(); });
   canvas.addEventListener('pointerdown', jump);
-  function syncModeSelection(options = {}) {
+  function syncModeSelection() {
+    if (modeSelect && modeSelect.value !== currentMode) modeSelect.value = currentMode;
     selectedModeName.textContent = modeLabels[currentMode] || currentMode;
-    modeCards.forEach((card, index) => {
-      const input = card.querySelector('input[name=challengeMode]');
-      const selected = input?.value === currentMode;
-      card.classList.toggle('is-selected', selected);
-      if (modeDots?.children[index]) modeDots.children[index].classList.toggle('active', selected);
-      if (selected && options.scroll !== false) {
-        card.scrollIntoView({behavior: options.instant ? 'auto' : 'smooth', inline: 'center', block: 'nearest'});
-      }
-    });
     document.body.classList.toggle('light-grey-game', currentTheme === 'light_grey');
     draw();
-  }
-
-  function selectModeByIndex(index, options = {}) {
-    if (!modeCards.length) return;
-    const safeIndex = Math.max(0, Math.min(modeCards.length - 1, index));
-    const input = modeCards[safeIndex].querySelector('input[name=challengeMode]');
-    if (!input) return;
-    input.checked = true;
-    currentMode = input.value;
-    syncModeSelection(options);
-    loadLeaderboard();
-  }
-
-  function selectNearestModeFromScroll() {
-    if (!modeSlider || !modeCards.length) return;
-    const sliderCenter = modeSlider.getBoundingClientRect().left + modeSlider.clientWidth / 2;
-    let nearestIndex = 0;
-    let nearestDistance = Infinity;
-    modeCards.forEach((card, index) => {
-      const rect = card.getBoundingClientRect();
-      const distance = Math.abs(rect.left + rect.width / 2 - sliderCenter);
-      if (distance < nearestDistance) {
-        nearestDistance = distance;
-        nearestIndex = index;
-      }
-    });
-    selectModeByIndex(nearestIndex, {scroll: false});
   }
 
   function showBunnyStep() {
@@ -904,26 +866,11 @@
     });
     if (input.checked) activeBunny = input.value === 'custom' ? {...customBunny} : {...defaultBunny};
   });
-  if (modeDots && modeCards.length) {
-    modeDots.replaceChildren(...modeCards.map(() => document.createElement('span')));
-  }
-  modeCards.forEach((card, index) => {
-    card.addEventListener('click', () => selectModeByIndex(index));
+  modeSelect?.addEventListener('change', () => {
+    currentMode = modeSelect.value;
+    syncModeSelection();
+    loadLeaderboard();
   });
-  document.querySelectorAll('input[name=challengeMode]').forEach(input => {
-    input.addEventListener('change', () => { currentMode = input.value; syncModeSelection(); loadLeaderboard(); });
-  });
-  document.querySelectorAll('[data-mode-direction]').forEach(button => {
-    button.addEventListener('click', () => {
-      const currentIndex = modeCards.findIndex(card => card.querySelector('input')?.value === currentMode);
-      selectModeByIndex(currentIndex + Number(button.dataset.modeDirection || 0));
-    });
-  });
-  let modeScrollTimer = 0;
-  modeSlider?.addEventListener('scroll', () => {
-    window.clearTimeout(modeScrollTimer);
-    modeScrollTimer = window.setTimeout(selectNearestModeFromScroll, 90);
-  }, {passive: true});
   document.addEventListener('visibilitychange', () => {
     if (document.hidden && game.running && !game.over) game.paused = true;
   });
@@ -931,7 +878,7 @@
   renderSoundButton();
   resizeCanvas();
   reset();
-  syncModeSelection({instant: true});
+  syncModeSelection();
   loadLeaderboard();
 })();
 
