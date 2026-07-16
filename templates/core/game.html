@@ -63,7 +63,10 @@
             </div>
           </div>
         </div>
-        <button id="touchJump" class="touch-jump" type="button" aria-label="Saltar">SALTAR</button>
+      </div>
+      <div class="game-control-bar" aria-label="Controles de partida">
+        <button id="pauseGameButton" class="button button-ghost" type="button">Pausar</button>
+        <button id="quickRestartGameButton" class="button button-primary" type="button">Reiniciar</button>
       </div>
       <div class="game-footer-bar">
         <span><kbd>ESPACIO</kbd> Saltar</span>
@@ -75,8 +78,8 @@
     <aside class="game-side">
       <div class="forest-story-panel">
         <span class="eyebrow">Historia de Nube</span>
-        <h2>Una huerta que espera volver a casa</h2>
-        <p>Nube creció en una familia de conejos jardineros que cuidaba el claro del bosque. Tras la llegada del zorro, cada carrera recupera alimentos, protege senderos y acerca a la madriguera al reencuentro.</p>
+        <h2>Un refugio listo para la próxima carrera</h2>
+        <p>Cuando tocás la pantalla, Nube escucha una señal suave del bosque: saltar justo a tiempo, juntar provisiones y volver con historias nuevas para compartir en la madriguera.</p>
         <button class="button button-primary" type="button" data-open-game-modal>Guía y ranking</button>
       </div>
       {% if daily_missions %}
