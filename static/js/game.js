@@ -20,7 +20,8 @@
   const restartButton = document.getElementById('restartGameButton');
   const rankingLink = document.getElementById('rankingLink');
   const shareButton = document.getElementById('shareResultButton');
-  const jumpButton = document.getElementById('touchJump');
+  const pauseButton = document.getElementById('pauseGameButton');
+  const quickRestartButton = document.getElementById('quickRestartGameButton');
   const soundButton = document.getElementById('soundButton');
   const csrfToken = document.getElementById('csrfToken').value;
   const scoreEl = document.getElementById('scoreValue');
@@ -157,6 +158,7 @@
     Object.assign(game.rabbit, {x: 145, y: groundY - 72, w: 58, h: 72, vy: 0, jumps: 0, invuln: 0, squash: 0});
     maxComboReached = 1;
     updateHud();
+    renderPauseButton();
   }
 
   async function startGame() {
@@ -178,6 +180,7 @@
       reset();
       overlay.classList.add('hidden');
       game.running = true;
+      renderPauseButton();
       startedAt = performance.now();
       previousTime = performance.now();
       cancelAnimationFrame(rafId);
@@ -513,6 +516,13 @@
     ctx.restore();
   }
 
+  function bunnyAccessories() {
+    const raw = activeBunny.accessory || 'none';
+    if (Array.isArray(raw)) return raw.filter(item => item && item !== 'none');
+    if (raw === 'all') return ['backpack', 'scarf', 'collar', 'cap', 'crown', 'glasses', 'flower', 'bow', 'clover', 'star', 'moon_pin', 'rainbow'];
+    return String(raw).split(/[,+\s]+/).map(item => item.trim()).filter(item => item && item !== 'none');
+  }
+
   function drawRabbit() {
     const r = game.rabbit;
     const blink = r.invuln > 0 && Math.floor(r.invuln * 12) % 2 === 0;
@@ -530,7 +540,8 @@
 
     // Side-profile runner: nose to the right and backpack/tail to the left.
     // The silhouette leaves five clear accessory zones: head, neck, body, back and paws.
-    drawBackAccessory(activeBunny.accessory);
+    const accessories = bunnyAccessories();
+    accessories.forEach(drawBackAccessory);
 
     ctx.fillStyle = colors.shade;
     ctx.strokeStyle = '#66574b';
@@ -574,10 +585,10 @@
     ctx.beginPath(); ctx.moveTo(66, 39); ctx.quadraticCurveTo(60, 42, 54, 39); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(68, 34); ctx.lineTo(77, 31); ctx.moveTo(68, 36); ctx.lineTo(78, 37); ctx.stroke();
 
-    drawBodyAccessory(activeBunny.accessory);
-    drawNeckAccessory(activeBunny.accessory);
-    drawHeadAccessory(activeBunny.accessory);
-    drawBootAccessory(activeBunny.accessory);
+    accessories.forEach(drawBodyAccessory);
+    accessories.forEach(drawNeckAccessory);
+    accessories.forEach(drawHeadAccessory);
+    accessories.forEach(drawBootAccessory);
     ctx.restore();
   }
 
@@ -599,8 +610,7 @@
   }
 
   function drawBodyAccessory(accessory) {
-    if (accessorySlot(accessory) !== 'body') return;
-    if (accessory === 'none') return;
+    if (!['star', 'moon_pin', 'rainbow'].includes(accessory)) return;
     const isPin = accessory === 'star' || accessory === 'moon_pin';
     ctx.fillStyle = accessory === 'rainbow' ? '#f4d58d' : '#6f8d64';
     ctx.strokeStyle = '#4f7046';
@@ -636,8 +646,10 @@
       ctx.beginPath(); ctx.arc(57, 29, 6, 0, Math.PI * 2); ctx.moveTo(63, 29); ctx.lineTo(69, 29); ctx.stroke();
     } else if (accessory === 'flower' || accessory === 'clover' || accessory === 'bow' || accessory === 'star' || accessory === 'moon_pin' || accessory === 'rainbow') {
       const glyph = {flower: '🌼', clover: '☘️', bow: '🎀', star: '⭐', moon_pin: '🌙', rainbow: '🌈'}[accessory];
-      ctx.font = '18px system-ui';
-      ctx.fillText(glyph, accessory === 'rainbow' ? 34 : 31, 18);
+      const positions = {flower: [30, 17], clover: [20, 23], bow: [45, 9], star: [18, 50], moon_pin: [25, 58], rainbow: [28, 12]};
+      const [x, y] = positions[accessory] || [31, 18];
+      ctx.font = '16px system-ui';
+      ctx.fillText(glyph, x, y);
     }
   }
 
@@ -749,7 +761,7 @@
     if (!game.paused) return;
     ctx.fillStyle = 'rgba(32,50,28,.58)'; ctx.fillRect(0, 0, WORLD_W, WORLD_H);
     ctx.fillStyle = '#fff'; ctx.font = '800 42px system-ui'; ctx.textAlign = 'center'; ctx.fillText('PAUSA', WORLD_W / 2, WORLD_H / 2);
-    ctx.font = '500 18px system-ui'; ctx.fillText('Presioná P para continuar', WORLD_W / 2, WORLD_H / 2 + 38);
+    ctx.font = '500 18px system-ui'; ctx.fillText('Presioná P o el botón Pausar para continuar', WORLD_W / 2, WORLD_H / 2 + 38);
   }
 
   function draw() {
@@ -775,6 +787,7 @@
     if (!game.running || game.over) return;
     game.paused = !game.paused;
     previousTime = performance.now();
+    renderPauseButton();
   }
 
   async function loadLeaderboard() {
@@ -793,6 +806,19 @@
     }
   }
 
+  function renderPauseButton() {
+    if (!pauseButton) return;
+    pauseButton.textContent = game.paused ? 'Reanudar' : 'Pausar';
+    pauseButton.setAttribute('aria-pressed', String(game.paused));
+  }
+
+  function quickRestart() {
+    if (game.running || game.over) {
+      cancelAnimationFrame(rafId);
+      startGame();
+    }
+  }
+
   function escapeHtml(value) {
     const div = document.createElement('div');
     div.textContent = value;
@@ -808,7 +834,8 @@
     if (['Space', 'ArrowUp', 'KeyW'].includes(event.code)) { event.preventDefault(); jump(); }
     if (event.code === 'KeyP') togglePause();
   });
-  jumpButton.addEventListener('pointerdown', event => { event.preventDefault(); jump(); });
+  pauseButton?.addEventListener('click', togglePause);
+  quickRestartButton?.addEventListener('click', quickRestart);
   canvas.addEventListener('pointerdown', jump);
   function syncModeSelection() {
     if (modeSelect && modeSelect.value !== currentMode) modeSelect.value = currentMode;
@@ -872,10 +899,14 @@
     loadLeaderboard();
   });
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden && game.running && !game.over) game.paused = true;
+    if (document.hidden && game.running && !game.over) {
+      game.paused = true;
+      renderPauseButton();
+    }
   });
 
   renderSoundButton();
+  renderPauseButton();
   resizeCanvas();
   reset();
   syncModeSelection();
