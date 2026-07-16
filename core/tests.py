@@ -22,6 +22,11 @@ class PublicPagesTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertIn(reverse("login"), response.url)
 
+    def test_game_exposes_accessible_sound_control(self):
+        response = self.client.get(reverse("game"))
+        self.assertContains(response, 'id="soundButton"')
+        self.assertContains(response, 'aria-label="Sonido activado"')
+
 
 class ProfileTests(TestCase):
     def test_profile_created_with_user(self):

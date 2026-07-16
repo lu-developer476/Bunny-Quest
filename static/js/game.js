@@ -42,6 +42,9 @@
   const soundPreferenceKey = 'bunnyQuestSoundEnabled';
   let soundEnabled = localStorage.getItem(soundPreferenceKey) !== 'false';
   let audioContext = null;
+  let soundBus = null;
+  let ambienceNodes = [];
+  let ambienceBirdTimer = 0;
   let maxComboReached = 1;
   let finalShareText = '';
   const FOOD_PICKUPS = {
@@ -141,26 +144,106 @@
     ctx.setTransform(canvas.width / WORLD_W, 0, 0, canvas.height / WORLD_H, 0, 0);
   }
 
-  function beep(frequency = 440, duration = .05, type = 'sine', volume = .04, delay = 0) {
-    if (!soundEnabled) return;
-    audioContext ??= new (window.AudioContext || window.webkitAudioContext)();
-    const osc = audioContext.createOscillator();
-    const gain = audioContext.createGain();
-    osc.type = type;
-    const startAt = audioContext.currentTime + delay;
-    osc.frequency.setValueAtTime(frequency, startAt);
-    gain.gain.setValueAtTime(volume, startAt);
-    gain.gain.exponentialRampToValueAtTime(.0001, startAt + duration);
-    osc.connect(gain).connect(audioContext.destination);
-    osc.start(startAt);
-    osc.stop(startAt + duration);
+  function unlockAudio() {
+    if (!audioContext) {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+      audioContext = new AudioContextClass();
+      soundBus = audioContext.createGain();
+      soundBus.gain.value = .72;
+      soundBus.connect(audioContext.destination);
+    }
+    if (audioContext.state === 'suspended') audioContext.resume();
   }
 
-  function playSound(name) {
-    if (name === 'level') [740, 980, 1240].forEach((note, i) => beep(note, .11, 'sine', .035, i * .08));
-    else if (name === 'combo') [520, 780, 1040].forEach((note, i) => beep(note, .08, 'triangle', .035, i * .045));
-    else if (name === 'damage') [180, 130].forEach((note, i) => beep(note, .12, 'sine', .025, i * .08));
-    else if (name === 'record') [660, 880, 990, 1320].forEach((note, i) => beep(note, .12, 'triangle', .04, i * .09));
+  function playTone(frequency, duration, {type = 'sine', volume = .08, endFrequency = frequency, delay = 0} = {}) {
+    if (!audioContext || !soundBus) return;
+    const start = audioContext.currentTime + delay;
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(frequency, start);
+    oscillator.frequency.exponentialRampToValueAtTime(Math.max(20, endFrequency), start + duration);
+    gain.gain.setValueAtTime(.0001, start);
+    gain.gain.exponentialRampToValueAtTime(volume, start + .012);
+    gain.gain.exponentialRampToValueAtTime(.0001, start + duration);
+    oscillator.connect(gain).connect(soundBus);
+    oscillator.start(start);
+    oscillator.stop(start + duration + .02);
+  }
+
+  function playNoise(duration, volume, cutoff = 900) {
+    if (!audioContext || !soundBus) return;
+    const buffer = audioContext.createBuffer(1, Math.ceil(audioContext.sampleRate * duration), audioContext.sampleRate);
+    const samples = buffer.getChannelData(0);
+    for (let i = 0; i < samples.length; i += 1) samples[i] = (Math.random() * 2 - 1) * (1 - i / samples.length);
+    const source = audioContext.createBufferSource();
+    const filter = audioContext.createBiquadFilter();
+    const gain = audioContext.createGain();
+    filter.type = 'lowpass'; filter.frequency.value = cutoff;
+    gain.gain.setValueAtTime(volume, audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(.0001, audioContext.currentTime + duration);
+    source.buffer = buffer;
+    source.connect(filter).connect(gain).connect(soundBus);
+    source.start();
+  }
+
+  function playSound(name, playbackRate = 1) {
+    if (!soundEnabled) return;
+    unlockAudio();
+    const rate = playbackRate;
+    if (name === 'jump') {
+      playTone(310 * rate, .16, {type: 'triangle', volume: .075, endFrequency: 560 * rate});
+      playTone(620 * rate, .08, {volume: .025, endFrequency: 760 * rate, delay: .035});
+    } else if (name === 'collect') {
+      [740, 932, 1175].forEach((note, index) => playTone(note * rate, .16, {type: 'sine', volume: .045, delay: index * .045}));
+    } else if (name === 'hit' || name === 'damage') {
+      playNoise(.22, .11, 620);
+      playTone(165, .28, {type: 'sawtooth', volume: .07, endFrequency: 72});
+    } else if (name === 'start') {
+      [392, 494, 587].forEach((note, index) => playTone(note, .32, {type: 'triangle', volume: .045, delay: index * .075}));
+    } else {
+      [523, 659, 784, 1047].forEach((note, index) => playTone(note, .24, {type: 'sine', volume: .05, delay: index * .06}));
+    }
+  }
+
+  function startAmbience() {
+    if (!soundEnabled) return;
+    unlockAudio();
+    if (!audioContext) return;
+    if (ambienceNodes.length) return;
+    const buffer = audioContext.createBuffer(1, audioContext.sampleRate * 2, audioContext.sampleRate);
+    const samples = buffer.getChannelData(0);
+    for (let i = 0; i < samples.length; i += 1) samples[i] = Math.random() * 2 - 1;
+    const breeze = audioContext.createBufferSource();
+    const filter = audioContext.createBiquadFilter();
+    const breezeGain = audioContext.createGain();
+    const forestBed = audioContext.createOscillator();
+    const bedGain = audioContext.createGain();
+    breeze.buffer = buffer; breeze.loop = true;
+    filter.type = 'lowpass'; filter.frequency.value = 420;
+    breezeGain.gain.value = .018;
+    forestBed.type = 'sine'; forestBed.frequency.value = 174;
+    bedGain.gain.value = .012;
+    breeze.connect(filter).connect(breezeGain).connect(soundBus);
+    forestBed.connect(bedGain).connect(soundBus);
+    breeze.start(); forestBed.start();
+    ambienceNodes = [breeze, forestBed];
+    const playBird = () => {
+      if (game.running && !game.paused && soundEnabled) {
+        playTone(1450, .11, {volume: .018, endFrequency: 2050});
+        playTone(1780, .13, {volume: .014, endFrequency: 1360, delay: .1});
+      }
+    };
+    playBird();
+    ambienceBirdTimer = window.setInterval(playBird, 5200);
+  }
+
+  function stopAmbience() {
+    ambienceNodes.forEach(node => { node.stop(); node.disconnect(); });
+    ambienceNodes = [];
+    if (ambienceBirdTimer) window.clearInterval(ambienceBirdTimer);
+    ambienceBirdTimer = 0;
   }
 
   function reset() {
@@ -200,7 +283,8 @@
       previousTime = performance.now();
       cancelAnimationFrame(rafId);
       rafId = requestAnimationFrame(loop);
-      beep(620, .08, 'triangle');
+      playSound('start');
+      startAmbience();
     } catch (error) {
       overlayText.textContent = 'No pudimos abrir el sendero. Revisá tu conexión e intentá de nuevo.';
     } finally {
@@ -218,7 +302,7 @@
       rabbit.jumps += 1;
       rabbit.squash = .16;
       emitParticles(rabbit.x + 18, groundY - 4, 5, '#c7d8ae');
-      beep(rabbit.jumps === 1 ? 360 : 470, .06, 'square', .025);
+      playSound('jump', rabbit.jumps === 1 ? 1 : 1.17);
     }
   }
 
@@ -391,7 +475,7 @@
       game.lives = Math.min(livesForMode().max, game.lives + 1); game.score += spec.points;
     }
     emitParticles(pickup.x + pickup.w / 2, pickup.y + pickup.h / 2, 12, spec.color);
-    beep(620 + game.combo * 35, .07, 'triangle', .035);
+    playSound(power ? 'reward' : 'collect', Math.min(1.16, .94 + game.combo * .025));
   }
 
   function updateHud() {
@@ -405,6 +489,7 @@
     if (game.over) return;
     game.over = true;
     game.running = false;
+    stopAmbience();
     const duration = Math.max(2000, Math.round(performance.now() - startedAt));
     overlay.classList.remove('hidden');
     overlayTitle.textContent = `Puntaje: ${Math.floor(game.score).toLocaleString('es-AR')}`;
@@ -855,6 +940,8 @@
     if (!game.running || game.over) return;
     game.paused = !game.paused;
     previousTime = performance.now();
+    if (game.paused) stopAmbience();
+    else startAmbience();
     renderPauseButton();
   }
 
@@ -914,6 +1001,7 @@
 
   function closeGameOverlay() {
     overlay.classList.add('hidden');
+    stopAmbience();
   }
 
   function showBunnyStep() {
@@ -952,13 +1040,17 @@
   closeSetupButton?.addEventListener('click', closeGameOverlay);
   function renderSoundButton() {
     soundButton.setAttribute('aria-pressed', String(soundEnabled));
-    soundButton.textContent = `Sonido: ${soundEnabled ? 'sí' : 'no'}`;
+    soundButton.setAttribute('aria-label', `Sonido ${soundEnabled ? 'activado' : 'desactivado'}`);
+    soundButton.textContent = `🔊 Sonido: ${soundEnabled ? 'sí' : 'no'}`;
   }
   soundButton.addEventListener('click', () => {
     soundEnabled = !soundEnabled;
     localStorage.setItem(soundPreferenceKey, String(soundEnabled));
     renderSoundButton();
-    if (soundEnabled) beep(700, .06, 'triangle', .025);
+    if (soundEnabled) {
+      playSound('start');
+      if (game.running && !game.paused) startAmbience();
+    } else stopAmbience();
   });
   document.querySelectorAll('input[name=runnerBunny]').forEach(input => {
     input.addEventListener('change', () => {
@@ -975,6 +1067,7 @@
   document.addEventListener('visibilitychange', () => {
     if (document.hidden && game.running && !game.over) {
       game.paused = true;
+      stopAmbience();
       renderPauseButton();
     }
   });
