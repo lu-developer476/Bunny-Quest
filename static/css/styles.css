@@ -1087,3 +1087,61 @@ body.theme-light-grey .theme-selector select { background: #f7f8f9; }
     scroll-padding-inline: 0;
   }
 }
+
+/* Dropdown mode picker: replace the problematic mobile/tablet card carousel. */
+.mode-selector {
+  padding: 18px;
+  overflow: visible;
+}
+
+.mode-selector .mode-selector-label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.challenge-select {
+  width: 100%;
+  min-height: 54px;
+  padding: 0 48px 0 16px;
+  border: 2px solid var(--leaf);
+  border-radius: 18px;
+  background: var(--leaf-light);
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1.2;
+  box-shadow: inset 0 0 0 1px rgba(79,112,70,.18);
+  cursor: pointer;
+  appearance: auto;
+}
+
+.challenge-select:focus {
+  outline: 3px solid rgba(79,112,70,.24);
+  outline-offset: 2px;
+}
+
+.mode-selector-help {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+@media (max-width: 980px) {
+  .mode-selector {
+    padding: 14px;
+  }
+}
+
+@media (max-width: 720px) {
+  .mode-selector {
+    padding: 12px;
+  }
+
+  .challenge-select {
+    min-height: 50px;
+    font-size: 15px;
+  }
+}

@@ -41,21 +41,15 @@
             {% endif %}
             <div id="modeStep" class="mode-step setup-popup{% if user.is_authenticated %} hidden{% endif %}">
             <div class="mode-selector" aria-label="Selector de modo desafío">
-              <div class="mode-selector-top">
-                <span class="mode-selector-label">Modo</span>
-                <span class="mode-selector-hint">Deslizá o usá las flechas</span>
-              </div>
-              <button class="mode-selector-arrow mode-selector-prev" type="button" aria-label="Modo anterior" data-mode-direction="-1">‹</button>
-              <fieldset class="challenge-picker challenge-slider" aria-label="Modo desafío">
-                <legend>Modo desafío</legend>
-                <label class="challenge-card"><input type="radio" name="challengeMode" value="normal" checked><span>Normal</span><small>Clásico</small></label>
-                <label class="challenge-card"><input type="radio" name="challengeMode" value="timed"><span>60 segundos</span><small>Contrarreloj</small></label>
-                <label class="challenge-card"><input type="radio" name="challengeMode" value="one_life"><span>Una vida</span><small>Sin errores</small></label>
-                <label class="challenge-card"><input type="radio" name="challengeMode" value="high_carrots"><span>Zanahorias altas</span><small>Saltos precisos</small></label>
-                <label class="challenge-card"><input type="radio" name="challengeMode" value="fast_forest"><span>Bosque veloz</span><small>Ritmo intenso</small></label>
-              </fieldset>
-              <button class="mode-selector-arrow mode-selector-next" type="button" aria-label="Modo siguiente" data-mode-direction="1">›</button>
-              <div class="mode-selector-dots" aria-hidden="true"></div>
+              <label class="mode-selector-label" for="challengeModeSelect">Modo</label>
+              <select id="challengeModeSelect" class="challenge-select" name="challengeMode" aria-describedby="challengeModeHelp">
+                <option value="normal" selected>Normal — Clásico</option>
+                <option value="timed">60 segundos — Contrarreloj</option>
+                <option value="one_life">Una vida — Sin errores</option>
+                <option value="high_carrots">Zanahorias altas — Saltos precisos</option>
+                <option value="fast_forest">Bosque veloz — Ritmo intenso</option>
+              </select>
+              <p id="challengeModeHelp" class="mode-selector-help">Elegí el modo desde la lista y confirmá para seguir.</p>
             </div>
             {% if user.is_authenticated %}<button id="backToBunnyButton" class="button button-ghost" type="button">Cambiar conejo</button>{% endif %}
             <button id="confirmModeButton" class="button button-primary" type="button">Aceptar modo</button>
