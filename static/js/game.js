@@ -57,7 +57,7 @@
     clover: {icon: '🛡️', label: 'trébol escudo', points: 120, color: '#53a85c', w: 38, h: 38},
     wing_leaf: {icon: '🪽', label: 'hoja voladora', points: 130, color: '#bfe7cf', w: 44, h: 34},
     mint: {icon: '🌿', label: 'menta', points: 110, color: '#62b987', w: 38, h: 38},
-    heart: {icon: '❤️', label: 'corazón', points: 80, color: '#e15d68', w: 36, h: 34}
+    heart: {icon: '❤️', label: 'corazón', points: 80, color: '#e15d68', w: 44, h: 44}
   };
   const defaultBunny = {color: canvas.dataset.bunnyColor || 'snow', accessory: canvas.dataset.bunnyAccessory || 'none'};
   const customBunny = {
@@ -765,14 +765,28 @@
 
   function drawPickupIcon(p) {
     const spec = FOOD_PICKUPS[p.type] || POWERUPS[p.type] || FOOD_PICKUPS.carrot;
+    const frameRadius = Math.min(p.w, p.h) * .5 - 1.5;
+    const iconSize = Math.min(26, Math.max(18, frameRadius * 1.45));
+
     ctx.save();
     ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
     ctx.rotate(Math.sin(p.spin) * .14);
     ctx.fillStyle = 'rgba(255,255,255,.82)';
     ctx.strokeStyle = spec.color;
     ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.ellipse(0, 0, p.w * .55, p.h * .55, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    ctx.font = '26px system-ui'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.beginPath();
+    ctx.arc(0, 0, frameRadius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // Emoji glyphs have browser-dependent bounds, so clip them to the frame's
+    // padded interior instead of allowing large glyphs (notably ❤️) to spill out.
+    ctx.beginPath();
+    ctx.arc(0, 0, Math.max(0, frameRadius - 3), 0, Math.PI * 2);
+    ctx.clip();
+    ctx.font = `${iconSize}px system-ui`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
     ctx.fillText(spec.icon, 0, 1);
     ctx.restore();
   }
