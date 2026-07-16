@@ -162,9 +162,13 @@ h1, h2 { font-family: 'Fraunces', Georgia, serif; }
 .canvas-wrap { position: relative; overflow: hidden; aspect-ratio: 16 / 9; background: #edf4df; touch-action: manipulation; }
 #gameCanvas { width: 100%; height: 100%; display: block; }
 .game-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 20px; background: rgba(37,54,33,.45); backdrop-filter: blur(5px); }
-.overlay-card { width: min(430px, 94%); padding: 34px; border-radius: 28px; background: rgba(255,255,255,.96); text-align: center; box-shadow: 0 25px 70px rgba(30,44,27,.25); }
-.setup-popups { width: min(620px, 96%); }
-.setup-popup { width: 100%; padding: 22px; border: 1px solid rgba(255,255,255,.72); border-radius: 24px; background: rgba(255,255,255,.98); box-shadow: 0 22px 60px rgba(30,44,27,.25); }
+.overlay-card { position: relative; width: min(430px, 94%); padding: 34px; border-radius: 28px; background: rgba(255,255,255,.96); text-align: center; box-shadow: 0 25px 70px rgba(30,44,27,.25); }
+.setup-popups { position: relative; width: min(620px, 96%); }
+.setup-popup { position: relative; width: 100%; padding: 22px; border: 1px solid rgba(255,255,255,.72); border-radius: 24px; background: rgba(255,255,255,.98); box-shadow: 0 22px 60px rgba(30,44,27,.25); }
+
+.overlay-close { position: absolute; top: 14px; right: 14px; z-index: 3; display: inline-grid; place-items: center; width: 36px; height: 36px; border: 1px solid var(--line); border-radius: 50%; color: var(--ink); background: rgba(255,255,255,.92); font-size: 24px; font-weight: 800; line-height: 1; cursor: pointer; box-shadow: 0 8px 24px rgba(30,44,27,.12); }
+.overlay-close:hover, .overlay-close:focus-visible { border-color: var(--leaf); color: var(--leaf-dark); outline: none; box-shadow: 0 0 0 4px rgba(79,112,70,.12); }
+.setup-close { top: -12px; right: -12px; }
 .overlay-bunny { display: block; font-size: 46px; }
 .overlay-card h2 { margin: 8px 0; font-size: 32px; }
 .overlay-card p { margin: 0 0 20px; color: var(--muted); }

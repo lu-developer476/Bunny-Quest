@@ -15,12 +15,13 @@
         <div><span>Puntos</span><strong id="scoreValue">0</strong></div>
         <div><span>Zanahorias</span><strong id="carrotValue">0</strong></div>
         <div><span>Nivel</span><strong id="levelValue">1</strong></div>
-        <div><span>Vidas</span><strong id="livesValue">♥♥♥</strong></div>
+        <div><span>Vidas</span><strong id="livesValue">♥♥♡♡♡</strong></div>
       </div>
       <div class="canvas-wrap">
         <canvas id="gameCanvas" width="960" height="540" aria-label="Juego del conejo" data-bunny-color="snow" data-bunny-accessory="{{ player_profile.equipped_accessories_csv|default:'none' }}" data-custom-bunny-color="{{ player_profile.bunny_color|default:'snow' }}" data-custom-bunny-accessory="{{ player_profile.equipped_accessories_csv|default:'none' }}" data-custom-bunny-name="{{ player_profile.bunny_name|default:'Nube' }}" data-theme="{{ player_profile.preferred_theme|default:'white' }}"></canvas>
         <div id="gameOverlay" class="game-overlay">
           <div class="overlay-card">
+            <button id="closeResultButton" class="overlay-close hidden" type="button" aria-label="Cerrar resultados">×</button>
             <span class="overlay-bunny">🐇</span>
             <h2 id="overlayTitle">¿Listo para saltar?</h2>
             <p id="overlayText">Juntá zanahorias, esquivá troncos y no pierdas el ritmo.</p>
@@ -29,6 +30,7 @@
             <a id="rankingLink" class="text-link hidden" href="{% url 'leaderboard' %}">Ver ranking →</a>
           </div>
           <div class="setup-popups" aria-label="Configuración de la partida">
+            <button id="closeSetupButton" class="overlay-close setup-close" type="button" aria-label="Cerrar configuración">×</button>
             {% if user.is_authenticated %}
             <div id="bunnyStep" class="bunny-step setup-popup">
               <fieldset class="bunny-runner-picker" aria-label="Conejo para jugar">
@@ -101,7 +103,7 @@
         <article class="tip-card"><span class="tip-number">01</span><h3>Saltá con precisión</h3><p>Usá el doble salto como recurso táctico: reservándolo para obstáculos exigentes vas a sostener mejores recorridos y evitar errores tempranos.</p></article>
         <article class="tip-card"><span class="tip-number">02</span><h3>Ítems de puntaje</h3><ul class="item-guide"><li><strong>🥕 Zanahoria:</strong> suma puntos y cuenta para el ranking de zanahorias.</li><li><strong>🥕 Dorada:</strong> vale más, sube mejor el combo y activa puntos ×2.</li><li><strong>🌾 Heno:</strong> suma poco, pero ayuda a mantener la racha.</li></ul></article>
         <article class="tip-card"><span class="tip-number">03</span><h3>Ítems de combo</h3><ul class="item-guide"><li><strong>🥬 Lechuga romana:</strong> agrega tiempo extra al combo.</li><li><strong>🥗 Escarola:</strong> da más puntos y acelera la subida de combo.</li><li><strong>🌱 Apio:</strong> suma puntos y alarga brevemente el salto.</li><li><strong>🟤 Pellets:</strong> puntaje bajo, con bonus rápido por ráfaga.</li></ul></article>
-        <article class="tip-card"><span class="tip-number">04</span><h3>Power-ups</h3><ul class="item-guide"><li><strong>🛡️ Trébol:</strong> bloquea el próximo golpe.</li><li><strong>🪽 Hoja voladora:</strong> permite saltos más largos.</li><li><strong>🌿 Menta:</strong> ralentiza el bosque unos segundos.</li><li><strong>❤️ Corazón:</strong> recupera una vida, hasta el máximo del modo.</li></ul></article>
+        <article class="tip-card"><span class="tip-number">04</span><h3>Power-ups</h3><ul class="item-guide"><li><strong>🛡️ Trébol:</strong> bloquea el próximo golpe.</li><li><strong>🪽 Hoja voladora:</strong> permite saltos más largos.</li><li><strong>🌿 Menta:</strong> ralentiza el bosque unos segundos.</li><li><strong>❤️ Corazón:</strong> recupera una vida, hasta el máximo del modo (hasta 5, salvo sin errores).</li></ul></article>
         <article class="tip-card"><span class="tip-number">05</span><h3>Elegí un desafío</h3><p>Competí en modo normal, 60 segundos, una vida, zanahorias altas o bosque veloz. Cada variante mantiene un ranking independiente para medir rendimiento real.</p></article>
       </div>
       <div class="live-board"><div class="card-header"><h3>Top 5</h3><a href="{% url 'leaderboard' %}">Ranking completo</a></div><ol id="liveLeaderboard" class="compact-ranking"><li class="empty-state">Cargando huellas…</li></ol></div>
