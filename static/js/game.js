@@ -545,9 +545,11 @@
     ctx.strokeStyle = '#66574b';
     ctx.lineWidth = 3;
 
-    // Tail behind the body.
+    // Tail behind the body: larger, puffier and clearly protruding from the rump.
     ctx.fillStyle = colors.fur;
-    ctx.beginPath(); ctx.arc(6, 47, 8, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.arc(1, 45, 10, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,.36)';
+    ctx.beginPath(); ctx.arc(-2, 42, 4, 0, Math.PI * 2); ctx.fill();
 
     // Body, low and long like a bunny standing on all fours.
     ctx.fillStyle = colors.fur;
@@ -563,35 +565,46 @@
     ctx.fillStyle = colors.fur;
     ctx.beginPath(); ctx.ellipse(45, 64, 10, 5.8, -.1, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
 
+    // Ears are anchored behind the head, separated and upright enough to read as bunny ears.
+    ctx.save();
+    ctx.translate(42, 21);
+    ctx.rotate(-.18);
+    ctx.fillStyle = colors.fur;
+    ctx.beginPath(); ctx.ellipse(0, -8, 6.8, 25, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#efb8b5';
+    ctx.beginPath(); ctx.ellipse(0, -6, 2.9, 17, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    ctx.save();
+    ctx.translate(55, 21);
+    ctx.rotate(.28);
+    ctx.fillStyle = colors.fur;
+    ctx.beginPath(); ctx.ellipse(0, -8, 6.4, 23, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#efb8b5';
+    ctx.beginPath(); ctx.ellipse(0, -6, 2.7, 15, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+
     // Head and muzzle, with clear space on top/neck for accessories.
     ctx.fillStyle = colors.fur;
     ctx.beginPath(); ctx.ellipse(50, 35, 18, 15, .04, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    ctx.beginPath(); ctx.ellipse(65, 38, 8, 5.6, .12, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-
-    // Ears lean back to avoid covering hats/crowns too much.
-    ctx.save();
-    ctx.translate(42, 20);
-    ctx.rotate(-.38);
-    ctx.beginPath(); ctx.ellipse(0, 0, 6.4, 23, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    ctx.fillStyle = '#e9b8ac';
-    ctx.beginPath(); ctx.ellipse(0, 1, 2.7, 15, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.restore();
-    ctx.save();
-    ctx.translate(54, 20);
-    ctx.rotate(.16);
     ctx.fillStyle = colors.fur;
-    ctx.beginPath(); ctx.ellipse(0, 0, 6.4, 22, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    ctx.fillStyle = '#e9b8ac';
-    ctx.beginPath(); ctx.ellipse(0, 1, 2.7, 14, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.restore();
+    ctx.beginPath(); ctx.ellipse(65, 38, 8.5, 6.2, .12, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
 
     ctx.fillStyle = '#493f38';
     ctx.beginPath(); ctx.arc(57, 33, 3, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#d98d84';
-    ctx.beginPath(); ctx.ellipse(70, 39, 3.2, 2.4, .1, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.75)';
+    ctx.beginPath(); ctx.arc(58, 32, 1, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#c9797d';
+    ctx.beginPath(); ctx.ellipse(70, 38, 3.7, 2.8, .04, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.45)';
+    ctx.beginPath(); ctx.arc(71, 37, .9, 0, Math.PI * 2); ctx.fill();
     ctx.strokeStyle = '#66574b'; ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(66, 43); ctx.quadraticCurveTo(60, 46, 54, 43); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(68, 38); ctx.lineTo(77, 35); ctx.moveTo(68, 40); ctx.lineTo(78, 41); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(66, 43); ctx.quadraticCurveTo(61, 47, 55, 44); ctx.stroke();
+    ctx.strokeStyle = '#5e5148'; ctx.lineWidth = 1.25;
+    ctx.beginPath();
+    ctx.moveTo(67, 37); ctx.lineTo(78, 33);
+    ctx.moveTo(68, 39); ctx.lineTo(80, 39);
+    ctx.moveTo(67, 41); ctx.lineTo(78, 45);
+    ctx.stroke();
 
     accessories.forEach(drawBodyAccessory);
     accessories.forEach(drawNeckAccessory);
