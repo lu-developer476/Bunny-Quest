@@ -534,55 +534,64 @@
     ctx.translate(-r.w / 2, -r.h / 2);
 
     const colors = bunnyPalette[activeBunny.color] || bunnyPalette.snow;
+    const accessories = bunnyAccessories();
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
 
-    // Side-profile runner: nose to the right and backpack/tail to the left.
-    // The silhouette leaves five clear accessory zones: head, neck, body, back and paws.
-    const accessories = bunnyAccessories();
+    // Side-on, four-legged pose. Only the near front and near rear paws are drawn
+    // so custom accessories can stay readable instead of being hidden by extra legs.
     accessories.forEach(drawBackAccessory);
 
-    ctx.fillStyle = colors.shade;
     ctx.strokeStyle = '#66574b';
     ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.ellipse(16, 66, 12, 7, -.08, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    ctx.beginPath(); ctx.ellipse(48, 67, 15, 7, -.08, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
 
+    // Tail behind the body.
     ctx.fillStyle = colors.fur;
-    ctx.beginPath(); ctx.ellipse(23, 47, 25, 20, -.13, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.arc(6, 47, 8, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+    // Body, low and long like a bunny standing on all fours.
+    ctx.fillStyle = colors.fur;
+    ctx.beginPath(); ctx.ellipse(30, 48, 28, 18, -.08, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
     if (colors.patch) {
       ctx.fillStyle = colors.shade;
-      ctx.beginPath(); ctx.ellipse(20, 42, 10, 12, -.35, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(21, 44, 10, 11, -.25, 0, Math.PI * 2); ctx.fill();
     }
 
+    // One visible rear leg and one visible front leg, both touching the ground.
+    ctx.fillStyle = colors.shade;
+    ctx.beginPath(); ctx.ellipse(17, 65, 13, 7, -.08, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
     ctx.fillStyle = colors.fur;
-    ctx.beginPath(); ctx.ellipse(48, 31, 19, 17, .06, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    ctx.beginPath(); ctx.ellipse(65, 33, 8, 6, .12, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    ctx.beginPath(); ctx.arc(5, 48, 8, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(45, 64, 10, 5.8, -.1, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
 
+    // Head and muzzle, with clear space on top/neck for accessories.
+    ctx.fillStyle = colors.fur;
+    ctx.beginPath(); ctx.ellipse(50, 35, 18, 15, .04, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(65, 38, 8, 5.6, .12, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+    // Ears lean back to avoid covering hats/crowns too much.
     ctx.save();
-    ctx.translate(42, 15);
-    ctx.rotate(-.32);
-    ctx.beginPath(); ctx.ellipse(0, 0, 7, 25, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.translate(42, 20);
+    ctx.rotate(-.38);
+    ctx.beginPath(); ctx.ellipse(0, 0, 6.4, 23, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
     ctx.fillStyle = '#e9b8ac';
-    ctx.beginPath(); ctx.ellipse(0, 1, 3, 17, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(0, 1, 2.7, 15, 0, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
     ctx.save();
-    ctx.translate(55, 16);
-    ctx.rotate(.18);
+    ctx.translate(54, 20);
+    ctx.rotate(.16);
     ctx.fillStyle = colors.fur;
-    ctx.beginPath(); ctx.ellipse(0, 0, 7, 24, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(0, 0, 6.4, 22, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
     ctx.fillStyle = '#e9b8ac';
-    ctx.beginPath(); ctx.ellipse(0, 1, 3, 16, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(0, 1, 2.7, 14, 0, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
 
     ctx.fillStyle = '#493f38';
-    ctx.beginPath(); ctx.arc(57, 29, 3.1, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(57, 33, 3, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#d98d84';
-    ctx.beginPath(); ctx.ellipse(70, 34, 3.4, 2.5, .1, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = '#66574b'; ctx.lineWidth = 1.6;
-    ctx.beginPath(); ctx.moveTo(66, 39); ctx.quadraticCurveTo(60, 42, 54, 39); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(68, 34); ctx.lineTo(77, 31); ctx.moveTo(68, 36); ctx.lineTo(78, 37); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(70, 39, 3.2, 2.4, .1, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#66574b'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(66, 43); ctx.quadraticCurveTo(60, 46, 54, 43); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(68, 38); ctx.lineTo(77, 35); ctx.moveTo(68, 40); ctx.lineTo(78, 41); ctx.stroke();
 
     accessories.forEach(drawBodyAccessory);
     accessories.forEach(drawNeckAccessory);
@@ -603,9 +612,9 @@
     ctx.fillStyle = '#b65e2c';
     ctx.strokeStyle = '#6f4935';
     ctx.lineWidth = 2.5;
-    drawRoundedRect(-2, 35, 22, 27, 8); ctx.fill(); ctx.stroke();
+    drawRoundedRect(-1, 34, 22, 25, 8); ctx.fill(); ctx.stroke();
     ctx.strokeStyle = '#f0b37c'; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.arc(18, 42, 9, -1.25, 1.1); ctx.stroke();
+    ctx.beginPath(); ctx.arc(18, 41, 9, -1.25, 1.1); ctx.stroke();
   }
 
   function drawBodyAccessory(accessory) {
@@ -614,38 +623,38 @@
     ctx.fillStyle = accessory === 'rainbow' ? '#f4d58d' : '#6f8d64';
     ctx.strokeStyle = '#4f7046';
     ctx.lineWidth = 2;
-    drawRoundedRect(12, 37, 34, 23, 10); ctx.fill(); ctx.stroke();
+    drawRoundedRect(13, 38, 34, 21, 10); ctx.fill(); ctx.stroke();
     if (isPin) {
       ctx.fillStyle = accessory === 'star' ? '#f5c14d' : '#d7d8ff';
-      ctx.beginPath(); ctx.arc(34, 42, 4.5, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(35, 43, 4.5, 0, Math.PI * 2); ctx.fill();
     }
   }
 
   function drawNeckAccessory(accessory) {
     if (accessory === 'scarf') {
       ctx.fillStyle = '#4f7046';
-      drawRoundedRect(35, 43, 22, 8, 4); ctx.fill();
-      ctx.beginPath(); ctx.moveTo(38, 49); ctx.lineTo(22, 63); ctx.lineTo(36, 56); ctx.closePath(); ctx.fill();
+      drawRoundedRect(36, 45, 22, 8, 4); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(39, 51); ctx.lineTo(24, 63); ctx.lineTo(38, 58); ctx.closePath(); ctx.fill();
     } else if (accessory === 'collar') {
-      ctx.strokeStyle = '#d88bc6'; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(39, 45, 14, -.9, .95); ctx.stroke();
-      ctx.fillStyle = '#f4d8ef'; ctx.beginPath(); ctx.arc(39, 56, 4, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#d88bc6'; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(42, 47, 13, -.9, .95); ctx.stroke();
+      ctx.fillStyle = '#f4d8ef'; ctx.beginPath(); ctx.arc(42, 57, 4, 0, Math.PI * 2); ctx.fill();
     }
   }
 
   function drawHeadAccessory(accessory) {
     if (accessory === 'cap') {
       ctx.fillStyle = '#45639a';
-      drawRoundedRect(38, 13, 30, 10, 5); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(67, 23, 13, 4, .1, 0, Math.PI * 2); ctx.fill();
+      drawRoundedRect(38, 17, 30, 10, 5); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(67, 27, 13, 4, .1, 0, Math.PI * 2); ctx.fill();
     } else if (accessory === 'crown') {
       ctx.fillStyle = '#f5c14d';
-      ctx.beginPath(); ctx.moveTo(36, 15); ctx.lineTo(42, 2); ctx.lineTo(49, 15); ctx.lineTo(56, 2); ctx.lineTo(63, 16); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(36, 18); ctx.lineTo(42, 5); ctx.lineTo(49, 18); ctx.lineTo(56, 5); ctx.lineTo(63, 19); ctx.closePath(); ctx.fill();
     } else if (accessory === 'glasses') {
       ctx.strokeStyle = '#243123'; ctx.lineWidth = 2;
       ctx.beginPath(); ctx.arc(57, 29, 6, 0, Math.PI * 2); ctx.moveTo(63, 29); ctx.lineTo(69, 29); ctx.stroke();
     } else if (accessory === 'flower' || accessory === 'clover' || accessory === 'bow' || accessory === 'star' || accessory === 'moon_pin' || accessory === 'rainbow') {
       const glyph = {flower: '🌼', clover: '☘️', bow: '🎀', star: '⭐', moon_pin: '🌙', rainbow: '🌈'}[accessory];
-      const positions = {flower: [30, 17], clover: [20, 23], bow: [45, 9], star: [18, 50], moon_pin: [25, 58], rainbow: [28, 12]};
+      const positions = {flower: [30, 20], clover: [20, 26], bow: [45, 13], star: [18, 52], moon_pin: [25, 59], rainbow: [28, 15]};
       const [x, y] = positions[accessory] || [31, 18];
       ctx.font = '16px system-ui';
       ctx.fillText(glyph, x, y);
@@ -655,8 +664,8 @@
   function drawBootAccessory(accessory) {
     if (!['rainbow', 'backpack', 'cap'].includes(accessory)) return;
     ctx.fillStyle = accessory === 'rainbow' ? '#ed8540' : '#45639a';
-    drawRoundedRect(5, 63, 20, 8, 4); ctx.fill();
-    drawRoundedRect(38, 63, 24, 8, 4); ctx.fill();
+    drawRoundedRect(6, 62, 22, 8, 4); ctx.fill();
+    drawRoundedRect(36, 61, 22, 8, 4); ctx.fill();
   }
 
   function drawObstacle(o) {
