@@ -184,6 +184,9 @@ kbd { padding: 4px 7px; border: 1px solid var(--line); border-bottom-width: 3px;
 .tip-number { display: inline-grid; place-items: center; width: 38px; height: 38px; margin-bottom: 26px; border-radius: 13px; color: var(--leaf-dark); background: var(--leaf-light); font-size: 11px; font-weight: 900; }
 .tip-card h3 { margin-bottom: 9px; font-size: 20px; }
 .tip-card p { margin: 0; color: var(--muted); font-size: 13px; }
+.item-guide { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; color: var(--muted); font-size: 13px; line-height: 1.45; }
+.item-guide li { margin: 0; }
+.item-guide strong { color: var(--ink); }
 .live-board .compact-ranking { margin-top: 14px; }
 .live-board .compact-ranking li { grid-template-columns: 28px 1fr auto; min-height: 48px; font-size: 12px; }
 

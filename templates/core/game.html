@@ -97,11 +97,12 @@
       <button class="modal-close" type="button" data-close-game-modal aria-label="Cerrar">×</button>
       <span class="eyebrow">Manual del bosque</span>
       <h2 id="gameInfoTitle">Estrategia, objetivos y ranking</h2>
-      <div class="tip-slider" aria-label="Consejos de juego">
+      <div class="tip-slider" aria-label="Consejos e ítems de juego">
         <article class="tip-card"><span class="tip-number">01</span><h3>Saltá con precisión</h3><p>Usá el doble salto como recurso táctico: reservándolo para obstáculos exigentes vas a sostener mejores recorridos y evitar errores tempranos.</p></article>
-        <article class="tip-card"><span class="tip-number">02</span><h3>Optimizá el combo</h3><p>Cada alimento tiene valor estratégico: priorizá zanahorias doradas, extendé rachas con lechuga romana y aprovechá escarola, apio y pellets según el ritmo del bosque.</p></article>
-        <article class="tip-card"><span class="tip-number">03</span><h3>Gestioná los power-ups</h3><p>Los tréboles protegen, las hojas elevan, la menta ralentiza el entorno y los corazones recuperan vidas. Activarlos en el momento correcto define la partida.</p></article>
-        <article class="tip-card"><span class="tip-number">04</span><h3>Elegí un desafío</h3><p>Competí en modo normal, 60 segundos, una vida, zanahorias altas o bosque veloz. Cada variante mantiene un ranking independiente para medir rendimiento real.</p></article>
+        <article class="tip-card"><span class="tip-number">02</span><h3>Ítems de puntaje</h3><ul class="item-guide"><li><strong>🥕 Zanahoria:</strong> suma puntos y cuenta para el ranking de zanahorias.</li><li><strong>🥕 Dorada:</strong> vale más, sube mejor el combo y activa puntos ×2.</li><li><strong>🌾 Heno:</strong> suma poco, pero ayuda a mantener la racha.</li></ul></article>
+        <article class="tip-card"><span class="tip-number">03</span><h3>Ítems de combo</h3><ul class="item-guide"><li><strong>🥬 Lechuga romana:</strong> agrega tiempo extra al combo.</li><li><strong>🥗 Escarola:</strong> da más puntos y acelera la subida de combo.</li><li><strong>🌱 Apio:</strong> suma puntos y alarga brevemente el salto.</li><li><strong>🟤 Pellets:</strong> puntaje bajo, con bonus rápido por ráfaga.</li></ul></article>
+        <article class="tip-card"><span class="tip-number">04</span><h3>Power-ups</h3><ul class="item-guide"><li><strong>🛡️ Trébol:</strong> bloquea el próximo golpe.</li><li><strong>🪽 Hoja voladora:</strong> permite saltos más largos.</li><li><strong>🌿 Menta:</strong> ralentiza el bosque unos segundos.</li><li><strong>❤️ Corazón:</strong> recupera una vida, hasta el máximo del modo.</li></ul></article>
+        <article class="tip-card"><span class="tip-number">05</span><h3>Elegí un desafío</h3><p>Competí en modo normal, 60 segundos, una vida, zanahorias altas o bosque veloz. Cada variante mantiene un ranking independiente para medir rendimiento real.</p></article>
       </div>
       <div class="live-board"><div class="card-header"><h3>Top 5</h3><a href="{% url 'leaderboard' %}">Ranking completo</a></div><ol id="liveLeaderboard" class="compact-ranking"><li class="empty-state">Cargando huellas…</li></ol></div>
     </div>
