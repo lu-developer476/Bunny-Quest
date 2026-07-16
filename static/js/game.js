@@ -622,25 +622,38 @@
 
   function drawBackAccessory(accessory) {
     if (accessory !== 'backpack') return;
+
+    // The backpack belongs on the bunny's back, not behind the tail. Draw it
+    // before the body so it feels equipped, but keep its top/side peeking out
+    // above the torso where players can clearly see their selected item.
     ctx.fillStyle = '#b65e2c';
     ctx.strokeStyle = '#6f4935';
     ctx.lineWidth = 2.5;
-    drawRoundedRect(-1, 34, 22, 25, 8); ctx.fill(); ctx.stroke();
+    drawRoundedRect(11, 24, 27, 29, 8); ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = '#d98244';
+    drawRoundedRect(15, 28, 19, 8, 4); ctx.fill();
+
     ctx.strokeStyle = '#f0b37c'; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.arc(18, 41, 9, -1.25, 1.1); ctx.stroke();
+    ctx.beginPath(); ctx.arc(38, 40, 12, -1.75, 1.25); ctx.stroke();
+    ctx.strokeStyle = '#6f4935'; ctx.lineWidth = 1.4;
+    ctx.beginPath(); ctx.moveTo(24, 24); ctx.lineTo(24, 53); ctx.stroke();
   }
 
   function drawBodyAccessory(accessory) {
     if (!['star', 'moon_pin', 'rainbow'].includes(accessory)) return;
-    const isPin = accessory === 'star' || accessory === 'moon_pin';
-    ctx.fillStyle = accessory === 'rainbow' ? '#f4d58d' : '#6f8d64';
-    ctx.strokeStyle = '#4f7046';
-    ctx.lineWidth = 2;
-    drawRoundedRect(13, 38, 34, 21, 10); ctx.fill(); ctx.stroke();
-    if (isPin) {
-      ctx.fillStyle = accessory === 'star' ? '#f5c14d' : '#d7d8ff';
-      ctx.beginPath(); ctx.arc(35, 43, 4.5, 0, Math.PI * 2); ctx.fill();
+    if (accessory === 'rainbow') {
+      ctx.fillStyle = '#f4d58d';
+      ctx.strokeStyle = '#4f7046';
+      ctx.lineWidth = 2;
+      drawRoundedRect(16, 36, 32, 10, 6); ctx.fill(); ctx.stroke();
+      return;
     }
+
+    ctx.fillStyle = accessory === 'star' ? '#f5c14d' : '#d7d8ff';
+    ctx.strokeStyle = '#6f8d64';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(38, 42, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
   }
 
   function drawNeckAccessory(accessory) {
@@ -667,7 +680,7 @@
       ctx.beginPath(); ctx.arc(57, 29, 6, 0, Math.PI * 2); ctx.moveTo(63, 29); ctx.lineTo(69, 29); ctx.stroke();
     } else if (accessory === 'flower' || accessory === 'clover' || accessory === 'bow' || accessory === 'star' || accessory === 'moon_pin' || accessory === 'rainbow') {
       const glyph = {flower: '🌼', clover: '☘️', bow: '🎀', star: '⭐', moon_pin: '🌙', rainbow: '🌈'}[accessory];
-      const positions = {flower: [30, 20], clover: [20, 26], bow: [45, 13], star: [18, 52], moon_pin: [25, 59], rainbow: [28, 15]};
+      const positions = {flower: [31, 20], clover: [25, 24], bow: [44, 16], star: [34, 40], moon_pin: [34, 46], rainbow: [36, 13]};
       const [x, y] = positions[accessory] || [31, 18];
       ctx.font = '16px system-ui';
       ctx.fillText(glyph, x, y);
@@ -675,7 +688,7 @@
   }
 
   function drawBootAccessory(accessory) {
-    if (!['rainbow', 'backpack', 'cap'].includes(accessory)) return;
+    if (!['rainbow', 'cap'].includes(accessory)) return;
     ctx.fillStyle = accessory === 'rainbow' ? '#ed8540' : '#45639a';
     drawRoundedRect(6, 62, 22, 8, 4); ctx.fill();
     drawRoundedRect(36, 61, 22, 8, 4); ctx.fill();
