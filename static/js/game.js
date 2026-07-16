@@ -366,15 +366,14 @@
       if (spec.wing) game.wingTimer = Math.max(game.wingTimer, spec.wing);
       game.score += (spec.points + (spec.burst || 0) * 15) * game.combo * game.scoreMultiplier;
     } else if (pickup.type === 'clover') {
-      game.shield = 1; game.score += spec.points; showToast('🛡️ Escudo listo por un golpe', spec.color);
+      game.shield = 1; game.score += spec.points;
     } else if (pickup.type === 'wing_leaf') {
-      game.wingTimer = 6; game.score += spec.points; showToast('🪽 Saltos más largos', spec.color);
+      game.wingTimer = 6; game.score += spec.points;
     } else if (pickup.type === 'mint') {
-      game.mintTimer = 5.5; game.score += spec.points; showToast('🌿 El bosque va más lento', spec.color);
+      game.mintTimer = 5.5; game.score += spec.points;
     } else if (pickup.type === 'heart') {
-      game.lives = Math.min(3, game.lives + 1); game.score += spec.points; showToast('❤️ Vida recuperada', spec.color);
+      game.lives = Math.min(3, game.lives + 1); game.score += spec.points;
     }
-    if (pickup.type === 'golden_carrot') showToast('🥕 Zanahoria dorada: puntos ×2', spec.color);
     emitParticles(pickup.x + pickup.w / 2, pickup.y + pickup.h / 2, 12, spec.color);
     beep(620 + game.combo * 35, .07, 'triangle', .035);
   }
@@ -746,8 +745,6 @@
     if (game.scoreMultiplier > 1) labels.push('🥕 ×2 puntos');
     if (game.wingTimer > 0) labels.push('🪽 salto largo');
     if (game.mintTimer > 0) labels.push('🌿 lento');
-    if (game.tutorialTimer > 0) labels.push(game.tutorialStep < 2 ? 'Tocá para saltar' : 'Agarrá la zanahoria: el combo sube hasta ×8');
-    if (game.toast) labels.push(game.toast.text);
     if (!labels.length) return;
     ctx.save();
     ctx.fillStyle = 'rgba(255,255,255,.9)';
