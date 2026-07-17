@@ -3,7 +3,7 @@
 {% block content %}
 <section class="auth-section container">
   <div class="auth-art"><span>🐇</span><h1>Volvé a tu madriguera.</h1><p>Tus récords, tu conejo y tus zanahorias te estaban esperando.</p></div>
-  <div class="auth-card"><span class="eyebrow">Acceso de jugadores</span><h2>Ingresar</h2>
+  <div class="auth-card"><span class="eyebrow">Acceso de jugadores</span>
     {% if form.errors %}<div class="form-error">Usuario o contraseña incorrectos.</div>{% endif %}
     <form method="post" class="styled-form">{% csrf_token %}{{ form.as_p }}{% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}<button class="button button-primary" type="submit">Entrar</button></form>
     <p class="auth-foot">¿No tenés cuenta? <a href="{% url 'signup' %}">Creala gratis</a>.</p>
