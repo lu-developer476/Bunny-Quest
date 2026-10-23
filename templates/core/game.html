@@ -24,8 +24,8 @@
           <div class="overlay-card">
             <button id="closeResultButton" class="overlay-close hidden" type="button" aria-label="Cerrar resultados">×</button>
             <span class="overlay-bunny">🐇</span>
-            <h2 id="overlayTitle">¿Listo para saltar?</h2>
-            <p id="overlayText">Juntá zanahorias, esquivá troncos y no pierdas el ritmo.</p>
+            <h2 id="overlayTitle">¿Listo para jugar?</h2>
+            <p id="overlayText"></p>
             <button id="restartGameButton" class="button button-primary hidden" type="button">Jugar otra vez</button>
             <button id="shareResultButton" class="button button-ghost hidden" type="button">Compartir resultado</button>
             <a id="rankingLink" class="text-link hidden" href="{% url 'leaderboard' %}">Ver ranking →</a>
@@ -92,9 +92,8 @@
     <div class="modal-card">
       <button class="modal-close" type="button" data-close-game-modal aria-label="Cerrar">×</button>
       <div class="tip-slider" aria-label="Consejos e ítems de juego">
-        <article class="tip-card"><span class="tip-number">01</span><h3>Saltá y elegí tu desafío</h3><p>Usá Espacio, ↑ o tocá la pantalla para saltar; reservá el doble salto para obstáculos exigentes. Elegí entre modo normal, contrarreloj, una vida, zanahorias altas o bosque veloz.</p></article>
-        <article class="tip-card"><span class="tip-number">02</span><h3>Recolectá ítems y sumá puntos</h3><ul class="item-guide"><li><strong>🥕 Zanahoria:</strong> suma puntos y cuenta para el ranking.</li><li><strong>🥕 Dorada:</strong> vale más y activa puntos ×2.</li><li><strong>🌾 Heno:</strong> ayuda a mantener la racha.</li><li><strong>🥬 Lechuga y 🥗 escarola:</strong> aumentan el combo.</li><li><strong>🌱 Apio y 🟤 pellets:</strong> dan puntos y beneficios breves.</li></ul></article>
-        <article class="tip-card"><span class="tip-number">03</span><h3>Aprovechá los power-ups</h3><ul class="item-guide"><li><strong>🛡️ Trébol:</strong> bloquea el próximo golpe.</li><li><strong>🪽 Hoja voladora:</strong> permite saltos más largos.</li><li><strong>🌿 Menta:</strong> ralentiza el bosque unos segundos.</li><li><strong>❤️ Corazón:</strong> recupera una vida, hasta el máximo del modo.</li></ul></article>
+        <article class="tip-card"><span class="tip-number">01</span><h3>Recolectá ítems y sumá puntos</h3><ul class="item-guide"><li><strong>🥕 Zanahoria:</strong> suma puntos y cuenta para el ranking.</li><li><strong>🥕 Dorada:</strong> vale más y activa puntos ×2.</li><li><strong>🌾 Heno:</strong> ayuda a mantener la racha.</li><li><strong>🥬 Lechuga y 🥗 escarola:</strong> aumentan el combo.</li><li><strong>🌱 Apio y 🟤 pellets:</strong> dan puntos y beneficios breves.</li></ul></article>
+        <article class="tip-card"><span class="tip-number">02</span><h3>Aprovechá los power-ups</h3><ul class="item-guide"><li><strong>🛡️ Trébol:</strong> bloquea el próximo golpe.</li><li><strong>🪽 Hoja voladora:</strong> permite saltos más largos.</li><li><strong>🌿 Menta:</strong> ralentiza el bosque unos segundos.</li><li><strong>❤️ Corazón:</strong> recupera una vida, hasta el máximo del modo.</li></ul></article>
       </div>
     </div>
   </dialog>
