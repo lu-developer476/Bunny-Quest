@@ -1289,3 +1289,23 @@ body.theme-light-grey .theme-selector select { background: #f7f8f9; }
     min-width: 0;
   }
 }
+
+
+/* Center the mode picker text before the player starts a run. */
+#modeStep .mode-selector {
+  text-align: center;
+}
+#modeStep .mode-selector-label {
+  text-align: center;
+}
+#modeStep .challenge-select {
+  text-align: center;
+  text-align-last: center;
+}
+#modeStep .mode-selector-help {
+  text-align: center;
+}
+#modeStep > .button {
+  display: block;
+  margin-inline: auto;
+}
