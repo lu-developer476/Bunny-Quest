@@ -5,7 +5,18 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f8faf5">
-  <meta name="description" content="Bunny Quest: ayuda a nuestro aventurero a recolectar comida y esquivar el peligro en diferentes escenarios.">
+  <meta name="description" content="{% block meta_description %}Bunny Quest: videojuego de plataformas protagonizado por Nube. Recolectá zanahorias, esquivá obstáculos y competí por el mejor puntaje.{% endblock %}">
+  <meta name="robots" content="{% block robots_meta %}index, follow{% endblock %}">
+  <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+  <meta property="og:site_name" content="Bunny Quest">
+  <meta property="og:locale" content="es_AR">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{% block og_title %}Bunny Quest{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}Jugá Bunny Quest: recolectá zanahorias, esquivá obstáculos y superá récords con Nube.{% endblock %}">
+  <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="{% block twitter_title %}Bunny Quest{% endblock %}">
+  <meta name="twitter:description" content="{% block twitter_description %}Un videojuego de plataformas con Nube, zanahorias y desafíos.{% endblock %}">
   <title>{% block title %}Bunny Quest{% endblock %}</title>
   <link rel="icon" href="{% static 'img/bunny-mark.svg' %}" type="image/svg+xml" sizes="any">
   <link rel="mask-icon" href="{% static 'img/bunny-mark.svg' %}" color="#4f7046">
@@ -64,6 +75,15 @@
       <p>© 2026 Todos los derechos reservados • Built with Python &amp; Django • UX/UI Interface • Deployed on Render ®</p>
     </div>
   </footer>
+  {% if GOOGLE_ANALYTICS_ID and not user.is_staff %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ GOOGLE_ANALYTICS_ID }}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '{{ GOOGLE_ANALYTICS_ID }}', { anonymize_ip: true });
+  </script>
+  {% endif %}
   <script src="{% static 'js/site.js' %}" defer></script>
   {% block scripts %}{% endblock %}
 </body>
