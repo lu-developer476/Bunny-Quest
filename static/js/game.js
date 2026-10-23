@@ -1097,3 +1097,49 @@
     if (event.target === modal) modal.close();
   });
 })();
+
+
+// Game display controls: compact layout and native fullscreen.
+(() => {
+  const shell = document.querySelector('.game-shell');
+  const compactButton = document.getElementById('compactGameButton');
+  const fullscreenButton = document.getElementById('fullscreenGameButton');
+  const canvas = document.getElementById('gameCanvas');
+  if (!shell || !compactButton || !fullscreenButton) return;
+
+  function renderCompactState() {
+    const compact = shell.classList.contains('is-compact');
+    compactButton.textContent = compact ? 'Ampliar pantalla' : 'Achicar pantalla';
+    compactButton.setAttribute('aria-pressed', String(compact));
+    window.dispatchEvent(new Event('resize'));
+  }
+
+  async function toggleFullscreen() {
+    try {
+      if (document.fullscreenElement === shell) {
+        await document.exitFullscreen();
+      } else if (shell.requestFullscreen) {
+        await shell.requestFullscreen();
+      }
+    } catch (error) {
+      fullscreenButton.textContent = 'Pantalla completa no disponible';
+      window.setTimeout(renderFullscreenState, 1800);
+    }
+  }
+
+  function renderFullscreenState() {
+    const active = document.fullscreenElement === shell;
+    fullscreenButton.textContent = active ? 'Salir de pantalla completa' : 'Pantalla completa';
+    fullscreenButton.setAttribute('aria-pressed', String(active));
+    window.dispatchEvent(new Event('resize'));
+  }
+
+  compactButton.addEventListener('click', () => {
+    shell.classList.toggle('is-compact');
+    renderCompactState();
+  });
+  fullscreenButton.addEventListener('click', toggleFullscreen);
+  document.addEventListener('fullscreenchange', renderFullscreenState);
+  renderCompactState();
+  renderFullscreenState();
+})();
