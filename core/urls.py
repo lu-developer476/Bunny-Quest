@@ -4,8 +4,6 @@ from . import views
 
 urlpatterns = [
     path("", views.home, name="home"),
-    path("robots.txt", views.robots_txt, name="robots_txt"),
-    path("sitemap.xml", views.sitemap_xml, name="sitemap_xml"),
     path("jugar/", views.game, name="game"),
     path("ranking/", views.leaderboard, name="leaderboard"),
     path("tema/", views.set_theme, name="set_theme"),
