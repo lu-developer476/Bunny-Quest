@@ -7,7 +7,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import connection, models, transaction
 from django.db.models import Avg, Count, Max, Q, Sum
-from django.http import HttpRequest, JsonResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils import timezone
@@ -17,6 +17,26 @@ from django.views.decorators.http import require_GET, require_POST
 from .forms import ProfileForm, SignUpForm
 from .models import AccessoryPurchase, GameScore, GameSession, PlayerProfile
 from .services import achievements_for_profile, coins_for_distance, daily_missions_for, shop_catalog_for, unlock_achievements_for
+
+
+def robots_txt(request):
+    sitemap_url = request.build_absolute_uri("/sitemap.xml")
+    content = f"User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /cuenta/\nDisallow: /api/\nSitemap: {sitemap_url}\n"
+    return HttpResponse(content, content_type="text/plain; charset=utf-8")
+
+
+def sitemap_xml(request):
+    base_url = request.build_absolute_uri("/").rstrip("/")
+    urls = [
+        (base_url + "/", "1.0"),
+        (base_url + "/ranking/", "0.7"),
+    ]
+    items = "".join(
+        f"<url><loc>{loc}</loc><changefreq>weekly</changefreq><priority>{priority}</priority></url>"
+        for loc, priority in urls
+    )
+    xml = '<?xml version="1.0" encoding="UTF-8"?>' + f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{items}</urlset>'
+    return HttpResponse(xml, content_type="application/xml; charset=utf-8")
 
 
 def home(request):
