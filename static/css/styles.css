@@ -1197,3 +1197,14 @@ body.theme-light-grey .theme-selector select { background: #f7f8f9; }
 .game-side { display: none; }
 .game-intro { align-items: center; }
 .game-guide-button { flex: 0 0 auto; }
+
+
+/* Center the game instructions and sound control together in the footer. */
+.game-footer-bar {
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  text-align: center;
+}
+.game-footer-bar .game-instructions { margin: 0; }
+.game-footer-bar #soundButton { margin: 0; }
