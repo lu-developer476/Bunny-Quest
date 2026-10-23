@@ -6,6 +6,7 @@
 <section class="game-page container">
   <div class="game-intro">
     <div><h1>Las travesía de Nube</h1></div>
+    <button class="button button-primary game-guide-button" type="button" data-open-game-modal>Guía</button>
   </div>
 
   <div class="game-layout">
@@ -70,15 +71,12 @@
         <button id="quickRestartGameButton" class="button button-primary" type="button">Reiniciar</button>
       </div>
       <div class="game-footer-bar">
-        <p class="game-instructions">Elegí el modo de juego y confirmá. Después escribí tu apodo y seleccioná <strong>Empezar partida</strong>. Durante la partida, usá <kbd>Espacio</kbd>, <kbd>↑</kbd> o tocá la pantalla para saltar; presioná <kbd>P</kbd> para pausar.</p>
+        <p class="game-instructions">Durante la partida, usá <kbd>Espacio</kbd>, <kbd>↑</kbd> o tocá la pantalla para saltar; presioná <kbd>P</kbd> para pausar.</p>
         <button id="soundButton" type="button" aria-pressed="true" aria-label="Sonido activado">🔊 Sonido: sí</button>
       </div>
     </div>
 
     <aside class="game-side">
-      <div class="forest-story-panel">
-        <button class="button button-primary" type="button" data-open-game-modal>Guía y ranking</button>
-      </div>
       {% if daily_missions %}
         <div class="mission-card"><span class="eyebrow">Misiones de hoy</span>
           {% for mission in daily_missions %}
@@ -93,7 +91,7 @@
     <div class="modal-card">
       <button class="modal-close" type="button" data-close-game-modal aria-label="Cerrar">×</button>
       <span class="eyebrow">Manual del bosque</span>
-      <h2 id="gameInfoTitle">Estrategia, objetivos y ranking</h2>
+      <h2 id="gameInfoTitle">Guía de juego</h2>
       <div class="tip-slider" aria-label="Consejos e ítems de juego">
         <article class="tip-card"><span class="tip-number">01</span><h3>Saltá con precisión</h3><p>Usá el doble salto como recurso táctico: reservándolo para obstáculos exigentes vas a sostener mejores recorridos y evitar errores tempranos.</p></article>
         <article class="tip-card"><span class="tip-number">02</span><h3>Ítems de puntaje</h3><ul class="item-guide"><li><strong>🥕 Zanahoria:</strong> suma puntos y cuenta para el ranking de zanahorias.</li><li><strong>🥕 Dorada:</strong> vale más, sube mejor el combo y activa puntos ×2.</li><li><strong>🌾 Heno:</strong> suma poco, pero ayuda a mantener la racha.</li></ul></article>
@@ -101,7 +99,6 @@
         <article class="tip-card"><span class="tip-number">04</span><h3>Power-ups</h3><ul class="item-guide"><li><strong>🛡️ Trébol:</strong> bloquea el próximo golpe.</li><li><strong>🪽 Hoja voladora:</strong> permite saltos más largos.</li><li><strong>🌿 Menta:</strong> ralentiza el bosque unos segundos.</li><li><strong>❤️ Corazón:</strong> recupera una vida, hasta el máximo del modo (hasta 5, salvo sin errores).</li></ul></article>
         <article class="tip-card"><span class="tip-number">05</span><h3>Elegí un desafío</h3><p>Competí en modo normal, 60 segundos, una vida, zanahorias altas o bosque veloz. Cada variante mantiene un ranking independiente para medir rendimiento real.</p></article>
       </div>
-      <div class="live-board"><div class="card-header"><h3>Top 5</h3><a href="{% url 'leaderboard' %}">Ranking completo</a></div><ol id="liveLeaderboard" class="compact-ranking"><li class="empty-state">Cargando huellas…</li></ol></div>
     </div>
   </dialog>
 </section>
