@@ -1190,3 +1190,10 @@ body.theme-light-grey .theme-selector select { background: #f7f8f9; }
   .game-control-bar .button { flex: 1; min-width: 0; min-height: 44px; }
   .game-footer-bar { justify-content: space-between; }
 }
+
+
+/* Game page: full-width play area with the guide aligned to the title. */
+.game-layout { grid-template-columns: minmax(0, 1fr); }
+.game-side { display: none; }
+.game-intro { align-items: center; }
+.game-guide-button { flex: 0 0 auto; }
